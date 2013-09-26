@@ -6,6 +6,7 @@
  */
 #include <iostream>
 #include "posixSerial.h"
+#include "croiUtil.h"
 
 extern "C" {
 #include <stdio.h>   /* Standard input/output definitions */
@@ -16,7 +17,7 @@ extern "C" {
 #include <termios.h> /* POSIX terminal control definitions */
 }
 
-namespace CROI {
+namespace Croi {
 
 PosixSerial::PosixSerial() :
     fd_(-1),
@@ -28,8 +29,19 @@ PosixSerial::PosixSerial() :
     memset(readBuf_, 0, sizeof(readBuf_));
 }
 
+PosixSerial::PosixSerial(std::string device) :
+    fd_(-1),
+    initialized_(false),
+    device_(device)
+{
+    settings_.baudrate = B115200;
+    settings_.cflag = (CS8 | CLOCAL | CREAD );
+    memset(readBuf_, 0, sizeof(readBuf_));
+}
+
 PosixSerial::PosixSerial(SerialSettings settings) :
     fd_(-1),
+    settings_(settings),
     initialized_(false)
 {}
 
@@ -43,7 +55,7 @@ int PosixSerial::writeSerial(const std::string buf) {
 
     int n = write(fd_, buf.c_str(), buf.size());
 
-    std::cout << "lahetetty tavuja: " << n << std::endl;
+    std::cout << "sent bytes: " << n << std::endl;
     if(n != static_cast<int>(buf.size())) {
         return CROI_ERROR;
     }
@@ -73,7 +85,7 @@ int PosixSerial::readSerial(std::string & buf) {
 
     //debug
     for(int i = 0; i < size; ++i) {
-        std::cout << readBuf_[i];
+        printf("tuosta: %i\n",readBuf_[i]);
     }
     std::cout << std::endl;
 
@@ -147,4 +159,4 @@ int PosixSerial::initializePort()
     return CROI_SUCCESS;
 }
 
-}
+}//namespace Croi

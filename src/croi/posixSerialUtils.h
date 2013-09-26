@@ -12,7 +12,7 @@ extern "C" {
 #include <termios.h>
 }
 
-namespace CROI {
+namespace Croi {
 
 struct SerialSettings {
 	speed_t baudrate; //eg. B19200
@@ -20,15 +20,12 @@ struct SerialSettings {
 
 };
 
-enum returnval {
-	CROI_ERROR = -1,
-	CROI_SUCCESS = 0
-};
 
 const std::string DEFAULT_DEVICE = "/dev/ttyUSB0";
 
 const unsigned int MAX_READ = 255;
-}
+
+} //namespace Croi
 
 
 #endif /* SERIALSETTINGS_H_ */

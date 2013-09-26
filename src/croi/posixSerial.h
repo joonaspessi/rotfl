@@ -11,12 +11,14 @@
 #include <string>
 #include "posixSerialUtils.h"
 
-namespace CROI {
+namespace Croi {
 
-class PosixSerial {
+class PosixSerial  {
 public:
 
 	PosixSerial(SerialSettings settings);
+
+    PosixSerial(std::string device);
 
 	PosixSerial();
 
@@ -24,11 +26,11 @@ public:
 
     int readSerial(std::string & buf);
 
+    int initializePort();
+
 	virtual ~PosixSerial();
 
 private:
-
-    int initializePort();
 
 	int openPort();
 

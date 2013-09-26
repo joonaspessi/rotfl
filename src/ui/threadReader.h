@@ -3,7 +3,7 @@
 
 #include <QThread>
 
-namespace CROI {
+namespace Croi {
 class PosixSerial;
 }
 
@@ -12,7 +12,7 @@ class ThreadReader : public QThread
     Q_OBJECT
 public:
     //explicit ThreadReader(QObject *parent = 0);
-    ThreadReader(CROI::PosixSerial *ps, QObject *parent = 0);
+    ThreadReader(Croi::PosixSerial *ps, QObject *parent = 0);
     virtual ~ThreadReader();
     void run();
     bool Stop;
@@ -23,7 +23,7 @@ signals:
 public slots:
 
 private:
-    CROI::PosixSerial *ps_;
+    Croi::PosixSerial *ps_;
 
 };
 

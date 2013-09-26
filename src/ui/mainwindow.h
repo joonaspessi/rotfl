@@ -24,12 +24,14 @@ private slots:
 
     void on_pushButton_2_clicked();
 
+    void on_comboBox_currentIndexChanged(const QString &arg1);
+
 private:
     void init();
     Ui::MainWindow *ui;
     QStandardItemModel *model;
     int index;
-    CROI::PosixSerial* posixserial;
+    Croi::PosixSerial* posixserial;
     ThreadReader *threadReader;
 
 };
