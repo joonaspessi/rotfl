@@ -79,11 +79,20 @@ void MainWindow::on_pushButton_clicked()
 
 
     //send message to ui
+    QString outputStr = "";
+    for(int i = 0; i < optCommands.size(); ++i){
+        QByteArray ba = 0;
+        ba.append(optCommands.at(i));
+        outputStr += ba.toHex();
+        outputStr += " ";
+    }
+
     QString outputCommandUI;
-    outputCommandUI = QTime::currentTime().toString() + " Write: " + optCommands.c_str() ;
+    outputCommandUI = QTime::currentTime().toString() + " Write: " + outputStr ;
     QStandardItem *item = new QStandardItem(outputCommandUI);
     model->setItem(index, 0, item);
     index++;
+    ui->listView->scrollToBottom();
 
 }
 
@@ -109,6 +118,7 @@ void MainWindow::on_pushButton_2_clicked()
         QStandardItem *item = new QStandardItem(outputStr);
         model->setItem(index, 0, item);
         index++;
+        ui->listView->scrollToBottom();
     }
 
 }
@@ -176,6 +186,11 @@ void MainWindow::on_comboBox_currentIndexChanged(const QString &arg1)
         break;
     }
     }
+
+    ui->byte_1_edit->clear();
+    ui->byte_2_edit->clear();
+    ui->byte_3_edit->clear();
+    ui->byte_4_edit->clear();
 
 
 }

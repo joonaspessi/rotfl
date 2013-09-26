@@ -16,11 +16,11 @@ namespace Croi {
 class PosixSerial  {
 public:
 
-	PosixSerial(SerialSettings settings);
+    PosixSerial(SerialSettings settings);
 
     PosixSerial(std::string device);
 
-	PosixSerial();
+    PosixSerial();
 
     int writeSerial(const std::string buf);
 
@@ -28,7 +28,7 @@ public:
 
     int initializePort();
 
-	virtual ~PosixSerial();
+    virtual ~PosixSerial();
 
 private:
 
