@@ -4,6 +4,7 @@
 #include <iomanip>
 #include <sstream>
 #include <iostream>
+#include <QDateTime>
 
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
@@ -73,11 +74,16 @@ void MainWindow::on_pushButton_clicked()
         stream << temp.toStdString();
     }
 
-
-
     std::string optCommands(stream.str());
     posixserial->writeSerial(optCommands);
 
+
+    //send message to ui
+    QString outputCommandUI;
+    outputCommandUI = QTime::currentTime().toString() + " Write: " + optCommands.c_str() ;
+    QStandardItem *item = new QStandardItem(outputCommandUI);
+    model->setItem(index, 0, item);
+    index++;
 
 }
 
@@ -170,5 +176,6 @@ void MainWindow::on_comboBox_currentIndexChanged(const QString &arg1)
         break;
     }
     }
+
 
 }
