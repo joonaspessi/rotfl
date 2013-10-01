@@ -33,20 +33,20 @@
    <widget class="QListView" name="listView">
     <property name="geometry">
      <rect>
-      <x>440</x>
-      <y>50</y>
-      <width>211</width>
-      <height>192</height>
+      <x>430</x>
+      <y>40</y>
+      <width>231</width>
+      <height>371</height>
      </rect>
     </property>
    </widget>
    <widget class="QPushButton" name="pushButton_2">
     <property name="geometry">
      <rect>
-      <x>560</x>
+      <x>530</x>
       <y>0</y>
-      <width>91</width>
-      <height>27</height>
+      <width>71</width>
+      <height>31</height>
      </rect>
     </property>
     <property name="text">
@@ -200,16 +200,46 @@
      <string>Byte 4</string>
     </property>
    </widget>
-   <widget class="QGraphicsView" name="graphicsView">
+   <widget class="mapQGraphicsView" name="mapView">
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>130</y>
+      <y>120</y>
       <width>391</width>
-      <height>291</height>
+      <height>351</height>
      </rect>
     </property>
    </widget>
+   <widget class="QPushButton" name="pushButton_3">
+    <property name="geometry">
+     <rect>
+      <x>430</x>
+      <y>420</y>
+      <width>131</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Clear all POIs</string>
+    </property>
+   </widget>
+   <zorder>pushButton</zorder>
+   <zorder>listView</zorder>
+   <zorder>pushButton_2</zorder>
+   <zorder>lineEdit</zorder>
+   <zorder>label</zorder>
+   <zorder>byte_1_edit</zorder>
+   <zorder>byte_2_edit</zorder>
+   <zorder>byte_3_edit</zorder>
+   <zorder>byte_4_edit</zorder>
+   <zorder>comboBox</zorder>
+   <zorder>opt_info_label</zorder>
+   <zorder>label_2</zorder>
+   <zorder>label_3</zorder>
+   <zorder>label_4</zorder>
+   <zorder>label_5</zorder>
+   <zorder>pushButton_3</zorder>
+   <zorder>mapView</zorder>
   </widget>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">
@@ -232,6 +262,13 @@
   <widget class="QStatusBar" name="statusBar"/>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
+ <customwidgets>
+  <customwidget>
+   <class>mapQGraphicsView</class>
+   <extends>QGraphicsView</extends>
+   <header>mapQGraphicsView.h</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>

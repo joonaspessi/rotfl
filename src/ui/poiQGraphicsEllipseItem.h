@@ -7,8 +7,11 @@
 
 class mapQGraphicsView;
 
-class Q_WIDGETS_EXPORT poiQGraphicsEllipseItem : public QGraphicsEllipseItem
+class Q_WIDGETS_EXPORT poiQGraphicsEllipseItem:
+        //public QObject, //perhaps not needed?
+        public QGraphicsEllipseItem
 {
+//Q_OBJECT //causes errors, perhaps not needed with Q_WIDGETS_EXPORT?
 public:
     //explicit poiQGraphicsEllipseItem(QGraphicsItem *parent = 0);
     explicit poiQGraphicsEllipseItem
@@ -18,7 +21,7 @@ public:
 signals:
 
 public slots:
-    void mouseReleaseEvent(QMouseEvent* event);
+    void mousePressEvent(QMouseEvent* event);
 
 private:
     mapQGraphicsView* map_;

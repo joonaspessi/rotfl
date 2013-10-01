@@ -14,15 +14,16 @@ class mapQGraphicsView : public QGraphicsView
     Q_OBJECT
 public:
     explicit mapQGraphicsView(QWidget* parent = 0);
-    virtual ~mapQGraphicsView();
-
     void removePoi(poiQGraphicsEllipseItem* poi);
-signals:
+    virtual ~mapQGraphicsView();
 
 public slots:
     void mousePressEvent(QMouseEvent* event);
+    void mouseDoubleClickEvent(QMouseEvent* event);
+    void clearAllPois();
+
 private:
-    QGraphicsScene * mapScene_;
+    QGraphicsScene* mapScene_;
     std::set<poiQGraphicsEllipseItem*> pois_;
 };
 

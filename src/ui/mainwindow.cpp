@@ -5,6 +5,7 @@
 #include <sstream>
 #include <iostream>
 #include <QDateTime>
+#include <QGridLayout>
 
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
@@ -14,6 +15,7 @@
 #include "croi/iRoomba.h"
 #include "croi/roombaSerial.h"
 #include "croi/croiUtil.h"
+#include "mapQGraphicsView.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     index(0), QMainWindow(parent),
@@ -40,6 +42,11 @@ MainWindow::MainWindow(QWidget *parent) :
 MainWindow::~MainWindow()
 {
     delete ui;
+}
+
+Ui::MainWindow* MainWindow::giveUiPointer()
+{
+    return ui;
 }
 
 void MainWindow::on_pushButton_clicked()
@@ -123,7 +130,10 @@ void MainWindow::on_pushButton_2_clicked()
 
 }
 
-
+void MainWindow::on_pushButton_3_clicked()
+{
+    emit allPoisCleared();
+}
 
 void MainWindow::on_comboBox_currentIndexChanged(const QString &arg1)
 {

@@ -18,7 +18,9 @@ SOURCES += main.cpp\
         mainwindow.cpp \
     threadReader.cpp \
     ../croi/posixSerial.cpp \
-    ../croi/roombaSerial.cpp
+    ../croi/roombaSerial.cpp \
+    mapQGraphicsView.cpp \
+    poiQGraphicsEllipseItem.cpp
 
 HEADERS  += mainwindow.h \
     threadReader.h \
@@ -26,6 +28,8 @@ HEADERS  += mainwindow.h \
     ../croi/posixSerial.h \
     ../croi/iRoomba.h \
     ../croi/roombaSerial.h \
-    ../croi/croiUtil.h
+    ../croi/croiUtil.h \
+    poiQGraphicsEllipseItem.h \
+    mapQGraphicsView.h
 
 FORMS    += mainwindow.ui

@@ -1,24 +1,32 @@
-#include "mapQGraphicsView.h"
 #include <QPointF>
 #include <QReadLocker>
-#include <QRectF>
 #include "poiQGraphicsEllipseItem.h"
 #include <set>
+#include <iostream>
+#include "mainwindow.h"
+#include "mapQGraphicsView.h"
 
 mapQGraphicsView::mapQGraphicsView(QWidget* parent) :
                     QGraphicsView(parent)
 {
     mapScene_ = new QGraphicsScene();
-    this->setSceneRect(0, 0, 500, 500);
-    this->setScene(mapScene_);
+    setScene(mapScene_);
+    setSceneRect(0, 0, 300, 300);
 }
 
 void mapQGraphicsView::removePoi(poiQGraphicsEllipseItem* poi)
 {
+    mapScene_->removeItem(poi);
     pois_.erase(poi);
+    delete poi;
 }
 
-void mapQGraphicsView::mousePressEvent(QMouseEvent * event)
+void mapQGraphicsView::mousePressEvent(QMouseEvent* event)
+{
+    event->ignore();
+}
+
+void mapQGraphicsView::mouseDoubleClickEvent(QMouseEvent* event)
 {
     double width = 10.0;
     QPointF point = mapToScene(event->pos());
@@ -28,11 +36,18 @@ void mapQGraphicsView::mousePressEvent(QMouseEvent * event)
     pois_.insert(poi);
 }
 
-mapQGraphicsView::~mapQGraphicsView()
+void mapQGraphicsView::clearAllPois()
 {
     for (std::set<poiQGraphicsEllipseItem*>::iterator i = pois_.begin();
         i != pois_.end(); ++i)
     {
+        mapScene_->removeItem(*i);
         delete *i;
     }
+    pois_.clear();
+}
+
+mapQGraphicsView::~mapQGraphicsView()
+{
+    clearAllPois();
 }
