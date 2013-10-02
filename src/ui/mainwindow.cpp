@@ -37,10 +37,15 @@ MainWindow::MainWindow(QWidget *parent) :
 
     //threadReader = new ThreadReader(posixserial, this);
     //threadReader->start();
+
+    roowifi_ = new RooWifi(this);
+    roowifi_->SetIP("192.168.43.69");
+    grabKeyboard();
 }
 
 MainWindow::~MainWindow()
 {
+    releaseKeyboard();
     delete ui;
 }
 
@@ -208,4 +213,84 @@ void MainWindow::on_comboBox_currentIndexChanged(const QString &arg1)
     ui->byte_4_edit->clear();
 
 
+}
+
+void MainWindow::on_pushButton_Connect_clicked()
+{
+    roowifi_->Connect();
+}
+
+void MainWindow::on_pushButton_Disconnect_clicked()
+{
+    roowifi_->Disconnect();
+}
+
+void MainWindow::on_pushButton_Clean_clicked()
+{
+    int song[] = {1,2,3,4,5,6};
+    int songDuration[] = {1,2,3,4,5,6};
+    roowifi_->Clean();
+    roowifi_->StoreSong(1,6, &song[0], &songDuration[0]);
+}
+
+void MainWindow::on_pushButton_DriveForward_clicked()
+{
+    roowifi_->AllCleaningMotors_On();
+}
+
+void MainWindow::on_pushButton_DriveBackward_clicked()
+{
+    roowifi_->AllCleaningMotors_Off();
+}
+
+void MainWindow::on_pushButton_Safe_clicked()
+{
+    roowifi_->SafeMode();
+}
+
+void MainWindow::on_pushButton_Full_clicked()
+{
+    roowifi_->FullMode();
+}
+
+void MainWindow::on_pushButton_Stop_clicked()
+{
+    roowifi_->Drive(0,0);
+}
+
+void MainWindow::keyPressEvent(QKeyEvent* event)
+{
+    qDebug() << "KeyPress";
+    if(event->key() == Qt::Key_W) {
+        roowifi_->Drive(200,0);
+        direction_ = true;
+        qDebug() << "UpArrow";
+    }
+    else if(event->key() == Qt::Key_S) {
+        roowifi_->Drive(-200,0);
+        direction_ = false;
+        qDebug() << "DownArrow";
+    }
+    else if(event->key() == Qt::Key_A) {
+        if (direction_) {
+            roowifi_->Drive(200,90);
+        }
+        else {
+            roowifi_->Drive(-200,90);
+        }
+        qDebug() << "RightArrow";
+     }
+    else if(event->key() == Qt::Key_D) {
+        if(direction_) {
+            roowifi_->Drive(200,-90);
+        }
+        else {
+            roowifi_->Drive(-200,-90);
+        }
+        qDebug() << "LeftArrow";
+    }
+    else {
+        roowifi_->Drive(0,0);
+        qDebug() << "Stop";
+    }
 }

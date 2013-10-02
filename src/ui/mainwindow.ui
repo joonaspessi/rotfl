@@ -223,6 +223,110 @@
      <string>Clear all POIs</string>
     </property>
    </widget>
+   <widget class="QPushButton" name="pushButton_Connect">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>480</y>
+      <width>98</width>
+      <height>27</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Connect</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButton_Disconnect">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>520</y>
+      <width>98</width>
+      <height>27</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Disconnect</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButton_Clean">
+    <property name="geometry">
+     <rect>
+      <x>130</x>
+      <y>480</y>
+      <width>98</width>
+      <height>27</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Clean</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButton_DriveForward">
+    <property name="geometry">
+     <rect>
+      <x>360</x>
+      <y>480</y>
+      <width>111</width>
+      <height>27</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Motors on</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButton_DriveBackward">
+    <property name="geometry">
+     <rect>
+      <x>360</x>
+      <y>520</y>
+      <width>111</width>
+      <height>27</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Motors off</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButton_Safe">
+    <property name="geometry">
+     <rect>
+      <x>130</x>
+      <y>520</y>
+      <width>96</width>
+      <height>27</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Safe</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButton_Full">
+    <property name="geometry">
+     <rect>
+      <x>240</x>
+      <y>520</y>
+      <width>96</width>
+      <height>27</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Full</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButton_Stop">
+    <property name="geometry">
+     <rect>
+      <x>240</x>
+      <y>480</y>
+      <width>96</width>
+      <height>27</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Stop</string>
+    </property>
+   </widget>
    <zorder>pushButton</zorder>
    <zorder>listView</zorder>
    <zorder>pushButton_2</zorder>
@@ -240,6 +344,14 @@
    <zorder>label_5</zorder>
    <zorder>pushButton_3</zorder>
    <zorder>mapView</zorder>
+   <zorder>pushButton_Connect</zorder>
+   <zorder>pushButton_Disconnect</zorder>
+   <zorder>pushButton_Clean</zorder>
+   <zorder>pushButton_DriveForward</zorder>
+   <zorder>pushButton_DriveBackward</zorder>
+   <zorder>pushButton_Safe</zorder>
+   <zorder>pushButton_Full</zorder>
+   <zorder>pushButton_Stop</zorder>
   </widget>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">
@@ -247,7 +359,7 @@
      <x>0</x>
      <y>0</y>
      <width>671</width>
-     <height>20</height>
+     <height>29</height>
     </rect>
    </property>
   </widget>
