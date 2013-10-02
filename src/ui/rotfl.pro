@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui
+QT       += core gui network
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -20,7 +20,8 @@ SOURCES += main.cpp\
     ../croi/posixSerial.cpp \
     ../croi/roombaSerial.cpp \
     mapQGraphicsView.cpp \
-    poiQGraphicsEllipseItem.cpp
+    poiQGraphicsEllipseItem.cpp \
+    ../../ext_lib/RooWifi_11b/roowifi.cpp
 
 HEADERS  += mainwindow.h \
     threadReader.h \
@@ -30,6 +31,8 @@ HEADERS  += mainwindow.h \
     ../croi/roombaSerial.h \
     ../croi/croiUtil.h \
     poiQGraphicsEllipseItem.h \
-    mapQGraphicsView.h
+    mapQGraphicsView.h \
+    ../../ext_lib/RooWifi_11b/roowifi.h \
+    ../../ext_lib/RooWifi_11b/roomba.h
 
 FORMS    += mainwindow.ui
