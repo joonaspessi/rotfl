@@ -192,9 +192,14 @@ void MainWindow::on_comboBox_currentIndexChanged(const QString &arg1)
         ui->byte_1_edit->show();
         ui->byte_2_edit->show();
         ui->byte_3_edit->show();
-        ui->byte_4_edit->hide();
+        ui->byte_4_edit->show();
         break;
     }
+    default:
+        ui->byte_1_edit->hide();
+        ui->byte_2_edit->hide();
+        ui->byte_3_edit->hide();
+        ui->byte_4_edit->hide();
     }
 
     ui->byte_1_edit->clear();
