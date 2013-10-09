@@ -73,7 +73,7 @@ int CroipSend::deinit()
 
 int CroipSend::send(CroipPacket &packet)
 {
-    char * message[MAX_PACKET_SIZE] = {0};
+    unsigned char * message[MAX_PACKET_SIZE] = {0};
     memset(message[0],0,MAX_PACKET_SIZE);
 
 

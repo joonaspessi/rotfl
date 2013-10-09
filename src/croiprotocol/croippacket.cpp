@@ -1,4 +1,5 @@
 #include <iostream>
+#include <cstring>
 #include "croippacket.h"
 #include "croip.h"
 
@@ -14,9 +15,9 @@ CroipPacket::~CroipPacket()
 
 }
 
-int CroipPacket::serialize(char * const buf) const
+int CroipPacket::serialize(unsigned char * const buf) const
 {
-    u_int32_t count = 0;
+    u_int16_t count = 0;
 
     for(int i = 0; i < 7; ++i){
         buf[i] = testibuffer_[i];
@@ -37,6 +38,19 @@ int CroipPacket::serialize(char * const buf) const
     buf[count++] = VERSION_MINOR;
     buf[count++] = VERSION_PATCH;
 
+    //OPERATION CODE
+    buf[count++] = (optCode_>>24) & 0xFF;
+    buf[count++] = (optCode_ >> 16) & 0xFF;
+    buf[count++] = (optCode_ >> 8) & 0xFF;
+    buf[count++] = (optCode_) & 0xFF;
+
+    //set size
+    u_int16_t size = 0;
+    size = count -2;
+
+    buf[0] = (size >> 8) & 0xFF;
+    buf[1] = (size) & 0xFF;
+
 
 
 
@@ -46,7 +60,9 @@ int CroipPacket::serialize(char * const buf) const
 
 int CroipPacket::deserialize(char * const buf)
 {
-    u_int32_t count = 0;
+    u_int16_t count = 0;
+
+    //
 
     //PACKET HEADER
     if(buf[count++] != HEADER_1 ||
@@ -62,9 +78,8 @@ int CroipPacket::deserialize(char * const buf)
     { return -1; }
 
 
-
     //PACKET SIZE
-    for(int i = 0; i < 7; ++i){
+    for(int i = 0; i < 7; ++i) {
         testibuffer_[i] = buf[i];
     }
 
