@@ -14,8 +14,17 @@ public:
     RoombaSerial();
     virtual ~RoombaSerial();
 
-    virtual int connect();
+    virtual int rmb_connect();
+    virtual int disconnect();
+    virtual void safeMode();
+    virtual void fullMode();
+    virtual void allMotorsOn();
+    virtual void allMotorsOff();
+    virtual void clean();
     virtual void Drive( int Velocity, int Radius );
+    virtual void playSong( int songNumber );
+    virtual char getTemperature();
+    virtual unsigned short getChargeLevel();
 
 private:
     PosixSerial* posixSerial_;

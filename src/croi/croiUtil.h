@@ -2,6 +2,7 @@
 #define CROIUTIL_H
 
 #include <map>
+#include <string>
 
 namespace Croi {
 

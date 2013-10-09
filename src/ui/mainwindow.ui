@@ -262,7 +262,7 @@
      <string>Clean</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="pushButton_DriveForward">
+   <widget class="QPushButton" name="pushButton_allMotorsOn">
     <property name="geometry">
      <rect>
       <x>360</x>
@@ -272,10 +272,10 @@
      </rect>
     </property>
     <property name="text">
-     <string>Motors on</string>
+     <string>All motors on</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="pushButton_DriveBackward">
+   <widget class="QPushButton" name="pushButton_allMotorsOff">
     <property name="geometry">
      <rect>
       <x>360</x>
@@ -285,7 +285,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>Motors off</string>
+     <string>All motors off</string>
     </property>
    </widget>
    <widget class="QPushButton" name="pushButton_Safe">
@@ -314,7 +314,7 @@
      <string>Full</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="pushButton_Stop">
+   <widget class="QPushButton" name="pushButton_playSong">
     <property name="geometry">
      <rect>
       <x>240</x>
@@ -324,7 +324,59 @@
      </rect>
     </property>
     <property name="text">
-     <string>Stop</string>
+     <string>Play song</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="temperature_unit_label">
+    <property name="geometry">
+     <rect>
+      <x>560</x>
+      <y>510</y>
+      <width>31</width>
+      <height>17</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>C</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="charge_unit_label">
+    <property name="geometry">
+     <rect>
+      <x>560</x>
+      <y>540</y>
+      <width>31</width>
+      <height>17</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>mAh</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="temperature_label">
+    <property name="geometry">
+     <rect>
+      <x>530</x>
+      <y>510</y>
+      <width>31</width>
+      <height>17</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>0</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="charge_label">
+    <property name="geometry">
+     <rect>
+      <x>530</x>
+      <y>540</y>
+      <width>31</width>
+      <height>17</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>0</string>
     </property>
    </widget>
    <zorder>pushButton</zorder>
@@ -347,11 +399,15 @@
    <zorder>pushButton_Connect</zorder>
    <zorder>pushButton_Disconnect</zorder>
    <zorder>pushButton_Clean</zorder>
-   <zorder>pushButton_DriveForward</zorder>
-   <zorder>pushButton_DriveBackward</zorder>
+   <zorder>pushButton_allMotorsOn</zorder>
+   <zorder>pushButton_allMotorsOff</zorder>
    <zorder>pushButton_Safe</zorder>
    <zorder>pushButton_Full</zorder>
-   <zorder>pushButton_Stop</zorder>
+   <zorder>pushButton_playSong</zorder>
+   <zorder>temperature_unit_label</zorder>
+   <zorder>charge_unit_label</zorder>
+   <zorder>temperature_label</zorder>
+   <zorder>charge_label</zorder>
   </widget>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">

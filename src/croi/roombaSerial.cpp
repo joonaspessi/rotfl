@@ -18,7 +18,7 @@ RoombaSerial::~RoombaSerial()
     }
 }
 
-int RoombaSerial::connect()
+int RoombaSerial::rmb_connect()
 {
     int rval = posixSerial_->initializePort();
 
@@ -29,10 +29,55 @@ int RoombaSerial::connect()
 
 }
 
+int RoombaSerial::disconnect()
+{
+
+}
+
+void RoombaSerial::safeMode()
+{
+
+}
+
+void RoombaSerial::fullMode()
+{
+
+}
+
+void RoombaSerial::allMotorsOn()
+{
+
+}
+
+void RoombaSerial::allMotorsOff()
+{
+
+}
+
+void RoombaSerial::clean()
+{
+
+}
+
+char RoombaSerial::getTemperature()
+{
+
+}
+
+unsigned short RoombaSerial::getChargeLevel()
+{
+
+}
+
 void RoombaSerial::Drive(int Velocity, int Radius)
 {
     if(posixSerial_->writeSerial("128+Velocity+Radius") != CROI_SUCCESS){
     }
+}
+
+void RoombaSerial::playSong(int songNumber)
+{
+
 }
 
 } //namespace Croi
