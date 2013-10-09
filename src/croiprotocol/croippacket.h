@@ -12,10 +12,11 @@ public:
     virtual ~CroipPacket();
 
     virtual int serialize(char * const buf) const;
-    virtual int deserialize(char * const buf) const;
+    virtual int deserialize(char * const buf);
 
 private:
     u_int32_t type_;
+    char testibuffer_[255];
 };
 
 } //namespace Croip

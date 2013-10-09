@@ -6,7 +6,7 @@
 
 QT       -= core gui
 
-QMAKE_CXXFLAGS += -std=c++11
+QMAKE_CXXFLAGS += -std=c++0x
 
 TARGET = Croip
 TEMPLATE = lib
@@ -27,7 +27,8 @@ unix:!symbian {
     maemo5 {
         target.path = /opt/usr/lib
     } else {
-        target.path = /usr/local/lib
+        target.path = /usr/lib
     }
     INSTALLS += target
 }
+11

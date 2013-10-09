@@ -11,6 +11,12 @@ const std::string IP_DEFAULT = "192.168.1.2";
 
 const u_int32_t MAX_PACKET_SIZE = 2000;
 
+
+const char HEADER_1 = 'C';
+const char HEADER_2 = 'R';
+const char HEADER_3 = 'O';
+const char HEADER_4 = '1';
+
 const char VERSION_MAJOR = '0';
 const char VERSION_MINOR = '0';
 const char VERSION_PATCH = '1';

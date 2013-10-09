@@ -13,6 +13,7 @@ class croipReceive
 {
 public:
     croipReceive();
+    croipReceive(u_int16_t port);
 
     virtual ~croipReceive();
 
@@ -22,9 +23,11 @@ public:
 
     void recvLoop();
 
-    void getPackets(std::vector<CroipPacket> packets);
+    void getPackets(std::vector<CroipPacket> &packets);
 
 private:
+    void addPacket(CroipPacket &packet);
+
     std::vector<CroipPacket>recvPackets_;
     std::mutex packetMutex_;
     int fdsocket_;

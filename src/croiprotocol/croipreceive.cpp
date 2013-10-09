@@ -21,6 +21,14 @@ croipReceive::croipReceive() :
 {
 }
 
+croipReceive::croipReceive(u_int16_t port) :
+    fdsocket_(-1),
+    port_(port)
+
+{
+
+}
+
 croipReceive::~croipReceive()
 {
 
@@ -86,11 +94,18 @@ void croipReceive::recvLoop()
 
 
     while(true) {
-        if( Util::readn(newsockfd,message,7) < 0 ) {
-            break;
+        if( Util::readn(newsockfd,message,7) != 7 ) {
+            perror("recvLoop : readn()");
+            return;
         }
+        std::cout << "new packet received..." << std::endl;
+
         message[7] = '\0';
-        std::cout << message << std::endl;
+
+        CroipPacket newpacket;
+        newpacket.deserialize(message);
+
+        addPacket(newpacket);
     }
 
     if( close(newsockfd) < 0) {
@@ -99,11 +114,20 @@ void croipReceive::recvLoop()
 
 }
 
-void croipReceive::getPackets(std::vector<CroipPacket> packets)
+void croipReceive::getPackets(std::vector<CroipPacket> &packets)
 {
     packetMutex_.lock();
     packets = recvPackets_;
+    recvPackets_.clear();
     packetMutex_.unlock();
+}
+
+void croipReceive::addPacket(CroipPacket &packet)
+{
+    packetMutex_.lock();
+    recvPackets_.push_back(packet);
+    packetMutex_.unlock();
+
 }
 
 } //namespace Croip
