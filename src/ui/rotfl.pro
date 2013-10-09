@@ -21,7 +21,8 @@ SOURCES += main.cpp\
     ../croi/roombaSerial.cpp \
     mapQGraphicsView.cpp \
     poiQGraphicsEllipseItem.cpp \
-    ../../ext_lib/RooWifi_11b/roowifi.cpp
+    ../../ext_lib/RooWifi_11b/roowifi.cpp \
+    ../croi/roombaRoowifi.cpp
 
 HEADERS  += mainwindow.h \
     threadReader.h \
@@ -33,6 +34,7 @@ HEADERS  += mainwindow.h \
     poiQGraphicsEllipseItem.h \
     mapQGraphicsView.h \
     ../../ext_lib/RooWifi_11b/roowifi.h \
-    ../../ext_lib/RooWifi_11b/roomba.h
+    ../../ext_lib/RooWifi_11b/roomba.h \
+    ../croi/roombaRoowifi.h
 
 FORMS    += mainwindow.ui
