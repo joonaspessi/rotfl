@@ -3,6 +3,8 @@ ROTFL
 
 ROomba, The Fleet Management
 
+Rotfl uses external library copyright by Roowifi (roowifi.com) for communicating with Roomba over Wifi.
+
 Hardware environment: Roomba Create robot platform, http://www.irobot.com/us/learn/Educators/Create.aspx and PC based control room software (either Windows or Linux)
 Problem describtion: We need a fleet management research environment, where work machines are replaced with Roomba robots.
 The fleet management is tracking location of the machines and giving them orders to optimize their tasks.
