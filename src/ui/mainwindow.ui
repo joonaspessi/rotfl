@@ -356,10 +356,10 @@
    <widget class="QLabel" name="temperature_label">
     <property name="geometry">
      <rect>
-      <x>530</x>
+      <x>520</x>
       <y>510</y>
-      <width>31</width>
-      <height>17</height>
+      <width>41</width>
+      <height>20</height>
      </rect>
     </property>
     <property name="text">
@@ -369,10 +369,10 @@
    <widget class="QLabel" name="charge_label">
     <property name="geometry">
      <rect>
-      <x>530</x>
+      <x>520</x>
       <y>540</y>
-      <width>31</width>
-      <height>17</height>
+      <width>41</width>
+      <height>20</height>
      </rect>
     </property>
     <property name="text">
