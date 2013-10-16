@@ -69,6 +69,16 @@ unsigned short RoombaSerial::getChargeLevel()
 
 }
 
+short RoombaSerial::getDistance()
+{
+
+}
+
+short RoombaSerial::getAngle()
+{
+
+}
+
 void RoombaSerial::Drive(int Velocity, int Radius)
 {
     if(posixSerial_->writeSerial("128+Velocity+Radius") != CROI_SUCCESS){

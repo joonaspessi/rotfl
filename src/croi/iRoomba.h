@@ -23,6 +23,9 @@ public:
     virtual void playSong( int songNumber ) = 0;
     virtual char getTemperature() = 0;
     virtual unsigned short getChargeLevel() = 0;
+    virtual short getDistance() = 0;
+    virtual short getAngle() = 0;
+    virtual int getRadius() = 0;
     //virtual bool isConnected = 0;
 
 

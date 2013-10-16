@@ -25,6 +25,8 @@ public:
     virtual void playSong( int songNumber );
     virtual char getTemperature();
     virtual unsigned short getChargeLevel();
+    virtual short getDistance();
+    virtual short getAngle();
 
 private:
     PosixSerial* posixSerial_;

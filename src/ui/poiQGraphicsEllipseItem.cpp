@@ -12,11 +12,10 @@ poiQGraphicsEllipseItem::poiQGraphicsEllipseItem
     map_ = map;
 }
 
-void poiQGraphicsEllipseItem::mousePressEvent(QMouseEvent* event)
-{
-    std::cout << "POI removed" << std::endl;
-    map_->removePoi(this);
-}
+//void poiQGraphicsEllipseItem::mousePressEvent(QMouseEvent* event)
+//{
+//    map_->removePoi(this);
+//}
 
 poiQGraphicsEllipseItem::~poiQGraphicsEllipseItem()
 {

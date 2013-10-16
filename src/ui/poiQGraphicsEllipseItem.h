@@ -21,7 +21,7 @@ public:
 signals:
 
 public slots:
-    void mousePressEvent(QMouseEvent* event);
+    //void mousePressEvent(QMouseEvent* event);
 
 private:
     mapQGraphicsView* map_;

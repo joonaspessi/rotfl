@@ -25,10 +25,14 @@ public:
     virtual char getTemperature();
     virtual unsigned short getChargeLevel();
 
+    virtual short getDistance();
+    virtual short getAngle();
+    virtual int getRadius();
 public slots:
     void testSlot();
 private:
     RooWifi* roowifi_;
+    int radius_;  //needed for updateLoc
 };
 
 } //namespace Croi

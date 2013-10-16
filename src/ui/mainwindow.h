@@ -48,8 +48,10 @@ private slots:
     void sensorUpdateTimerTimeout();
     void on_pushButton_playSong_clicked();
 
+    void on_pushButton_clearTraces_clicked();
+
+    void on_pushButton_simMov_clicked();
 signals:
-    void allPoisCleared();
     
 protected:
     void keyPressEvent(QKeyEvent *event);

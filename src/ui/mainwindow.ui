@@ -215,12 +215,12 @@
      <rect>
       <x>430</x>
       <y>420</y>
-      <width>131</width>
-      <height>41</height>
+      <width>101</width>
+      <height>21</height>
      </rect>
     </property>
     <property name="text">
-     <string>Clear all POIs</string>
+     <string>Clear POIs</string>
     </property>
    </widget>
    <widget class="QPushButton" name="pushButton_Connect">
@@ -379,6 +379,32 @@
      <string>0</string>
     </property>
    </widget>
+   <widget class="QPushButton" name="pushButton_clearTraces">
+    <property name="geometry">
+     <rect>
+      <x>540</x>
+      <y>420</y>
+      <width>111</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Clear traces</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButton_simMov">
+    <property name="geometry">
+     <rect>
+      <x>430</x>
+      <y>450</y>
+      <width>221</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Simulate movement</string>
+    </property>
+   </widget>
    <widget class="QLineEdit" name="ipLineEdit_1">
     <property name="geometry">
      <rect>
@@ -476,6 +502,8 @@
    <zorder>charge_unit_label</zorder>
    <zorder>temperature_label</zorder>
    <zorder>charge_label</zorder>
+   <zorder>pushButton_clearTraces</zorder>
+   <zorder>pushButton_simMov</zorder>
    <zorder>ipLineEdit_1</zorder>
    <zorder>ipLineEdit_2</zorder>
    <zorder>ipLineEdit_3</zorder>

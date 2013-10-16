@@ -142,7 +142,7 @@ void MainWindow::on_pushButton_2_clicked()
 
 void MainWindow::on_pushButton_3_clicked()
 {
-    emit allPoisCleared();
+    ui->mapView->clearAllPois();
 }
 
 void MainWindow::on_comboBox_currentIndexChanged(const QString &arg1)
@@ -264,6 +264,10 @@ void MainWindow::on_pushButton_Full_clicked()
 
 void MainWindow::keyPressEvent(QKeyEvent* event)
 {
+    //Remember following special radiuses
+    //Straight = 32768 or 32767
+    //Turn in place clockwise = 65535
+    //Turn in place counter-clockwise = 1
     qDebug() << "KeyPress";
     if(event->key() == Qt::Key_W) {
         iRoomba_->Drive(200,0);
@@ -304,9 +308,23 @@ void MainWindow::sensorUpdateTimerTimeout()
     qDebug() << "sensorUpdateTimerTimeout";
     ui->temperature_label->setText( QString::number( ( unsigned char )( iRoomba_->getTemperature() ) ) );
     ui->charge_label->setText( QString::number( (unsigned short)( iRoomba_->getChargeLevel() ) ) );
+    ui->mapView->updateLoc(iRoomba_->getDistance(), iRoomba_->getAngle(), iRoomba_->getRadius());
 }
 
 void MainWindow::on_pushButton_playSong_clicked()
 {
     iRoomba_->playSong(1);
+}
+
+void MainWindow::on_pushButton_clearTraces_clicked()
+{
+    ui->mapView->clearAllTraces();
+}
+
+void MainWindow::on_pushButton_simMov_clicked()
+{
+    double distance = rand()%250;
+    double angle = rand()%70-rand()%70;
+    ui->mapView->updateLoc(distance, angle, static_cast<int>(2000*(360-angle)/360));
+    //ui->mapView->updateLoc(-100, -10, 1);  //simple version
 }
