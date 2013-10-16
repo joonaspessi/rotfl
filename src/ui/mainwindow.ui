@@ -379,6 +379,74 @@
      <string>0</string>
     </property>
    </widget>
+   <widget class="QLineEdit" name="ipLineEdit_1">
+    <property name="geometry">
+     <rect>
+      <x>510</x>
+      <y>470</y>
+      <width>31</width>
+      <height>27</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>192</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="ipLineEdit_2">
+    <property name="geometry">
+     <rect>
+      <x>550</x>
+      <y>470</y>
+      <width>31</width>
+      <height>27</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>168</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="ipLineEdit_3">
+    <property name="geometry">
+     <rect>
+      <x>590</x>
+      <y>470</y>
+      <width>31</width>
+      <height>27</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>1</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="ipLineEdit_4">
+    <property name="geometry">
+     <rect>
+      <x>630</x>
+      <y>470</y>
+      <width>31</width>
+      <height>27</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>1</string>
+    </property>
+    <property name="readOnly">
+     <bool>false</bool>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_6">
+    <property name="geometry">
+     <rect>
+      <x>480</x>
+      <y>480</y>
+      <width>21</width>
+      <height>17</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>IP:</string>
+    </property>
+   </widget>
    <zorder>pushButton</zorder>
    <zorder>listView</zorder>
    <zorder>pushButton_2</zorder>
@@ -408,6 +476,11 @@
    <zorder>charge_unit_label</zorder>
    <zorder>temperature_label</zorder>
    <zorder>charge_label</zorder>
+   <zorder>ipLineEdit_1</zorder>
+   <zorder>ipLineEdit_2</zorder>
+   <zorder>ipLineEdit_3</zorder>
+   <zorder>ipLineEdit_4</zorder>
+   <zorder>label_6</zorder>
   </widget>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">

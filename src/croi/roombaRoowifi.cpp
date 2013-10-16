@@ -5,10 +5,8 @@ namespace Croi {
 
 RoombaRoowifi::RoombaRoowifi(QObject *parent) :
     QObject(parent)
-
 {
     roowifi_ = new RooWifi(this);
-    roowifi_->SetIP("10.0.0.1");
     connect(roowifi_,SIGNAL(AutoCaptureUpdated()), this, SLOT(testSlot()));
 }
 
@@ -17,11 +15,14 @@ RoombaRoowifi::~RoombaRoowifi()
     roowifi_->Disconnect();
 }
 
-int RoombaRoowifi::rmb_connect()
+int RoombaRoowifi::rmb_connect(std::string ip)
 {
+    QString qip = QString::fromStdString(ip);
+    qDebug() << "set ip to:" << qip;
+    roowifi_->SetIP(qip);
     roowifi_->Connect();
     roowifi_->StartAutoCapture();
-    roowifi_->SetAutoCaptureTime(500);
+    roowifi_->SetAutoCaptureTime(250);
 }
 
 int RoombaRoowifi::disconnect()

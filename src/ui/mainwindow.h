@@ -62,6 +62,7 @@ private:
     ThreadReader *threadReader;
     bool direction_;
     Croi::IRoomba* iRoomba_;
+    QTimer *updateSensorData_;
 };
 
 #endif // MAINWINDOW_H

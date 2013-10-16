@@ -13,7 +13,7 @@ public:
     RoombaRoowifi(QObject *parent);
     virtual ~RoombaRoowifi();
 
-    virtual int rmb_connect();
+    virtual int rmb_connect(std::string ip);
     virtual int disconnect();
     virtual void safeMode();
     virtual void fullMode();

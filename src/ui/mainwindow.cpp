@@ -32,16 +32,13 @@ MainWindow::MainWindow(QWidget *parent) :
         ui->comboBox->addItem(tr(i->second.name.c_str()));
     }
 
-    QTimer* updateSensorData = new QTimer(this);
-    updateSensorData->start(5000);
-    connect(updateSensorData,SIGNAL(timeout()),this,SLOT(sensorUpdateTimerTimeout()));
+    updateSensorData_ = new QTimer(this);
+    connect(updateSensorData_,SIGNAL(timeout()),this,SLOT(sensorUpdateTimerTimeout()));
 
     iRoomba_ = new Croi::RoombaRoowifi(this);
 
     //threadReader = new ThreadReader(posixserial, this);
     //threadReader->start();
-
-    grabKeyboard();
 
     QMenu* fileMenu = menuBar()->addMenu(tr("&File"));
 
@@ -225,11 +222,18 @@ void MainWindow::on_comboBox_currentIndexChanged(const QString &arg1)
 
 void MainWindow::on_pushButton_Connect_clicked()
 {
-    iRoomba_->rmb_connect();
+    grabKeyboard();
+    updateSensorData_->start(500);
+    QString ip = ui->ipLineEdit_1->text() + "." + ui->ipLineEdit_2->text() + "." + ui->ipLineEdit_3->text()
+            + "." + ui->ipLineEdit_4->text();
+    std::string stdip = ip.toStdString();
+    iRoomba_->rmb_connect(stdip);
 }
 
 void MainWindow::on_pushButton_Disconnect_clicked()
 {
+    releaseKeyboard();
+    updateSensorData_->stop();
     iRoomba_->disconnect();
 }
 
