@@ -67,11 +67,11 @@ void mapQGraphicsView::mouseDoubleClickEvent(QMouseEvent* event)
     }
     else
     {
-    poiQGraphicsEllipseItem* poi = new poiQGraphicsEllipseItem
-             (point.x()-POIWIDTH/2, point.y()-POIWIDTH/2, POIWIDTH,
-             POIWIDTH, this);
-    mapScene_->addItem(poi);
-    pois_.insert(poi);
+        poiQGraphicsEllipseItem* poi = new poiQGraphicsEllipseItem
+                (point.x()-POIWIDTH/2, point.y()-POIWIDTH/2, POIWIDTH,
+                 POIWIDTH, this);
+        mapScene_->addItem(poi);
+        pois_.insert(poi);
     }
 }
 
@@ -112,12 +112,12 @@ void mapQGraphicsView::updateLoc(int distance, int angle, int radius)
     //angle for distance calculation
     double angleForDist = angle_-static_cast<double>(angle)*PI/180;
     //magic scaling due to currently nonscaled coordinates
-    double dist = static_cast<double>(distance)/MAGICSCALE;
+    double dist = -(static_cast<double>(distance)/MAGICSCALE);
     //special radiuses mean no adaptation needed
     if (radius != 32768 && radius != 32767 && radius != 65535 && radius != 1)
     {
         //corrected distance
-        dist = 2*(static_cast<double>(radius)/MAGICSCALE)*
+        dist = -2*(static_cast<double>(radius)/MAGICSCALE)*
                 sin(static_cast<double>(distance)/radius/2);
         //corrected angle in radians for distance calculation
         angleForDist = angle_-static_cast<double>(distance)/radius/2;
@@ -143,11 +143,6 @@ void mapQGraphicsView::updateLoc(int distance, int angle, int radius)
     points.append(first);
     QPolygonF triangle(points);
 
-    QGraphicsPolygonItem* roombaTriangle = mapScene_->addPolygon(triangle);
-    //color of the roombaTriangle is blue
-    QBrush triangleBrush(Qt::GlobalColor::blue);
-    roombaTriangle->setBrush(triangleBrush);
-
     if (curPoint_ != NULL)  //not first update
     {
         QGraphicsEllipseItem* trace = new QGraphicsEllipseItem
@@ -160,6 +155,12 @@ void mapQGraphicsView::updateLoc(int distance, int angle, int radius)
         mapScene_->removeItem(curPoint_); //old position is taken away
         delete curPoint_;
     }
+
+    QGraphicsPolygonItem* roombaTriangle = mapScene_->addPolygon(triangle);
+    //color of the roombaTriangle is blue
+    QBrush triangleBrush(Qt::GlobalColor::blue);
+    roombaTriangle->setBrush(triangleBrush);
+
     initX_ = x;
     initY_ = y;
     curPoint_ = roombaTriangle;

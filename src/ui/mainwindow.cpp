@@ -273,42 +273,42 @@ void MainWindow::keyPressEvent(QKeyEvent* event)
     //Turn in place counter-clockwise = 1
     qDebug() << "KeyPress";
     if(event->key() == Qt::Key_W) {
-        iRoomba_->Drive(200,0);
+        iRoomba_->Drive(200,32767);
         direction_ = true;
         qDebug() << "UpArrow";
     }
     else if(event->key() == Qt::Key_S) {
-        iRoomba_->Drive(-200,0);
+        iRoomba_->Drive(-200,32767);
         direction_ = false;
         qDebug() << "DownArrow";
     }
     else if(event->key() == Qt::Key_A) {
         if (direction_) {
-            iRoomba_->Drive(200,90);
+            iRoomba_->Drive(200,200);
         }
         else {
-            iRoomba_->Drive(-200,90);
+            iRoomba_->Drive(-200,200);
         }
         qDebug() << "RightArrow";
      }
     else if(event->key() == Qt::Key_D) {
         if(direction_) {
-            iRoomba_->Drive(200,-90);
+            iRoomba_->Drive(200,-200);
         }
         else {
-            iRoomba_->Drive(-200,-90);
+            iRoomba_->Drive(-200,-200);
         }
         qDebug() << "LeftArrow";
     }
     else {
-        iRoomba_->Drive(0,0);
+        iRoomba_->Drive(0,32767);
         qDebug() << "Stop";
     }
 }
 
 void MainWindow::sensorUpdateTimerTimeout()
 {
-    qDebug() << "sensorUpdateTimerTimeout";
+//    qDebug() << "sensorUpdateTimerTimeout";
     ui->temperature_label->setText( QString::number( ( unsigned char )( iRoomba_->getTemperature() ) ) );
     ui->charge_label->setText( QString::number( (unsigned short)( iRoomba_->getChargeLevel() ) ) );
     ui->mapView->updateLoc(iRoomba_->getDistance(), iRoomba_->getAngle(), iRoomba_->getRadius());

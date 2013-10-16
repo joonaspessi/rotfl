@@ -11,7 +11,7 @@
 const double POIWIDTH = 10.0;
 const double TRACEWIDTH = 10.0;
 const double PI = 3.14159265;
-const double MAGICSCALE = 5.0;
+const double MAGICSCALE = 2.0;
 class poiQGraphicsEllipseItem;
 
 class mapQGraphicsView : public QGraphicsView
