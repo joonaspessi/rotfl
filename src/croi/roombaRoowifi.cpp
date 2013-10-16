@@ -7,11 +7,12 @@ RoombaRoowifi::RoombaRoowifi(QObject *parent) :
     QObject(parent), radius_(1)
 {
     roowifi_ = new RooWifi(this);
-    connect(roowifi_,SIGNAL(AutoCaptureUpdated()), this, SLOT(testSlot()));
+    connect(roowifi_,SIGNAL(AutoCaptureUpdated()), parent, SLOT(sensorUpdateTimerTimeout()));
 }
 
 RoombaRoowifi::~RoombaRoowifi()
 {
+    roowifi_->StopAutoCapture();
     roowifi_->Disconnect();
 }
 

@@ -32,8 +32,9 @@ MainWindow::MainWindow(QWidget *parent) :
         ui->comboBox->addItem(tr(i->second.name.c_str()));
     }
 
-    updateSensorData_ = new QTimer(this);
-    connect(updateSensorData_,SIGNAL(timeout()),this,SLOT(sensorUpdateTimerTimeout()));
+//    Disabled until Roowifi AutoCapture is used instead
+//    updateSensorData_ = new QTimer(this);
+//    connect(updateSensorData_,SIGNAL(timeout()),this,SLOT(sensorUpdateTimerTimeout()));
 
     iRoomba_ = new Croi::RoombaRoowifi(this);
 
@@ -223,7 +224,8 @@ void MainWindow::on_comboBox_currentIndexChanged(const QString &arg1)
 void MainWindow::on_pushButton_Connect_clicked()
 {
     grabKeyboard();
-    updateSensorData_->start(500);
+//    Disabled until Roowifi AutoCapture is used instead
+//    updateSensorData_->start(500);
     QString ip = ui->ipLineEdit_1->text() + "." + ui->ipLineEdit_2->text() + "." + ui->ipLineEdit_3->text()
             + "." + ui->ipLineEdit_4->text();
     std::string stdip = ip.toStdString();
@@ -233,7 +235,8 @@ void MainWindow::on_pushButton_Connect_clicked()
 void MainWindow::on_pushButton_Disconnect_clicked()
 {
     releaseKeyboard();
-    updateSensorData_->stop();
+//    Disabled until Roowifi AutoCapture is used instead
+//    updateSensorData_->stop();
     iRoomba_->disconnect();
 }
 

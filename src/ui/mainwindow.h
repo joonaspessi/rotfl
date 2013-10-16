@@ -22,6 +22,10 @@ public:
 
     Ui::MainWindow *giveUiPointer();
 
+public slots:
+//    Move to private when Roowifi AutoCapture removed
+    void sensorUpdateTimerTimeout();
+
 private slots:
     void on_pushButton_clicked();
 
@@ -45,7 +49,6 @@ private slots:
 
     void on_pushButton_allMotorsOff_clicked();
 
-    void sensorUpdateTimerTimeout();
     void on_pushButton_playSong_clicked();
 
     void on_pushButton_clearTraces_clicked();
