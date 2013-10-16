@@ -42,6 +42,13 @@ MainWindow::MainWindow(QWidget *parent) :
     //threadReader->start();
 
     grabKeyboard();
+
+    QMenu* fileMenu = menuBar()->addMenu(tr("&File"));
+
+    QAction* quitAct = new QAction(tr("&Quit"),this);
+    quitAct->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_Q));
+    connect(quitAct, SIGNAL(triggered()),this,SLOT(close()));
+    fileMenu->addAction(quitAct);
 }
 
 MainWindow::~MainWindow()
