@@ -118,7 +118,7 @@ void mapQGraphicsView::updateLoc(int distance, int angle, int radius, int veloci
     }
 
     //angle for distance calculation
-    double angleForDist = angle_-static_cast<double>(angle)*PI/180.0;
+    double angleForDist = angle_-static_cast<double>(angle)*PI*ANGLECORRECTION/180.0;
     //magic scaling due to currently nonscaled coordinates
     double dist = -(static_cast<double>(distance)/MAGICSCALE);
     //special radiuses mean no adaptation needed
@@ -131,7 +131,7 @@ void mapQGraphicsView::updateLoc(int distance, int angle, int radius, int veloci
         angleForDist = angle_-static_cast<double>(distance)/radius/2.0;
     }
     //real angle (always used for roomba's angle)
-    angle_ -= static_cast<double>(angle)*PI/180.0;  //roomba expected to be upwards
+    angle_ -= static_cast<double>(angle)*PI*ANGLECORRECTION/180.0;
 
     //coordinates are updated
     double x = initX_+cos(angleForDist)*dist;

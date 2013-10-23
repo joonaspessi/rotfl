@@ -13,6 +13,7 @@ const double TRACEWIDTH = 10.0;
 const double ARROWWIDTH = 15.0;
 const double PI = 3.14159265;
 const double MAGICSCALE = 2.0;
+const double ANGLECORRECTION = 3.05;
 class poiQGraphicsEllipseItem;
 
 class mapQGraphicsView : public QGraphicsView
