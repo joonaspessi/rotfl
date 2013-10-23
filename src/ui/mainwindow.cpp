@@ -273,7 +273,7 @@ void MainWindow::keyPressEvent(QKeyEvent* event)
 {
     //Remember following special radiuses
     //Straight = 32768 or 32767
-    //Turn in place clockwise = 65535
+    //Turn in place clockwise = -1
     //Turn in place counter-clockwise = 1
     qDebug() << "KeyPress";
     if(event->key() == Qt::Key_W) {
@@ -295,8 +295,8 @@ void MainWindow::keyPressEvent(QKeyEvent* event)
         qDebug() << "LeftArrow";
     }
     else if(event->key() == Qt::Key_E) {
-        iRoomba_->Drive(ui->velocity_horizontalSlider->value(),65535);
-        radius_ = 65535;
+        iRoomba_->Drive(ui->velocity_horizontalSlider->value(),-1);
+        radius_ = -1;
         moving_ = true;
         qDebug() << "Turn clockwise";
     }
