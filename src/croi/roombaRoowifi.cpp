@@ -23,7 +23,7 @@ int RoombaRoowifi::rmb_connect(std::string ip)
     roowifi_->SetIP(qip);
     roowifi_->Connect();
     roowifi_->StartAutoCapture();
-    roowifi_->SetAutoCaptureTime(500);
+    roowifi_->SetAutoCaptureTime(100);
 }
 
 int RoombaRoowifi::disconnect()
