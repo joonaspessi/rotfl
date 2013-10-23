@@ -8,6 +8,8 @@
 #include <QGridLayout>
 #include <QDockWidget>
 #include <QHBoxLayout>
+#include <QtQml>
+#include <QtQuick>
 
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
@@ -25,14 +27,14 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-//    posixserial = new Croi::PosixSerial();
+    //    posixserial = new Croi::PosixSerial();
 
-//    Disabled until Roowifi AutoCapture is used instead
-//    updateSensorData_ = new QTimer(this);
-//    connect(updateSensorData_,SIGNAL(timeout()),this,SLOT(sensorUpdateTimerTimeout()));
+    //    Disabled until Roowifi AutoCapture is used instead
+    //    updateSensorData_ = new QTimer(this);
+    //    connect(updateSensorData_,SIGNAL(timeout()),this,SLOT(sensorUpdateTimerTimeout()));
 
     iRoomba_ = new Croi::RoombaRoowifi(this);
-//    iRoomba_ = new Croi::RoombaSerial();
+    //    iRoomba_ = new Croi::RoombaSerial();
 
     //threadReader = new ThreadReader(posixserial, this);
     //threadReader->start();
@@ -43,7 +45,6 @@ MainWindow::MainWindow(QWidget *parent) :
     quitAct->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_Q));
     connect(quitAct, SIGNAL(triggered()),this,SLOT(close()));
     fileMenu->addAction(quitAct);
-
     // TODO: Magic fixed size for mainwindow
     resize(750,450);
     scene_ = new QGraphicsScene(QRect(0,0,398,398), this);
@@ -70,13 +71,28 @@ MainWindow::MainWindow(QWidget *parent) :
     mapWidth_lineEdit_->setText(QString::number(mapQGraphicsView_->giveMapWidth()));
     // TODO: Height in this one?
     //show the default real world width of map in cm
-//    mapWidth_lineEdit_->setText(QString::number(mapQGraphicsView_->giveMapWidth()));
+    //    mapWidth_lineEdit_->setText(QString::number(mapQGraphicsView_->giveMapWidth()));
+    view_ = new QQuickView;
+    view_->setSource(QUrl::fromLocalFile("../ui/main.qml"));
+    view_->show();
+    //    qDebug() << "qml errors: " + view->errors().at(0).toString() + "\n2";
+    QObject *object = view_->rootObject();
+    //    object->setProperty("color", "blue");
+    //    QObject *cleanButton_qml = object->findChild<QObject*>("root");
+    //    if (cleanButton_qml) {
+    //        cleanButton_qml->setProperty("color", "yellow");
+    //    }
+    QObject::connect(object, SIGNAL(toggled()),
+                     this, SLOT(pushButton_Clean_clicked()));
+    //    QObject::connect(object, SIGNAL(connecting()),
+    //                         this, SLOT(pushButton_Connect_clicked()));
 }
 
 MainWindow::~MainWindow()
 {
     iRoomba_->disconnect();
     releaseKeyboard();
+    view_->close();
     delete ui;
 }
 
@@ -150,7 +166,7 @@ void MainWindow::createActionDock()
     action_dockWidget_ = new QDockWidget(tr("Action"), this);
     action_dockWidget_->setWidget(actionWidget);
     addDockWidget(Qt::BottomDockWidgetArea, action_dockWidget_);
-//    action_dockWidget->setFeatures(QDockWidget::NoDockWidgetFeatures);
+    //    action_dockWidget->setFeatures(QDockWidget::NoDockWidgetFeatures);
 }
 
 void MainWindow::createStatusDock()
@@ -221,7 +237,7 @@ void MainWindow::createMapTestingDock()
     mapTesting_dockWidget_ = new QDockWidget(tr("Map testing"), this);
     mapTesting_dockWidget_->setWidget(mapTestingWidget);
     addDockWidget(Qt::RightDockWidgetArea, mapTesting_dockWidget_);
-//    action_dockWidget->setFeatures(QDockWidget::NoDockWidgetFeatures);
+    //    action_dockWidget->setFeatures(QDockWidget::NoDockWidgetFeatures);
 }
 
 void MainWindow::pushButton_removeRedObjects_clicked()
@@ -231,8 +247,8 @@ void MainWindow::pushButton_removeRedObjects_clicked()
 
 void MainWindow::pushButton_Connect_clicked()
 {
-//    Disabled until Roowifi AutoCapture is used instead
-//    updateSensorData_->start(500);
+    //    Disabled until Roowifi AutoCapture is used instead
+    //    updateSensorData_->start(500);
     QString ip = ipLineEdit_1_->text() + "." + ipLineEdit_2_->text() + "." + ipLineEdit_3_->text()
             + "." + ipLineEdit_4_->text();
     std::string stdip = ip.toStdString();
@@ -241,8 +257,8 @@ void MainWindow::pushButton_Connect_clicked()
 
 void MainWindow::pushButton_Disconnect_clicked()
 {
-//    Disabled until Roowifi AutoCapture is used instead
-//    updateSensorData_->stop();
+    //    Disabled until Roowifi AutoCapture is used instead
+    //    updateSensorData_->stop();
     iRoomba_->disconnect();
     temperature_label_->setText("0");
     chargeLevel_label_->setText("0");
@@ -306,7 +322,7 @@ void MainWindow::keyPressEvent(QKeyEvent* event)
         radius_ = 200;
         moving_ = true;
         qDebug() << "RightArrow";
-     }
+    }
     else if(event->key() == Qt::Key_D) {
         iRoomba_->Drive(velocity_horizontalSlider_->value(),-200);
         radius_ = -200;
@@ -347,13 +363,13 @@ void MainWindow::keyPressEvent(QKeyEvent* event)
 
 void MainWindow::sensorUpdateTimerTimeout()
 {
-//    qDebug() << "sensorUpdateTimerTimeout";
+    //    qDebug() << "sensorUpdateTimerTimeout";
     temperature_label_->setText( QString::number( ( unsigned char )( iRoomba_->getTemperature() ) ) );
     chargeLevel_label_->setText( QString::number( (unsigned short)( iRoomba_->getChargeLevel() ) ) );
     QPointF rmbPosition = mapQGraphicsView_->getRoombasLocation();
     rmbPosition_label_->setText( "(" + QString::number(rmbPosition.x()) + " , " + QString::number(rmbPosition.y()) + ")" );
     mapQGraphicsView_->updateLoc(iRoomba_->getDistance(), iRoomba_->getAngle(), iRoomba_->getRadius(),
-                           iRoomba_->getVelocity());
+                                 iRoomba_->getVelocity());
 }
 
 void MainWindow::pushButton_playSong_clicked()

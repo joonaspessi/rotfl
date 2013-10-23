@@ -13,6 +13,7 @@
 #include "mapQGraphicsView.h"
 
 class ThreadReader;
+class QQuickView;
 
 namespace Ui {
 class MainWindow;
@@ -95,6 +96,7 @@ private:
     QDockWidget *status_dockWidget_;
     QDockWidget *action_dockWidget_;
     QDockWidget *mapTesting_dockWidget_;
+    QQuickView *view_;
 };
 
 #endif // MAINWINDOW_H

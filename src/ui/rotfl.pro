@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui network
+QT       += core gui network qml quick
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -40,3 +40,5 @@ HEADERS  += mainwindow.h \
     wallQGraphicsLineItem.h
 
 FORMS    += mainwindow.ui
+
+OTHER_FILES += main.qml
