@@ -19,7 +19,7 @@
 #include "mapQGraphicsView.h"
 
 MainWindow::MainWindow(QWidget *parent) :
-    index(0), QMainWindow(parent),
+    index(0), moving_(false), QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
@@ -238,6 +238,10 @@ void MainWindow::on_pushButton_Disconnect_clicked()
 //    Disabled until Roowifi AutoCapture is used instead
 //    updateSensorData_->stop();
     iRoomba_->disconnect();
+    ui->temperature_label->setText("0");
+    ui->charge_label->setText("0");
+    ui->velocity_horizontalSlider->setValue(0);
+    ui->velocityValue_label->setText("0");
 }
 
 void MainWindow::on_pushButton_Clean_clicked()
@@ -273,35 +277,33 @@ void MainWindow::keyPressEvent(QKeyEvent* event)
     //Turn in place counter-clockwise = 1
     qDebug() << "KeyPress";
     if(event->key() == Qt::Key_W) {
-        iRoomba_->Drive(200,32767);
-        direction_ = true;
+        iRoomba_->Drive(ui->velocity_horizontalSlider->value(),32767);
+        radius_ = 32767;
+        moving_ = true;
         qDebug() << "UpArrow";
     }
-    else if(event->key() == Qt::Key_S) {
-        iRoomba_->Drive(-200,32767);
-        direction_ = false;
-        qDebug() << "DownArrow";
-    }
     else if(event->key() == Qt::Key_A) {
-        if (direction_) {
-            iRoomba_->Drive(200,200);
-        }
-        else {
-            iRoomba_->Drive(-200,200);
-        }
+        iRoomba_->Drive(ui->velocity_horizontalSlider->value(),200);
+        radius_ = 200;
+        moving_ = true;
         qDebug() << "RightArrow";
      }
     else if(event->key() == Qt::Key_D) {
-        if(direction_) {
-            iRoomba_->Drive(200,-200);
-        }
-        else {
-            iRoomba_->Drive(-200,-200);
-        }
+        iRoomba_->Drive(ui->velocity_horizontalSlider->value(),-200);
+        radius_ = -200;
+        moving_ = true;
         qDebug() << "LeftArrow";
+    }
+    else if(event->key() == Qt::Key_E) {
+        iRoomba_->Drive(ui->velocity_horizontalSlider->value(),65535);
+        radius_ = 65535;
+        moving_ = true;
+        qDebug() << "Turn clockwise";
     }
     else {
         iRoomba_->Drive(0,32767);
+        radius_ = 32767;
+        moving_ = false;
         qDebug() << "Stop";
     }
 }
@@ -330,4 +332,12 @@ void MainWindow::on_pushButton_simMov_clicked()
     double angle = rand()%70-rand()%70;
     ui->mapView->updateLoc(distance, angle, static_cast<int>(2000*(360-angle)/360));
     //ui->mapView->updateLoc(-100, -10, 1);  //simple version
+}
+
+void MainWindow::on_velocity_horizontalSlider_sliderMoved(int position)
+{
+    ui->velocityValue_label->setText(QString::number(position));
+    if (moving_) {
+        iRoomba_->Drive(position,radius_);
+    }
 }

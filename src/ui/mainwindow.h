@@ -54,6 +54,8 @@ private slots:
     void on_pushButton_clearTraces_clicked();
 
     void on_pushButton_simMov_clicked();
+    void on_velocity_horizontalSlider_sliderMoved(int position);
+
 signals:
     
 protected:
@@ -65,7 +67,8 @@ private:
     int index;
     Croi::PosixSerial* posixserial;
     ThreadReader *threadReader;
-    bool direction_;
+    bool moving_;
+    int radius_;
     Croi::IRoomba* iRoomba_;
     QTimer *updateSensorData_;
 };

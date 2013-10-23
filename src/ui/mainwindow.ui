@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>671</width>
-    <height>630</height>
+    <width>702</width>
+    <height>670</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -454,7 +454,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>1</string>
+     <string>145</string>
     </property>
     <property name="readOnly">
      <bool>false</bool>
@@ -471,6 +471,67 @@
     </property>
     <property name="text">
      <string>IP:</string>
+    </property>
+   </widget>
+   <widget class="QSlider" name="velocity_horizontalSlider">
+    <property name="geometry">
+     <rect>
+      <x>400</x>
+      <y>570</y>
+      <width>160</width>
+      <height>18</height>
+     </rect>
+    </property>
+    <property name="minimum">
+     <number>-500</number>
+    </property>
+    <property name="maximum">
+     <number>500</number>
+    </property>
+    <property name="orientation">
+     <enum>Qt::Horizontal</enum>
+    </property>
+   </widget>
+   <widget class="QLabel" name="velocity_label">
+    <property name="geometry">
+     <rect>
+      <x>330</x>
+      <y>570</y>
+      <width>66</width>
+      <height>17</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Velocity:</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="velocityValue_label">
+    <property name="geometry">
+     <rect>
+      <x>570</x>
+      <y>570</y>
+      <width>41</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>0</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="velocityUnit_label">
+    <property name="geometry">
+     <rect>
+      <x>630</x>
+      <y>570</y>
+      <width>41</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>mm/s</string>
     </property>
    </widget>
    <zorder>pushButton</zorder>
@@ -509,13 +570,17 @@
    <zorder>ipLineEdit_3</zorder>
    <zorder>ipLineEdit_4</zorder>
    <zorder>label_6</zorder>
+   <zorder>velocity_horizontalSlider</zorder>
+   <zorder>velocity_label</zorder>
+   <zorder>velocityValue_label</zorder>
+   <zorder>velocityUnit_label</zorder>
   </widget>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>671</width>
+     <width>702</width>
      <height>29</height>
     </rect>
    </property>
