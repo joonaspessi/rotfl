@@ -10,6 +10,7 @@
 
 const double POIWIDTH = 10.0;
 const double TRACEWIDTH = 10.0;
+const double ARROWWIDTH = 15.0;
 const double PI = 3.14159265;
 const double MAGICSCALE = 2.0;
 class poiQGraphicsEllipseItem;
@@ -25,7 +26,7 @@ public:
     //Straight = 32768 or 32767
     //Turn in place clockwise = 65535
     //Turn in place counter-clockwise = 1
-    void updateLoc(int distance, int angle, int radius);
+    void updateLoc(int distance, int angle, int radius, int velocity);
 
     void clearAllPois();
     void clearAllTraces();
@@ -41,6 +42,7 @@ private:
     std::set<QGraphicsEllipseItem*> traces_;
     QGraphicsEllipseItem* startPoint_;
     QGraphicsPolygonItem* curPoint_;
+    QGraphicsLineItem* curSpeed_;
     double initX_;
     double initY_;
     double angle_;

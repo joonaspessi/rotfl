@@ -26,6 +26,7 @@ public:
     virtual short getDistance() = 0;
     virtual short getAngle() = 0;
     virtual int getRadius() = 0;
+    virtual int getVelocity() = 0;
     //virtual bool isConnected = 0;
 
 

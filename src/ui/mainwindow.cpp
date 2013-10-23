@@ -313,7 +313,8 @@ void MainWindow::sensorUpdateTimerTimeout()
 //    qDebug() << "sensorUpdateTimerTimeout";
     ui->temperature_label->setText( QString::number( ( unsigned char )( iRoomba_->getTemperature() ) ) );
     ui->charge_label->setText( QString::number( (unsigned short)( iRoomba_->getChargeLevel() ) ) );
-    ui->mapView->updateLoc(iRoomba_->getDistance(), iRoomba_->getAngle(), iRoomba_->getRadius());
+    ui->mapView->updateLoc(iRoomba_->getDistance(), iRoomba_->getAngle(), iRoomba_->getRadius(),
+                           iRoomba_->getVelocity());
 }
 
 void MainWindow::on_pushButton_playSong_clicked()
@@ -330,8 +331,9 @@ void MainWindow::on_pushButton_simMov_clicked()
 {
     double distance = rand()%250;
     double angle = rand()%70-rand()%70;
-    ui->mapView->updateLoc(distance, angle, static_cast<int>(2000*(360-angle)/360));
-    //ui->mapView->updateLoc(-100, -10, 1);  //simple version
+    //ui->mapView->updateLoc(distance, angle, static_cast<int>(2000*(360-angle)/360),
+    //                       rand()%500);
+    ui->mapView->updateLoc(-50, -10, 1, rand()%500);  //simple version
 }
 
 void MainWindow::on_velocity_horizontalSlider_sliderMoved(int position)

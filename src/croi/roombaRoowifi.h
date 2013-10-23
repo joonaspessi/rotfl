@@ -28,11 +28,13 @@ public:
     virtual short getDistance();
     virtual short getAngle();
     virtual int getRadius();
+    virtual int getVelocity();
 public slots:
     void testSlot();
 private:
     RooWifi* roowifi_;
-    int radius_;  //needed for updateLoc
+    int radius_;
+    int velocity_;
 };
 
 } //namespace Croi
