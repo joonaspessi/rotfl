@@ -266,8 +266,17 @@ void RooWifi::UpdateSensors( unsigned char* NewValues )
     //Class values
     BatteryLevel =  ( float ) Sensors.Charge / ( float) Sensors.Capacity;
 
+    short radius =  ( ( short ) NewValues[46]  ) << 8 |
+                    ( short ) NewValues[47];
+
+//    char radius = ( char ) NewValues[46];
+    short velocity =  ( ( short ) NewValues[44] ) << 8 |
+                      ( short )  NewValues[45];
+
+
     #ifdef ROOWIFI_DEBUG
         qDebug() << QString( "ROOWIFI:: Sensor Structure up to date. Emits AutoCaptureUpdated SIGNAL" );
+        qDebug() << "Radius: " << QString::number(radius) << " Speed: " << QString::number(velocity) << "\n";
     #endif
 
     AutoCaptureLoopFinished = true;
@@ -335,7 +344,7 @@ int RooWifi::Read(char *Data, int DataLen)
 //
 void RooWifi::RequestAllSensors()
 {
-    ExecuteCommandWithParameter(Commands::Command_Sensors,0);
+    ExecuteCommandWithParameter(Commands::Command_Sensors,6);
 }
 
 /////////////////

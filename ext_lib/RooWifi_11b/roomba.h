@@ -32,7 +32,7 @@
 #define ROOMBA_H
 
 //Number of sensors in SCI specification
-#define SCI_NUMBER_OF_SENSORS       26
+#define SCI_NUMBER_OF_SENSORS       52
 
 //Byte postion for each sensor in response frame
 #define BUMPWHEELDROPS_SENSOR       0
