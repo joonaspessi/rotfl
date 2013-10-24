@@ -322,15 +322,15 @@ void MainWindow::on_pushButton_playSong_clicked()
     iRoomba_->playSong(1);
 }
 
-void MainWindow::on_pushButton_clearTraces_clicked()
+void MainWindow::on_pushButton_unshowTraces_clicked()
 {
-    ui->mapView->clearAllTraces();
+    ui->mapView->ifShowTraces();
 }
 
 void MainWindow::on_pushButton_simMov_clicked()
 {
     double distance = rand()%250;
-    double angle = rand()%70-rand()%70;
+    double angle = rand()%40-rand()%40;
     //ui->mapView->updateLoc(distance, angle, static_cast<int>(2000*(360-angle)/360),
     //                       rand()%500);
     ui->mapView->updateLoc(-50, -10, 1, rand()%500);  //simple version

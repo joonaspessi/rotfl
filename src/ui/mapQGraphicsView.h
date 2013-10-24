@@ -25,12 +25,13 @@ public:
     //updates roomba's location and heading. Keeps a trace
     //Remember following special radiuses
     //Straight = 32768 or 32767
-    //Turn in place clockwise = 65535
+    //Turn in place clockwise = -1
     //Turn in place counter-clockwise = 1
     void updateLoc(int distance, int angle, int radius, int velocity);
 
     void clearAllPois();
-    void clearAllTraces();
+    void ifShowTraces();
+
     virtual ~mapQGraphicsView();
 
 public slots:
@@ -40,13 +41,14 @@ public slots:
 private:
     QGraphicsScene* mapScene_;
     std::set<poiQGraphicsEllipseItem*> pois_;
-    std::set<QGraphicsEllipseItem*> traces_;
+    QVector<QGraphicsLineItem*> traces_;
     QGraphicsEllipseItem* startPoint_;
     QGraphicsPolygonItem* curPoint_;
     QGraphicsLineItem* curSpeed_;
     double initX_;
     double initY_;
     double angle_;
+    bool traceShown_;
 };
 
 #endif // MAPQGRAPHICSVIEW_H

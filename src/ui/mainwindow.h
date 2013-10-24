@@ -51,10 +51,10 @@ private slots:
 
     void on_pushButton_playSong_clicked();
 
-    void on_pushButton_clearTraces_clicked();
-
     void on_pushButton_simMov_clicked();
     void on_velocity_horizontalSlider_sliderMoved(int position);
+
+    void on_pushButton_unshowTraces_clicked();
 
 signals:
     

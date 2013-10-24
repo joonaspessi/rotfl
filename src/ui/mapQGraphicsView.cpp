@@ -10,7 +10,7 @@
 
 mapQGraphicsView::mapQGraphicsView(QWidget* parent) :
     QGraphicsView(parent), startPoint_(NULL), curPoint_(NULL),
-    curSpeed_(NULL), initX_(0), initY_(0), angle_(0.0)
+    curSpeed_(NULL), initX_(0), initY_(0), angle_(0.0), traceShown_(true)
 {
     mapScene_ = new QGraphicsScene();
     setScene(mapScene_);
@@ -86,21 +86,36 @@ void mapQGraphicsView::clearAllPois()
     pois_.clear();
 }
 
-void mapQGraphicsView::clearAllTraces()
+void mapQGraphicsView::ifShowTraces()
 {
-    for (std::set<QGraphicsEllipseItem*>::iterator i = traces_.begin();
-        i != traces_.end(); ++i)
+    if (traceShown_)
     {
-        mapScene_->removeItem(*i);
-        delete *i;
+        traceShown_ = false;
+
+        for (QVector<QGraphicsLineItem*>::iterator i = traces_.begin();
+            i != traces_.end(); ++i)
+        {
+            (*i)->setVisible(false);
+            //mapScene_->removeItem(*i);
+        }
     }
-    traces_.clear();
+    else
+    {
+        traceShown_ = true;
+
+        for (QVector<QGraphicsLineItem*>::iterator i = traces_.begin();
+            i != traces_.end(); ++i)
+        {
+            (*i)->setVisible(true);
+            //mapScene_->addItem(*i);
+        }
+    }
 }
 
 //updates roomba's location and heading. Keeps a trace
 //Remember following special radiuses
 //Straight = 32768 or 32767
-//Turn in place clockwise = 65535
+//Turn in place clockwise = -1
 //Turn in place counter-clockwise = 1
 void mapQGraphicsView::updateLoc(int distance, int angle, int radius, int velocity)
 {
@@ -122,7 +137,7 @@ void mapQGraphicsView::updateLoc(int distance, int angle, int radius, int veloci
     //magic scaling due to currently nonscaled coordinates
     double dist = -(static_cast<double>(distance)/MAGICSCALE);
     //special radiuses mean no adaptation needed
-    if (radius != 32768 && radius != 32767 && radius != 65535 && radius != 1)
+    if (radius != 32768 && radius != 32767 && radius != -1 && radius != 1)
     {
         //corrected distance
         dist = -2.0*(static_cast<double>(radius)/MAGICSCALE)*
@@ -137,6 +152,7 @@ void mapQGraphicsView::updateLoc(int distance, int angle, int radius, int veloci
     double x = initX_+cos(angleForDist)*dist;
     double y = initY_+sin(angleForDist)*dist;
 
+
     //making the correctly angled roombaTriangle
     QVector<QPointF> points;
     QPointF first(x+cos(angle_)*ARROWWIDTH,
@@ -150,10 +166,11 @@ void mapQGraphicsView::updateLoc(int distance, int angle, int radius, int veloci
                           y-sin(tempAngle)*ARROWWIDTH));
     points.append(first);
     QPolygonF triangle(points);
-
     //calculate the point at the back of the triangle
     double triangleX = (points.at(1).x()+points.at(2).x())/2.0;
     double triangleY = (points.at(1).y()+points.at(2).y())/2.0;
+
+    QPointF traceP(initX_, initY_);
 
     if (curPoint_ == NULL)  //first update
     {
@@ -170,25 +187,36 @@ void mapQGraphicsView::updateLoc(int distance, int angle, int radius, int veloci
     }
     else
     {
-        QGraphicsEllipseItem* trace = new QGraphicsEllipseItem
-                (initX_-TRACEWIDTH/2.0,
-                 initY_-TRACEWIDTH/2.0, TRACEWIDTH, TRACEWIDTH);
-        QBrush traceBrush(Qt::GlobalColor::red);
-        trace->setBrush(traceBrush);
-        mapScene_->addItem(trace);
-        traces_.insert(trace);
+        QGraphicsLineItem* traceL = new QGraphicsLineItem
+                (initX_, initY_, x, y);
+        QPen linePen(Qt::GlobalColor::red);
+        linePen.setWidth(TRACEWIDTH);
+        traceL->setPen(linePen);
+        traces_.append(traceL);
+        if (traceShown_)
+        {
+            mapScene_->addItem(traceL);
+        }
+
         curPoint_->setPolygon(triangle);
         curSpeed_->setLine(triangleX, triangleY,
-                           triangleX-cos(angle_)*ARROWWIDTH*5.0*speed,
-                           triangleY-sin(angle_)*ARROWWIDTH*5.0*speed);
+                           triangleX-cos(angle_)*ARROWWIDTH*4.0*speed,
+                           triangleY-sin(angle_)*ARROWWIDTH*4.0*speed);
     }
 
     initX_ = x;
     initY_ = y;
 }
+
 mapQGraphicsView::~mapQGraphicsView()
 {
     clearAllPois();
-    clearAllTraces();
     delete curPoint_;
+
+    for (QVector<QGraphicsLineItem*>::iterator i = traces_.begin();
+        i != traces_.end(); ++i)
+    {
+        mapScene_->removeItem(*i);
+        delete *i;
+    }
 }

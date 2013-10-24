@@ -379,17 +379,17 @@
      <string>0</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="pushButton_clearTraces">
+   <widget class="QPushButton" name="pushButton_unshowTraces">
     <property name="geometry">
      <rect>
       <x>540</x>
       <y>420</y>
-      <width>111</width>
+      <width>121</width>
       <height>21</height>
      </rect>
     </property>
     <property name="text">
-     <string>Clear traces</string>
+     <string>(un)Show traces</string>
     </property>
    </widget>
    <widget class="QPushButton" name="pushButton_simMov">
@@ -563,7 +563,7 @@
    <zorder>charge_unit_label</zorder>
    <zorder>temperature_label</zorder>
    <zorder>charge_label</zorder>
-   <zorder>pushButton_clearTraces</zorder>
+   <zorder>pushButton_unshowTraces</zorder>
    <zorder>pushButton_simMov</zorder>
    <zorder>ipLineEdit_1</zorder>
    <zorder>ipLineEdit_2</zorder>
@@ -581,7 +581,7 @@
      <x>0</x>
      <y>0</y>
      <width>702</width>
-     <height>29</height>
+     <height>25</height>
     </rect>
    </property>
   </widget>
