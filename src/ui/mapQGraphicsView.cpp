@@ -12,9 +12,9 @@ mapQGraphicsView::mapQGraphicsView(QWidget* parent) :
     QGraphicsView(parent), startPoint_(NULL), curPoint_(NULL),
     curSpeed_(NULL), initX_(0), initY_(0), angle_(0.0), traceShown_(true)
 {
-    mapScene_ = new QGraphicsScene();
+    mapScene_ = new QGraphicsScene(childrenRect(), this);
     setScene(mapScene_);
-    setSceneRect(0, 0, 400, 400);
+    setRenderHints(QPainter::Antialiasing);
 }
 
 void mapQGraphicsView::removePoi(poiQGraphicsEllipseItem* poi)
@@ -26,7 +26,7 @@ void mapQGraphicsView::removePoi(poiQGraphicsEllipseItem* poi)
 
 void mapQGraphicsView::mousePressEvent(QMouseEvent* event)
 {
-    QPointF clickPoint = mapToScene(event->pos());
+    //QPointF clickPoint = mapToScene(event->pos());
     //QPointF clickPoint = mapTo(this, event->pos());
 
 //    //NONWORKING ATTEMPT TO CIRCUMVENT A CLEVER WAY TO REMOVE A CERTAIN POI
@@ -52,6 +52,7 @@ void mapQGraphicsView::mouseDoubleClickEvent(QMouseEvent* event)
 {
     QPointF point = mapToScene(event->pos());
     //QPointF point = mapTo(this, event->pos());
+    //QPointF point = event->pos();
 
     if(startPoint_ == NULL)
     {
@@ -72,6 +73,7 @@ void mapQGraphicsView::mouseDoubleClickEvent(QMouseEvent* event)
                  POIWIDTH, this);
         mapScene_->addItem(poi);
         pois_.insert(poi);
+        qDebug() << poi->x() << " " << poi->y();
     }
 }
 
@@ -204,6 +206,8 @@ void mapQGraphicsView::updateLoc(int distance, int angle, int radius, int veloci
                            triangleY-sin(angle_)*ARROWWIDTH*4.0*speed);
     }
 
+    curPoint_->setZValue(1);
+    curSpeed_->setZValue(1);
     initX_ = x;
     initY_ = y;
 }
