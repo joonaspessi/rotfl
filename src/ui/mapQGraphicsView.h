@@ -28,14 +28,13 @@ public:
     //Turn in place clockwise = -1
     //Turn in place counter-clockwise = 1
     void updateLoc(int distance, int angle, int radius, int velocity);
-
-    void clearAllPois();
+    void clearRedPois();
     void ifShowTraces();
 
     virtual ~mapQGraphicsView();
 
 public slots:
-    void mousePressEvent(QMouseEvent* event);
+
     void mouseDoubleClickEvent(QMouseEvent* event);
 
 private:

@@ -24,30 +24,6 @@ void mapQGraphicsView::removePoi(poiQGraphicsEllipseItem* poi)
     delete poi;
 }
 
-void mapQGraphicsView::mousePressEvent(QMouseEvent* event)
-{
-    //QPointF clickPoint = mapToScene(event->pos());
-    //QPointF clickPoint = mapTo(this, event->pos());
-
-//    //NONWORKING ATTEMPT TO CIRCUMVENT A CLEVER WAY TO REMOVE A CERTAIN POI
-//    //clever way is to somehow pass the even to the POI
-//    for (std::set<poiQGraphicsEllipseItem*>::iterator i = pois_.begin();
-//        i != pois_.end(); ++i)
-//    {
-//        QPointF poiPoint = (*i)->pos();
-
-//        if (clickPoint.x() >= poiPoint.x()-20 &&
-//            clickPoint.x() <= poiPoint.x()+20 &&
-//            clickPoint.y() >= poiPoint.y()-20 &&
-//            clickPoint.y() <= poiPoint.y()+20)
-//        {
-//            mapScene_->removeItem(*i);
-//            delete *i;
-//            pois_.erase(i);
-//        }
-//    }
-}
-
 void mapQGraphicsView::mouseDoubleClickEvent(QMouseEvent* event)
 {
     QPointF point = mapToScene(event->pos());
@@ -73,19 +49,21 @@ void mapQGraphicsView::mouseDoubleClickEvent(QMouseEvent* event)
                  POIWIDTH, this);
         mapScene_->addItem(poi);
         pois_.insert(poi);
-        qDebug() << poi->x() << " " << poi->y();
     }
 }
 
-void mapQGraphicsView::clearAllPois()
+void mapQGraphicsView::clearRedPois()
 {
     for (std::set<poiQGraphicsEllipseItem*>::iterator i = pois_.begin();
         i != pois_.end(); ++i)
     {
-        mapScene_->removeItem(*i);
-        delete *i;
+        if ((*i)->pen().color() == Qt::GlobalColor::red)
+        {
+            pois_.erase(i);
+            mapScene_->removeItem(*i);
+            delete *i;
+        }
     }
-    pois_.clear();
 }
 
 void mapQGraphicsView::ifShowTraces()
@@ -213,12 +191,18 @@ void mapQGraphicsView::updateLoc(int distance, int angle, int radius, int veloci
 }
 
 mapQGraphicsView::~mapQGraphicsView()
-{
-    clearAllPois();
+{ 
     delete curPoint_;
 
     for (QVector<QGraphicsLineItem*>::iterator i = traces_.begin();
         i != traces_.end(); ++i)
+    {
+        mapScene_->removeItem(*i);
+        delete *i;
+    }
+
+    for (std::set<poiQGraphicsEllipseItem*>::iterator i = pois_.begin();
+        i != pois_.end(); ++i)
     {
         mapScene_->removeItem(*i);
         delete *i;

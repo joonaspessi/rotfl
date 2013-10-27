@@ -10,12 +10,24 @@ poiQGraphicsEllipseItem::poiQGraphicsEllipseItem
         QGraphicsEllipseItem(x, y, w, h, parent)
 {    
     map_ = map;
+    QPen pen(Qt::GlobalColor::black);
+    setPen(pen);
 }
 
-//void poiQGraphicsEllipseItem::mousePressEvent(QMouseEvent* event)
-//{
-//    map_->removePoi(this);
-//}
+void poiQGraphicsEllipseItem::mousePressEvent(QGraphicsSceneMouseEvent* event)
+{
+    if (pen().color() == Qt::GlobalColor::black)
+    {
+        QPen pen(Qt::GlobalColor::red);
+        setPen(pen);
+    }
+    else
+    {
+        QPen pen(Qt::GlobalColor::black);
+        setPen(pen);
+    }
+    //map_->removePoi(this);
+}
 
 poiQGraphicsEllipseItem::~poiQGraphicsEllipseItem()
 {
