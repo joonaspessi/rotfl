@@ -59,9 +59,9 @@ void mapQGraphicsView::clearRedPois()
     {
         if ((*i)->pen().color() == Qt::GlobalColor::red)
         {
-            pois_.erase(i);
             mapScene_->removeItem(*i);
             delete *i;
+            pois_.erase(i);
         }
     }
 }
