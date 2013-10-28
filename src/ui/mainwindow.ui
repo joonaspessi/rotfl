@@ -215,12 +215,12 @@
      <rect>
       <x>430</x>
       <y>420</y>
-      <width>131</width>
+      <width>141</width>
       <height>21</height>
      </rect>
     </property>
     <property name="text">
-     <string>Clear red POIs</string>
+     <string>Remove red objects</string>
     </property>
    </widget>
    <widget class="QPushButton" name="pushButton_Connect">
@@ -382,7 +382,7 @@
    <widget class="QPushButton" name="pushButton_unshowTraces">
     <property name="geometry">
      <rect>
-      <x>570</x>
+      <x>580</x>
       <y>420</y>
       <width>121</width>
       <height>21</height>
@@ -534,7 +534,7 @@
      <string>mm/s</string>
     </property>
    </widget>
-   <widget class="QTextEdit" name="textEdit">
+   <widget class="QTextEdit" name="textEdit_mapWidth">
     <property name="geometry">
      <rect>
       <x>170</x>
@@ -597,7 +597,7 @@
    <zorder>velocity_label</zorder>
    <zorder>velocityValue_label</zorder>
    <zorder>velocityUnit_label</zorder>
-   <zorder>textEdit</zorder>
+   <zorder>textEdit_mapWidth</zorder>
    <zorder>label_7</zorder>
   </widget>
   <widget class="QMenuBar" name="menuBar">

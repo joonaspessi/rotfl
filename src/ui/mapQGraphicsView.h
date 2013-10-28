@@ -4,8 +4,11 @@
 #include <QGraphicsView>
 #include <QGraphicsScene>
 #include <QGraphicsEllipseItem>
+#include <QGraphicsRectItem>
 #include "poiQGraphicsEllipseItem.h"
+#include "wallQGraphicsLineItem.h"
 #include <QMouseEvent>
+
 #include <set>
 
 const double POIWIDTH = 10.0;
@@ -28,17 +31,18 @@ public:
     //Turn in place clockwise = -1
     //Turn in place counter-clockwise = 1
     void updateLoc(int distance, int angle, int radius, int velocity);
-    void clearRedPois();
+    void clearRedObjects();
     void ifShowTraces();
 
     virtual ~mapQGraphicsView();
 
 public slots:
-
     void mouseDoubleClickEvent(QMouseEvent* event);
 
 private:
     QGraphicsScene* mapScene_;
+    QGraphicsRectItem* wallStartPoint_;
+    std::set<wallQGraphicsLineItem*> walls_;
     std::set<poiQGraphicsEllipseItem*> pois_;
     QVector<QGraphicsLineItem*> traces_;
     QGraphicsEllipseItem* startPoint_;

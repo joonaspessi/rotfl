@@ -143,7 +143,7 @@ void MainWindow::on_pushButton_2_clicked()
 
 void MainWindow::on_pushButton_3_clicked()
 {
-    ui->mapView->clearRedPois();
+    ui->mapView->clearRedObjects();
 }
 
 void MainWindow::on_comboBox_currentIndexChanged(const QString &arg1)

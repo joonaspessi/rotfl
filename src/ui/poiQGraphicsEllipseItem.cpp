@@ -1,21 +1,22 @@
-#include <QGraphicsEllipseItem>
-
 #include "poiQGraphicsEllipseItem.h"
 #include "mapQGraphicsView.h"
-#include <iostream>
 
 poiQGraphicsEllipseItem::poiQGraphicsEllipseItem
-    (qreal x, qreal y, qreal w, qreal h, mapQGraphicsView* map,
-     QGraphicsItem* parent) :
+    (qreal x, qreal y, qreal w, qreal h, QGraphicsItem* parent):
         QGraphicsEllipseItem(x, y, w, h, parent)
 {    
-    map_ = map;
     QPen pen(Qt::GlobalColor::black);
     setPen(pen);
+    setZValue(1);
 }
 
 void poiQGraphicsEllipseItem::mousePressEvent(QGraphicsSceneMouseEvent* event)
 {
+    if (event->button() != Qt::LeftButton)
+    {
+        return;
+    }
+
     if (pen().color() == Qt::GlobalColor::black)
     {
         QPen pen(Qt::GlobalColor::red);
@@ -26,7 +27,6 @@ void poiQGraphicsEllipseItem::mousePressEvent(QGraphicsSceneMouseEvent* event)
         QPen pen(Qt::GlobalColor::black);
         setPen(pen);
     }
-    //map_->removePoi(this);
 }
 
 poiQGraphicsEllipseItem::~poiQGraphicsEllipseItem()

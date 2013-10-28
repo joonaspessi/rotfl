@@ -1,6 +1,7 @@
 #include <QPointF>
 #include <QReadLocker>
 #include "poiQGraphicsEllipseItem.h"
+#include "wallQGraphicsLineItem.h"
 #include <set>
 #include <iostream>
 #include "mainwindow.h"
@@ -9,8 +10,9 @@
 #include <QDebug>
 
 mapQGraphicsView::mapQGraphicsView(QWidget* parent) :
-    QGraphicsView(parent), startPoint_(NULL), curPoint_(NULL),
-    curSpeed_(NULL), initX_(0), initY_(0), angle_(0.0), traceShown_(true)
+    QGraphicsView(parent), wallStartPoint_(NULL), startPoint_(NULL),
+    curPoint_(NULL), curSpeed_(NULL), initX_(0), initY_(0), angle_(0.0),
+    traceShown_(true)
 {
     mapScene_ = new QGraphicsScene(childrenRect(), this);
     setScene(mapScene_);
@@ -26,33 +28,51 @@ void mapQGraphicsView::removePoi(poiQGraphicsEllipseItem* poi)
 
 void mapQGraphicsView::mouseDoubleClickEvent(QMouseEvent* event)
 {
-    QPointF point = mapToScene(event->pos());
-    //QPointF point = mapTo(this, event->pos());
-    //QPointF point = event->pos();
+    QPointF p = mapToScene(event->pos());
 
-    if(startPoint_ == NULL)
+    if (event->button() == Qt::LeftButton)
     {
-        initX_ = point.x();
-        initY_ = point.y();
-        QGraphicsEllipseItem* startPoint = new QGraphicsEllipseItem
-                (point.x()-TRACEWIDTH, point.y()-TRACEWIDTH, TRACEWIDTH*2,
-                 TRACEWIDTH*2);
-        QBrush brush(Qt::GlobalColor::green);
-        startPoint->setBrush(brush);
-        mapScene_->addItem(startPoint);
-        startPoint_ = startPoint;
+        if(startPoint_ == NULL)
+        {
+            initX_ = p.x();
+            initY_ = p.y();
+            startPoint_ = new QGraphicsEllipseItem
+                    (p.x()-TRACEWIDTH, p.y()-TRACEWIDTH, TRACEWIDTH*2,
+                     TRACEWIDTH*2);
+            QBrush brush(Qt::GlobalColor::green);
+            startPoint_->setBrush(brush);
+            mapScene_->addItem(startPoint_);
+        }
+        else
+        {
+            poiQGraphicsEllipseItem* poi = new poiQGraphicsEllipseItem
+                    (p.x()-POIWIDTH/2, p.y()-POIWIDTH/2, POIWIDTH, POIWIDTH);
+            mapScene_->addItem(poi);
+            pois_.insert(poi);
+        }
     }
-    else
+    else if (event->button() == Qt::RightButton)
     {
-        poiQGraphicsEllipseItem* poi = new poiQGraphicsEllipseItem
-                (point.x()-POIWIDTH/2, point.y()-POIWIDTH/2, POIWIDTH,
-                 POIWIDTH, this);
-        mapScene_->addItem(poi);
-        pois_.insert(poi);
+        if (wallStartPoint_ == NULL)
+        {
+            wallStartPoint_ = new QGraphicsRectItem(0, 0, 2, 2);
+            wallStartPoint_->setPos(p);
+            mapScene_->addItem(wallStartPoint_);
+        }
+        else
+        {
+            wallQGraphicsLineItem* wall = new wallQGraphicsLineItem
+                    (wallStartPoint_->x(), wallStartPoint_->y(), p.x(), p.y());
+            walls_.insert(wall);
+            mapScene_->addItem(wall);
+            mapScene_->removeItem(wallStartPoint_);
+            delete wallStartPoint_;
+            wallStartPoint_ = NULL;
+        }
     }
 }
 
-void mapQGraphicsView::clearRedPois()
+void mapQGraphicsView::clearRedObjects()
 {
     for (std::set<poiQGraphicsEllipseItem*>::iterator i = pois_.begin();
         i != pois_.end(); ++i)
@@ -62,6 +82,16 @@ void mapQGraphicsView::clearRedPois()
             mapScene_->removeItem(*i);
             delete *i;
             pois_.erase(i);
+        }
+    }
+    for (std::set<wallQGraphicsLineItem*>::iterator i = walls_.begin();
+        i != walls_.end(); ++i)
+    {
+        if ((*i)->pen().color() == Qt::GlobalColor::red)
+        {
+            mapScene_->removeItem(*i);
+            delete *i;
+            walls_.erase(i);
         }
     }
 }
@@ -169,7 +199,7 @@ void mapQGraphicsView::updateLoc(int distance, int angle, int radius, int veloci
     {
         QGraphicsLineItem* traceL = new QGraphicsLineItem
                 (initX_, initY_, x, y);
-        QPen linePen(Qt::GlobalColor::red);
+        QPen linePen(Qt::GlobalColor::gray);
         linePen.setWidth(TRACEWIDTH);
         traceL->setPen(linePen);
         traces_.append(traceL);
@@ -196,6 +226,13 @@ mapQGraphicsView::~mapQGraphicsView()
 
     for (QVector<QGraphicsLineItem*>::iterator i = traces_.begin();
         i != traces_.end(); ++i)
+    {
+        mapScene_->removeItem(*i);
+        delete *i;
+    }
+
+    for (std::set<wallQGraphicsLineItem*>::iterator i = walls_.begin();
+        i != walls_.end(); ++i)
     {
         mapScene_->removeItem(*i);
         delete *i;
