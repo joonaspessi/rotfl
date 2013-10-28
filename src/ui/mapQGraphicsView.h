@@ -13,9 +13,8 @@
 
 const double POIWIDTH = 10.0;
 const double TRACEWIDTH = 10.0;
-const double ARROWWIDTH = 15.0;
+const double ARROWWIDTH = 8.0;
 const double PI = 3.14159265;
-const double MAGICSCALE = 2.0;
 const double ANGLECORRECTION = 3.05;
 class poiQGraphicsEllipseItem;
 
@@ -31,8 +30,15 @@ public:
     //Turn in place clockwise = -1
     //Turn in place counter-clockwise = 1
     void updateLoc(int distance, int angle, int radius, int velocity);
-    void clearRedObjects();
+    void removeRedObjects();
     void ifShowTraces();
+    void removeTraces();
+    //gives map's width in mm
+    int giveMapWidth();
+    //give new width in mm
+    void changeMapWidth(int width);
+    void resetAngle();
+
 
     virtual ~mapQGraphicsView();
 
@@ -45,12 +51,13 @@ private:
     std::set<wallQGraphicsLineItem*> walls_;
     std::set<poiQGraphicsEllipseItem*> pois_;
     QVector<QGraphicsLineItem*> traces_;
-    QGraphicsEllipseItem* startPoint_;
+    poiQGraphicsEllipseItem* startPoint_;
     QGraphicsPolygonItem* curPoint_;
     QGraphicsLineItem* curSpeed_;
     double initX_;
     double initY_;
     double angle_;
+    int mapWidth_;
     bool traceShown_;
 };
 

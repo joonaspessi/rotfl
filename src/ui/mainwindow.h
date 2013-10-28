@@ -56,6 +56,10 @@ private slots:
 
     void on_pushButton_unshowTraces_clicked();
 
+    void on_pushButton_mapWidth_clicked();
+
+    void on_pushButton_resetAngle_clicked();
+
 signals:
     
 protected:

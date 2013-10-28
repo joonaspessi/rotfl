@@ -57,7 +57,7 @@
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>50</y>
+      <y>40</y>
       <width>71</width>
       <height>31</height>
      </rect>
@@ -70,7 +70,7 @@
     <property name="geometry">
      <rect>
       <x>30</x>
-      <y>90</y>
+      <y>70</y>
       <width>41</width>
       <height>21</height>
      </rect>
@@ -83,7 +83,7 @@
     <property name="geometry">
      <rect>
       <x>110</x>
-      <y>50</y>
+      <y>40</y>
       <width>71</width>
       <height>31</height>
      </rect>
@@ -93,7 +93,7 @@
     <property name="geometry">
      <rect>
       <x>190</x>
-      <y>50</y>
+      <y>40</y>
       <width>71</width>
       <height>31</height>
      </rect>
@@ -103,7 +103,7 @@
     <property name="geometry">
      <rect>
       <x>270</x>
-      <y>50</y>
+      <y>40</y>
       <width>71</width>
       <height>31</height>
      </rect>
@@ -113,7 +113,7 @@
     <property name="geometry">
      <rect>
       <x>350</x>
-      <y>50</y>
+      <y>40</y>
       <width>71</width>
       <height>31</height>
      </rect>
@@ -152,7 +152,7 @@
     <property name="geometry">
      <rect>
       <x>120</x>
-      <y>90</y>
+      <y>70</y>
       <width>66</width>
       <height>17</height>
      </rect>
@@ -165,7 +165,7 @@
     <property name="geometry">
      <rect>
       <x>200</x>
-      <y>90</y>
+      <y>70</y>
       <width>66</width>
       <height>17</height>
      </rect>
@@ -178,7 +178,7 @@
     <property name="geometry">
      <rect>
       <x>280</x>
-      <y>90</y>
+      <y>70</y>
       <width>66</width>
       <height>17</height>
      </rect>
@@ -191,7 +191,7 @@
     <property name="geometry">
      <rect>
       <x>360</x>
-      <y>90</y>
+      <y>70</y>
       <width>66</width>
       <height>17</height>
      </rect>
@@ -203,10 +203,10 @@
    <widget class="mapQGraphicsView" name="mapView">
     <property name="geometry">
      <rect>
-      <x>20</x>
-      <y>120</y>
-      <width>391</width>
-      <height>351</height>
+      <x>10</x>
+      <y>90</y>
+      <width>400</width>
+      <height>400</height>
      </rect>
     </property>
    </widget>
@@ -226,8 +226,8 @@
    <widget class="QPushButton" name="pushButton_Connect">
     <property name="geometry">
      <rect>
-      <x>20</x>
-      <y>480</y>
+      <x>10</x>
+      <y>500</y>
       <width>98</width>
       <height>27</height>
      </rect>
@@ -239,8 +239,8 @@
    <widget class="QPushButton" name="pushButton_Disconnect">
     <property name="geometry">
      <rect>
-      <x>20</x>
-      <y>520</y>
+      <x>10</x>
+      <y>540</y>
       <width>98</width>
       <height>27</height>
      </rect>
@@ -252,8 +252,8 @@
    <widget class="QPushButton" name="pushButton_Clean">
     <property name="geometry">
      <rect>
-      <x>130</x>
-      <y>480</y>
+      <x>120</x>
+      <y>500</y>
       <width>98</width>
       <height>27</height>
      </rect>
@@ -265,8 +265,8 @@
    <widget class="QPushButton" name="pushButton_allMotorsOn">
     <property name="geometry">
      <rect>
-      <x>360</x>
-      <y>480</y>
+      <x>350</x>
+      <y>500</y>
       <width>111</width>
       <height>27</height>
      </rect>
@@ -278,8 +278,8 @@
    <widget class="QPushButton" name="pushButton_allMotorsOff">
     <property name="geometry">
      <rect>
-      <x>360</x>
-      <y>520</y>
+      <x>350</x>
+      <y>540</y>
       <width>111</width>
       <height>27</height>
      </rect>
@@ -291,8 +291,8 @@
    <widget class="QPushButton" name="pushButton_Safe">
     <property name="geometry">
      <rect>
-      <x>130</x>
-      <y>520</y>
+      <x>120</x>
+      <y>540</y>
       <width>96</width>
       <height>27</height>
      </rect>
@@ -304,8 +304,8 @@
    <widget class="QPushButton" name="pushButton_Full">
     <property name="geometry">
      <rect>
-      <x>240</x>
-      <y>520</y>
+      <x>230</x>
+      <y>540</y>
       <width>96</width>
       <height>27</height>
      </rect>
@@ -317,8 +317,8 @@
    <widget class="QPushButton" name="pushButton_playSong">
     <property name="geometry">
      <rect>
-      <x>240</x>
-      <y>480</y>
+      <x>230</x>
+      <y>500</y>
       <width>96</width>
       <height>27</height>
      </rect>
@@ -397,7 +397,7 @@
      <rect>
       <x>430</x>
       <y>450</y>
-      <width>221</width>
+      <width>141</width>
       <height>21</height>
      </rect>
     </property>
@@ -409,7 +409,7 @@
     <property name="geometry">
      <rect>
       <x>510</x>
-      <y>470</y>
+      <y>480</y>
       <width>31</width>
       <height>27</height>
      </rect>
@@ -422,7 +422,7 @@
     <property name="geometry">
      <rect>
       <x>550</x>
-      <y>470</y>
+      <y>480</y>
       <width>31</width>
       <height>27</height>
      </rect>
@@ -435,7 +435,7 @@
     <property name="geometry">
      <rect>
       <x>590</x>
-      <y>470</y>
+      <y>480</y>
       <width>31</width>
       <height>27</height>
      </rect>
@@ -448,7 +448,7 @@
     <property name="geometry">
      <rect>
       <x>630</x>
-      <y>470</y>
+      <y>480</y>
       <width>31</width>
       <height>27</height>
      </rect>
@@ -476,8 +476,8 @@
    <widget class="QSlider" name="velocity_horizontalSlider">
     <property name="geometry">
      <rect>
-      <x>400</x>
-      <y>570</y>
+      <x>410</x>
+      <y>580</y>
       <width>160</width>
       <height>18</height>
      </rect>
@@ -495,8 +495,8 @@
    <widget class="QLabel" name="velocity_label">
     <property name="geometry">
      <rect>
-      <x>330</x>
-      <y>570</y>
+      <x>340</x>
+      <y>580</y>
       <width>66</width>
       <height>17</height>
      </rect>
@@ -508,9 +508,9 @@
    <widget class="QLabel" name="velocityValue_label">
     <property name="geometry">
      <rect>
-      <x>570</x>
-      <y>570</y>
-      <width>41</width>
+      <x>590</x>
+      <y>580</y>
+      <width>31</width>
       <height>20</height>
      </rect>
     </property>
@@ -524,8 +524,8 @@
    <widget class="QLabel" name="velocityUnit_label">
     <property name="geometry">
      <rect>
-      <x>630</x>
-      <y>570</y>
+      <x>650</x>
+      <y>580</y>
       <width>41</width>
       <height>20</height>
      </rect>
@@ -534,27 +534,53 @@
      <string>mm/s</string>
     </property>
    </widget>
-   <widget class="QTextEdit" name="textEdit_mapWidth">
-    <property name="geometry">
-     <rect>
-      <x>170</x>
-      <y>560</y>
-      <width>81</width>
-      <height>31</height>
-     </rect>
-    </property>
-   </widget>
    <widget class="QLabel" name="label_7">
     <property name="geometry">
      <rect>
-      <x>20</x>
-      <y>560</y>
-      <width>141</width>
-      <height>20</height>
+      <x>10</x>
+      <y>580</y>
+      <width>181</width>
+      <height>16</height>
      </rect>
     </property>
     <property name="text">
-     <string>Define map's width:</string>
+     <string>Define map's width (cm):</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="lineEdit_mapWidth">
+    <property name="geometry">
+     <rect>
+      <x>190</x>
+      <y>580</y>
+      <width>51</width>
+      <height>27</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButton_mapWidth">
+    <property name="geometry">
+     <rect>
+      <x>250</x>
+      <y>580</y>
+      <width>41</width>
+      <height>27</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>OK</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButton_resetAngle">
+    <property name="geometry">
+     <rect>
+      <x>580</x>
+      <y>450</y>
+      <width>95</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Reset angle</string>
     </property>
    </widget>
    <zorder>pushButton</zorder>
@@ -597,8 +623,10 @@
    <zorder>velocity_label</zorder>
    <zorder>velocityValue_label</zorder>
    <zorder>velocityUnit_label</zorder>
-   <zorder>textEdit_mapWidth</zorder>
    <zorder>label_7</zorder>
+   <zorder>lineEdit_mapWidth</zorder>
+   <zorder>pushButton_mapWidth</zorder>
+   <zorder>pushButton_resetAngle</zorder>
   </widget>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">

@@ -43,6 +43,10 @@ MainWindow::MainWindow(QWidget *parent) :
 
     QMenu* fileMenu = menuBar()->addMenu(tr("&File"));
 
+    QString temp;
+    //show the default real world width of map in cm
+    ui->lineEdit_mapWidth->setText(temp.setNum(ui->mapView->giveMapWidth()/10));
+
     QAction* quitAct = new QAction(tr("&Quit"),this);
     quitAct->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_Q));
     connect(quitAct, SIGNAL(triggered()),this,SLOT(close()));
@@ -143,7 +147,7 @@ void MainWindow::on_pushButton_2_clicked()
 
 void MainWindow::on_pushButton_3_clicked()
 {
-    ui->mapView->clearRedObjects();
+    ui->mapView->removeRedObjects();
 }
 
 void MainWindow::on_comboBox_currentIndexChanged(const QString &arg1)
@@ -342,4 +346,14 @@ void MainWindow::on_velocity_horizontalSlider_sliderMoved(int position)
     if (moving_) {
         iRoomba_->Drive(position,radius_);
     }
+}
+
+void MainWindow::on_pushButton_mapWidth_clicked()
+{
+    ui->mapView->changeMapWidth(ui->lineEdit_mapWidth->text().toInt()*10);
+}
+
+void MainWindow::on_pushButton_resetAngle_clicked()
+{
+    ui->mapView->resetAngle();
 }
