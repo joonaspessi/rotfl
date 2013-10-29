@@ -12,13 +12,15 @@
 mapQGraphicsView::mapQGraphicsView(QWidget* parent) :
     QGraphicsView(parent), wallStartPoint_(NULL), startPoint_(NULL),
     curPoint_(NULL), curSpeed_(NULL), initX_(0.0), initY_(0.0), angle_(0.0),
-    mapWidth_(4000), traceShown_(true)
+    mapWidth_(600), traceShown_(true)
 {
     mapScene_ = new QGraphicsScene(childrenRect(), this);
     setScene(mapScene_);
     setRenderHints(QPainter::Antialiasing);
-    //scale((mapWidth_/geometry().width()),
-    //      (mapWidth_/geometry().width()));
+    //the view's rectangle's size 400 should instead be taken with function
+    //currently the functions give an unwanted value for some reason
+    scale(400.0/mapWidth_, 400.0/mapWidth_);
+    qDebug() << rect().width();
 }
 
 void mapQGraphicsView::removePoi(poiQGraphicsEllipseItem* poi)
@@ -160,7 +162,6 @@ void mapQGraphicsView::updateLoc(int distance, int angle, int radius, int veloci
     {
         return;
     }
-
     //normalized speed
     double speed = static_cast<double>(velocity)/500.0;
 
@@ -171,13 +172,14 @@ void mapQGraphicsView::updateLoc(int distance, int angle, int radius, int veloci
 
     //angle for distance calculation
     double angleForDist = angle_-static_cast<double>(angle)*PI*ANGLECORRECTION/180.0;
-    double dist = -static_cast<double>(distance);
+    //distance changed to cm
+    double dist = -static_cast<double>(distance)/10.0;
     //special radiuses mean no adaptation needed
     if (radius != 32768 && radius != 32767 && radius != -1 && radius != 1)
     {
-        //corrected distance
+        //corrected distance (and change to cm)
         dist = -2.0*(static_cast<double>(radius))*
-                sin(static_cast<double>(distance)/radius/2);
+                sin(static_cast<double>(distance)/radius/2)/10.0;
         //corrected angle in radians for distance calculation
         angleForDist = angle_-static_cast<double>(distance)/radius/2.0;
     }
@@ -226,18 +228,18 @@ void mapQGraphicsView::updateLoc(int distance, int angle, int radius, int veloci
         QBrush triangleBrush(Qt::GlobalColor::blue);
         curPoint_->setBrush(triangleBrush);
         QPen curSpeedPen(Qt::GlobalColor::blue);
-        curSpeedPen.setWidth(TRACEWIDTH/2.0);
+        curSpeedPen.setWidth(TRACEWIDTH/4.0);
         curSpeed_ = mapScene_->addLine(triangleX, triangleY,
-                                       triangleX-cos(angle_)*ARROWWIDTH*4.0*speed,
-                                       triangleY-sin(angle_)*ARROWWIDTH*4.0*speed,
+                                       triangleX-cos(angle_)*ARROWWIDTH*2.0*speed,
+                                       triangleY-sin(angle_)*ARROWWIDTH*2.0*speed,
                                        curSpeedPen);
     }
     else
     {
         curPoint_->setPolygon(triangle);
         curSpeed_->setLine(triangleX, triangleY,
-                           triangleX-cos(angle_)*ARROWWIDTH*4.0*speed,
-                           triangleY-sin(angle_)*ARROWWIDTH*4.0*speed);
+                           triangleX-cos(angle_)*ARROWWIDTH*2.0*speed,
+                           triangleY-sin(angle_)*ARROWWIDTH*2.0*speed);
     }
 
     curPoint_->setZValue(1);
@@ -256,7 +258,10 @@ int mapQGraphicsView::giveMapWidth()
 void mapQGraphicsView::changeMapWidth(int width)
 {
     mapWidth_ = width;
-    //scale(width/geometry().width(), width/geometry().width());
+    //the view's rectangle's size 400.0 should instead be taken with function.
+    //currently the functions give an unwanted value for some reason
+    resetTransform();
+    scale(400.0/mapWidth_, 400.0/mapWidth_);
 }
 
 void mapQGraphicsView::resetAngle()

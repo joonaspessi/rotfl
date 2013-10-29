@@ -45,7 +45,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     QString temp;
     //show the default real world width of map in cm
-    ui->lineEdit_mapWidth->setText(temp.setNum(ui->mapView->giveMapWidth()/10));
+    ui->lineEdit_mapWidth->setText(temp.setNum(ui->mapView->giveMapWidth()));
 
     QAction* quitAct = new QAction(tr("&Quit"),this);
     quitAct->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_Q));
@@ -333,11 +333,11 @@ void MainWindow::on_pushButton_unshowTraces_clicked()
 
 void MainWindow::on_pushButton_simMov_clicked()
 {
-    double distance = rand()%250;
-    double angle = rand()%40-rand()%40;
-    //ui->mapView->updateLoc(distance, angle, static_cast<int>(2000*(360-angle)/360),
-    //                       rand()%500);
-    ui->mapView->updateLoc(-50, -10, 1, rand()%500);  //simple version
+    double distance = -rand()%500;
+    double angle = -(rand()%90-rand()%90);
+    ui->mapView->updateLoc(distance, angle/3.05, static_cast<int>(2000*(360-angle)/360),
+                           rand()%500);
+    //ui->mapView->updateLoc(-300, -10, 1, rand()%500);  //simple version
 }
 
 void MainWindow::on_velocity_horizontalSlider_sliderMoved(int position)
@@ -350,7 +350,7 @@ void MainWindow::on_velocity_horizontalSlider_sliderMoved(int position)
 
 void MainWindow::on_pushButton_mapWidth_clicked()
 {
-    ui->mapView->changeMapWidth(ui->lineEdit_mapWidth->text().toInt()*10);
+    ui->mapView->changeMapWidth(ui->lineEdit_mapWidth->text().toInt());
 }
 
 void MainWindow::on_pushButton_resetAngle_clicked()
