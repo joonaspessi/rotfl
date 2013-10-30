@@ -7,6 +7,7 @@
 #include <QLabel>
 #include <QLineEdit>
 #include <QSlider>
+#include <QPushButton>
 #include "croi/posixSerial.h"
 #include "croi/iRoomba.h"
 #include "mapQGraphicsView.h"
@@ -32,39 +33,33 @@ public slots:
     void sensorUpdateTimerTimeout();
 
 private slots:
-    void on_pushButton_clicked();
+    void pushButton_removeRedObjects_clicked();
 
-    void on_pushButton_2_clicked();
+    void pushButton_Connect_clicked();
 
-    void on_comboBox_currentIndexChanged(const QString &arg1);
+    void pushButton_Disconnect_clicked();
 
-    void on_pushButton_removeRedObjects_clicked();
+    void pushButton_Clean_clicked();
 
-    void on_pushButton_Connect_clicked();
+    void pushButton_Safe_clicked();
 
-    void on_pushButton_Disconnect_clicked();
+    void pushButton_Full_clicked();
 
-    void on_pushButton_Clean_clicked();
+    void pushButton_allMotorsOn_clicked();
 
-    void on_pushButton_Safe_clicked();
+    void pushButton_allMotorsOff_clicked();
 
-    void on_pushButton_Full_clicked();
+    void pushButton_playSong_clicked();
 
-    void on_pushButton_allMotorsOn_clicked();
+    void pushButton_simMov_clicked();
 
-    void on_pushButton_allMotorsOff_clicked();
+    void pushButton_unshowTraces_clicked();
 
-    void on_pushButton_playSong_clicked();
+    void pushButton_mapWidth_clicked();
 
-    void on_pushButton_simMov_clicked();
+    void pushButton_resetAngle_clicked();
 
-    void on_pushButton_unshowTraces_clicked();
-
-    void on_pushButton_mapWidth_clicked();
-
-    void on_pushButton_resetAngle_clicked();
-
-    void on_velocity_horizontalSlider_sliderMoved(int position);
+    void velocity_horizontalSlider_sliderMoved(int position);
 
 signals:
     
@@ -73,8 +68,6 @@ protected:
 private:
     void init();
     Ui::MainWindow *ui;
-    QStandardItemModel *model;
-    int index;
     Croi::PosixSerial* posixserial;
     ThreadReader *threadReader;
     bool moving_;

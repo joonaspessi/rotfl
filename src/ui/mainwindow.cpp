@@ -21,18 +21,11 @@
 #include "mapQGraphicsView.h"
 
 MainWindow::MainWindow(QWidget *parent) :
-    index(0), moving_(false), QMainWindow(parent),
+    moving_(false), QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    model = new QStandardItemModel(3, 3);
-    ui->listView->setModel(model);
 //    posixserial = new Croi::PosixSerial();
-
-    //combobox
-    for(auto i = Croi::ROOMBA_COMMAND_MAP.begin(); i != Croi::ROOMBA_COMMAND_MAP.end(); ++i){
-        ui->comboBox->addItem(tr(i->second.name.c_str()));
-    }
 
 //    Disabled until Roowifi AutoCapture is used instead
 //    updateSensorData_ = new QTimer(this);
@@ -46,7 +39,6 @@ MainWindow::MainWindow(QWidget *parent) :
 
     QMenu* fileMenu = menuBar()->addMenu(tr("&File"));
 
-
     QAction* quitAct = new QAction(tr("&Quit"),this);
     quitAct->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_Q));
     connect(quitAct, SIGNAL(triggered()),this,SLOT(close()));
@@ -59,11 +51,7 @@ MainWindow::MainWindow(QWidget *parent) :
     mapQGraphicsView_->centerOn(0,0);
     mapQGraphicsView_->setMapWidth(600);
     setCentralWidget(mapQGraphicsView_);
-    //show the default real world width of map in cm
-    ui->lineEdit_mapWidth->setText(QString::number(mapQGraphicsView_->giveMapWidth()));
-    //show the default real world width of map in cm
-    ui->lineEdit_mapWidth->setText(QString::number(mapQGraphicsView_->giveMapWidth()));
-
+    centralWidget()->setFixedWidth(600);
 
     qDebug() << "children width: " << mapQGraphicsView_->childrenRect().width();
     qDebug() << "children height: " << mapQGraphicsView_->childrenRect().height();
@@ -75,6 +63,12 @@ MainWindow::MainWindow(QWidget *parent) :
     tabifyDockWidget(status_dockWidget_,action_dockWidget_);
     tabifyDockWidget(action_dockWidget_,mapTesting_dockWidget_);
     tabifyDockWidget(mapTesting_dockWidget_,connection_dockWidget_);
+
+    //show the default real world width of map in cm
+    mapWidth_lineEdit_->setText(QString::number(mapQGraphicsView_->giveMapWidth()));
+    // TODO: Height in this one?
+    //show the default real world width of map in cm
+//    mapWidth_lineEdit_->setText(QString::number(mapQGraphicsView_->giveMapWidth()));
 }
 
 MainWindow::~MainWindow()
@@ -103,9 +97,9 @@ void MainWindow::createConnectDock()
     ipLineEdit_layout->addWidget(ipLineEdit_4_);
 
     QPushButton *connect_pushButton = new QPushButton("&Connect", this);
-    connect(connect_pushButton,SIGNAL(clicked()),this,SLOT(on_pushButton_Connect_clicked()));
+    connect(connect_pushButton,SIGNAL(clicked()),this,SLOT(pushButton_Connect_clicked()));
     QPushButton * disconnect_pushButton = new QPushButton("&Disconnect", this);
-    connect(disconnect_pushButton,SIGNAL(clicked()),this,SLOT(on_pushButton_Disconnect_clicked()));
+    connect(disconnect_pushButton,SIGNAL(clicked()),this,SLOT(pushButton_Disconnect_clicked()));
     connect_layout->addWidget(connect_pushButton);
     connect_layout->addWidget(disconnect_pushButton);
     connect_layout->addLayout(ipLineEdit_layout);
@@ -121,21 +115,21 @@ void MainWindow::createActionDock()
 {
     QVBoxLayout *action_layout = new QVBoxLayout;
     QPushButton *clean_pushButton = new QPushButton("Cl&ean", this);
-    connect(clean_pushButton,SIGNAL(clicked()),this,SLOT(on_pushButton_Clean_clicked()));
+    connect(clean_pushButton,SIGNAL(clicked()),this,SLOT(pushButton_Clean_clicked()));
     QPushButton *safe_pushButton = new QPushButton("&Safe", this);
-    connect(safe_pushButton,SIGNAL(clicked()),this,SLOT(on_pushButton_Safe_clicked()));
+    connect(safe_pushButton,SIGNAL(clicked()),this,SLOT(pushButton_Safe_clicked()));
     QPushButton *full_pushButton = new QPushButton("F&ull", this);
-    connect(full_pushButton,SIGNAL(clicked()),this,SLOT(on_pushButton_Full_clicked()));
+    connect(full_pushButton,SIGNAL(clicked()),this,SLOT(pushButton_Full_clicked()));
     QPushButton *motorsOn_pushButton = new QPushButton("&Motors on", this);
-    connect(motorsOn_pushButton,SIGNAL(clicked()),this,SLOT(on_pushButton_allMotorsOn_clicked()));
+    connect(motorsOn_pushButton,SIGNAL(clicked()),this,SLOT(pushButton_allMotorsOn_clicked()));
     QPushButton *motorsOff_pushButton = new QPushButton("&Motors off", this);
-    connect(motorsOff_pushButton,SIGNAL(clicked()),this,SLOT(on_pushButton_allMotorsOff_clicked()));
+    connect(motorsOff_pushButton,SIGNAL(clicked()),this,SLOT(pushButton_allMotorsOff_clicked()));
     QPushButton *playSong_pushButton = new QPushButton("&Play song", this);
-    connect(playSong_pushButton,SIGNAL(clicked()),this,SLOT(on_pushButton_playSong_clicked()));
+    connect(playSong_pushButton,SIGNAL(clicked()),this,SLOT(pushButton_playSong_clicked()));
     velocity_horizontalSlider_ = new QSlider(Qt::Horizontal);
     velocity_horizontalSlider_->setMaximum(500);
     velocity_horizontalSlider_->setMinimum(-500);
-    connect(velocity_horizontalSlider_,SIGNAL(valueChanged(int)),this,SLOT(on_velocity_horizontalSlider_sliderMoved(int)));
+    connect(velocity_horizontalSlider_,SIGNAL(valueChanged(int)),this,SLOT(velocity_horizontalSlider_sliderMoved(int)));
 
     action_layout->addWidget(clean_pushButton);
     action_layout->addWidget(safe_pushButton);
@@ -190,19 +184,19 @@ void MainWindow::createMapTestingDock()
 {
     QVBoxLayout *mapTesting_layout = new QVBoxLayout;
     QPushButton *removeRedObjects_pushButton = new QPushButton("Remove red objects", this);
-    connect(removeRedObjects_pushButton,SIGNAL(clicked()),this,SLOT(on_pushButton_removeRedObjects_clicked()));
+    connect(removeRedObjects_pushButton,SIGNAL(clicked()),this,SLOT(pushButton_removeRedObjects_clicked()));
     QPushButton *unshowTraces_pushButton = new QPushButton("(Un)show traces", this);
-    connect(unshowTraces_pushButton,SIGNAL(clicked()),this,SLOT(on_pushButton_unshowTraces_clicked()));
+    connect(unshowTraces_pushButton,SIGNAL(clicked()),this,SLOT(pushButton_unshowTraces_clicked()));
     QPushButton *simMov_pushButton = new QPushButton("Simulate movement", this);
-    connect(simMov_pushButton,SIGNAL(clicked()),this,SLOT(on_pushButton_simMov_clicked()));
+    connect(simMov_pushButton,SIGNAL(clicked()),this,SLOT(pushButton_simMov_clicked()));
     QPushButton *resetAngle_pushButton = new QPushButton("Reset angle", this);
-    connect(resetAngle_pushButton,SIGNAL(clicked()),this,SLOT(on_pushButton_resetAngle_clicked()));
+    connect(resetAngle_pushButton,SIGNAL(clicked()),this,SLOT(pushButton_resetAngle_clicked()));
 
     QHBoxLayout *mapWidth_layout = new QHBoxLayout;
     QLabel *mapWidth_label = new QLabel("Define map's width (cm):");
     mapWidth_lineEdit_ = new QLineEdit("");
     QPushButton *mapWidth_pushButton = new QPushButton("Ok", this);
-    connect(mapWidth_pushButton,SIGNAL(clicked()),this,SLOT(on_pushButton_mapWidth_clicked()));
+    connect(mapWidth_pushButton,SIGNAL(clicked()),this,SLOT(pushButton_mapWidth_clicked()));
     mapWidth_layout->addWidget(mapWidth_label);
     mapWidth_layout->addWidget(mapWidth_lineEdit_);
     mapWidth_layout->addWidget(mapWidth_pushButton);
@@ -221,168 +215,12 @@ void MainWindow::createMapTestingDock()
 //    action_dockWidget->setFeatures(QDockWidget::NoDockWidgetFeatures);
 }
 
-void MainWindow::on_pushButton_clicked()
-{
-    std::stringstream stream;
-
-    QString send;
-
-    send += ui->lineEdit->text();
-
-    bool isConversionOk = false;
-
-    char optCommand = static_cast<char>(send.toInt(&isConversionOk));
-
-    if(isConversionOk){
-        stream << std::hex << optCommand;
-    }
-
-    if( ui->byte_1_edit->isHidden() == false) {
-        QString temp;
-
-        for(int i = 0; i < ui->byte_1_edit->text().size(); ++i){
-            if(i > 1)
-                break;
-            QByteArray ba;
-            ba.append( ui->byte_1_edit->text().at(i) );
-            temp += ba;
-
-        }
-
-
-        stream << temp.toStdString();
-    }
-
-    std::string optCommands(stream.str());
-    //posixserial->writeSerial(optCommands);
-    //iRoomba_->getAngle();
-
-    //send message to ui
-    QString outputStr = "";
-    for(int i = 0; i < optCommands.size(); ++i){
-        QByteArray ba = 0;
-        ba.append(optCommands.at(i));
-        outputStr += ba.toHex();
-        outputStr += " ";
-    }
-
-    QString outputCommandUI;
-    outputCommandUI = QTime::currentTime().toString() + " Write: " + outputStr ;
-    QStandardItem *item = new QStandardItem(outputCommandUI);
-    model->setItem(index, 0, item);
-    index++;
-    ui->listView->scrollToBottom();
-
-}
-
-
-void MainWindow::on_pushButton_2_clicked()
-{
-    std::string buf;
-    posixserial->readSerial(buf);
-
-    QString outputStr = "";
-    if(buf.size() > 0){
-        for(int i = 0; i < buf.size(); ++i){
-            QByteArray ba = 0;
-            ba.append(buf.at(i));
-            outputStr += ba.toHex();
-            outputStr += " ";
-        }
-
-        std::cout << "testi : " << outputStr.toStdString() << std::endl;
-    }
-
-    if(buf.size() > 0) {
-        QStandardItem *item = new QStandardItem(outputStr);
-        model->setItem(index, 0, item);
-        index++;
-        ui->listView->scrollToBottom();
-    }
-
-}
-
-void MainWindow::on_comboBox_currentIndexChanged(const QString &arg1)
-{
-    std::cout << arg1.toStdString() << std::endl;
-    int optCode = 0;
-    int bytes = 0;
-    for(auto i = Croi::ROOMBA_COMMAND_MAP.begin(); i != Croi::ROOMBA_COMMAND_MAP.end(); ++i) {
-        if( i->second.name == arg1.toStdString() ){
-            optCode = i->second.opcode;
-            bytes = i->second.bytes;
-            break;
-        }
-    }
-
-    if( optCode != 0) {
-        std::cout << optCode << std::endl;
-        ui->lineEdit->setText(QString::number(optCode));
-    }
-
-    switch (bytes)
-    {
-    case 0:
-    {
-        ui->byte_1_edit->hide();
-        ui->byte_2_edit->hide();
-        ui->byte_3_edit->hide();
-        ui->byte_4_edit->hide();
-        break;
-    }
-    case 1:
-    {
-        ui->byte_1_edit->show();
-        ui->byte_2_edit->hide();
-        ui->byte_3_edit->hide();
-        ui->byte_4_edit->hide();
-        break;
-    }
-    case 2:
-    {
-        ui->byte_1_edit->show();
-        ui->byte_2_edit->show();
-        ui->byte_3_edit->hide();
-        ui->byte_4_edit->hide();
-        break;
-    }
-    case 3:
-    {
-        ui->byte_1_edit->show();
-        ui->byte_2_edit->show();
-        ui->byte_3_edit->show();
-        ui->byte_4_edit->hide();
-        break;
-    }
-    case 4:
-    {
-        ui->byte_1_edit->show();
-        ui->byte_2_edit->show();
-        ui->byte_3_edit->show();
-        ui->byte_4_edit->show();
-        break;
-    }
-    default:
-        ui->byte_1_edit->hide();
-        ui->byte_2_edit->hide();
-        ui->byte_3_edit->hide();
-        ui->byte_4_edit->hide();
-    }
-
-    ui->byte_1_edit->clear();
-    ui->byte_2_edit->clear();
-    ui->byte_3_edit->clear();
-    ui->byte_4_edit->clear();
-
-
-}
-
-void MainWindow::on_pushButton_removeRedObjects_clicked()
+void MainWindow::pushButton_removeRedObjects_clicked()
 {
     mapQGraphicsView_->removeRedObjects();
 }
 
-void MainWindow::on_pushButton_Connect_clicked()
+void MainWindow::pushButton_Connect_clicked()
 {
     grabKeyboard();
 //    Disabled until Roowifi AutoCapture is used instead
@@ -393,7 +231,7 @@ void MainWindow::on_pushButton_Connect_clicked()
     iRoomba_->rmb_connect(stdip);
 }
 
-void MainWindow::on_pushButton_Disconnect_clicked()
+void MainWindow::pushButton_Disconnect_clicked()
 {
     releaseKeyboard();
 //    Disabled until Roowifi AutoCapture is used instead
@@ -405,27 +243,27 @@ void MainWindow::on_pushButton_Disconnect_clicked()
     velocityValue_label_->setText("0");
 }
 
-void MainWindow::on_pushButton_Clean_clicked()
+void MainWindow::pushButton_Clean_clicked()
 {
     iRoomba_->clean();
 }
 
-void MainWindow::on_pushButton_allMotorsOn_clicked()
+void MainWindow::pushButton_allMotorsOn_clicked()
 {
     iRoomba_->allMotorsOn();
 }
 
-void MainWindow::on_pushButton_allMotorsOff_clicked()
+void MainWindow::pushButton_allMotorsOff_clicked()
 {
     iRoomba_->allMotorsOff();
 }
 
-void MainWindow::on_pushButton_Safe_clicked()
+void MainWindow::pushButton_Safe_clicked()
 {
     iRoomba_->safeMode();
 }
 
-void MainWindow::on_pushButton_Full_clicked()
+void MainWindow::pushButton_Full_clicked()
 {
     iRoomba_->fullMode();
 }
@@ -478,17 +316,17 @@ void MainWindow::sensorUpdateTimerTimeout()
                            iRoomba_->getVelocity());
 }
 
-void MainWindow::on_pushButton_playSong_clicked()
+void MainWindow::pushButton_playSong_clicked()
 {
     iRoomba_->playSong(1);
 }
 
-void MainWindow::on_pushButton_unshowTraces_clicked()
+void MainWindow::pushButton_unshowTraces_clicked()
 {
     mapQGraphicsView_->ifShowTraces();
 }
 
-void MainWindow::on_pushButton_simMov_clicked()
+void MainWindow::pushButton_simMov_clicked()
 {
     double distance = -rand()%500;
     double angle = -(rand()%90-rand()%90);
@@ -497,7 +335,7 @@ void MainWindow::on_pushButton_simMov_clicked()
     mapQGraphicsView_->updateLoc(-1000/3.05, 0, 1, rand()%500);  //simple version
 }
 
-void MainWindow::on_velocity_horizontalSlider_sliderMoved(int position)
+void MainWindow::velocity_horizontalSlider_sliderMoved(int position)
 {
     velocityValue_label_->setText(QString::number(position));
     if (moving_) {
@@ -505,12 +343,12 @@ void MainWindow::on_velocity_horizontalSlider_sliderMoved(int position)
     }
 }
 
-void MainWindow::on_pushButton_mapWidth_clicked()
+void MainWindow::pushButton_mapWidth_clicked()
 {
 //    mapQGraphicsView_->changeMapWidth(mapWidth_lineEdit_->text().toInt());
 }
 
-void MainWindow::on_pushButton_resetAngle_clicked()
+void MainWindow::pushButton_resetAngle_clicked()
 {
     mapQGraphicsView_->resetAngle();
 }
