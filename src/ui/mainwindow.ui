@@ -200,16 +200,6 @@
      <string>Byte 4</string>
     </property>
    </widget>
-   <widget class="mapQGraphicsView" name="mapView">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>139</y>
-      <width>400</width>
-      <height>351</height>
-     </rect>
-    </property>
-   </widget>
    <widget class="QPushButton" name="pushButton_3">
     <property name="geometry">
      <rect>
@@ -505,22 +495,6 @@
      <string>Velocity:</string>
     </property>
    </widget>
-   <widget class="QLabel" name="velocityValue_label">
-    <property name="geometry">
-     <rect>
-      <x>590</x>
-      <y>100</y>
-      <width>31</width>
-      <height>20</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>0</string>
-    </property>
-    <property name="alignment">
-     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-    </property>
-   </widget>
    <widget class="QLabel" name="velocityUnit_label">
     <property name="geometry">
      <rect>
@@ -583,50 +557,6 @@
      <string>Reset angle</string>
     </property>
    </widget>
-   <zorder>pushButton</zorder>
-   <zorder>listView</zorder>
-   <zorder>pushButton_2</zorder>
-   <zorder>lineEdit</zorder>
-   <zorder>label</zorder>
-   <zorder>byte_1_edit</zorder>
-   <zorder>byte_2_edit</zorder>
-   <zorder>byte_3_edit</zorder>
-   <zorder>byte_4_edit</zorder>
-   <zorder>comboBox</zorder>
-   <zorder>opt_info_label</zorder>
-   <zorder>label_2</zorder>
-   <zorder>label_3</zorder>
-   <zorder>label_4</zorder>
-   <zorder>label_5</zorder>
-   <zorder>pushButton_3</zorder>
-   <zorder>mapView</zorder>
-   <zorder>pushButton_Connect</zorder>
-   <zorder>pushButton_Disconnect</zorder>
-   <zorder>pushButton_Clean</zorder>
-   <zorder>pushButton_allMotorsOn</zorder>
-   <zorder>pushButton_allMotorsOff</zorder>
-   <zorder>pushButton_Safe</zorder>
-   <zorder>pushButton_Full</zorder>
-   <zorder>pushButton_playSong</zorder>
-   <zorder>temperature_unit_label</zorder>
-   <zorder>charge_unit_label</zorder>
-   <zorder>temperature_label</zorder>
-   <zorder>charge_label</zorder>
-   <zorder>pushButton_unshowTraces</zorder>
-   <zorder>pushButton_simMov</zorder>
-   <zorder>ipLineEdit_1</zorder>
-   <zorder>ipLineEdit_2</zorder>
-   <zorder>ipLineEdit_3</zorder>
-   <zorder>ipLineEdit_4</zorder>
-   <zorder>label_6</zorder>
-   <zorder>velocity_horizontalSlider</zorder>
-   <zorder>velocity_label</zorder>
-   <zorder>velocityValue_label</zorder>
-   <zorder>velocityUnit_label</zorder>
-   <zorder>label_7</zorder>
-   <zorder>lineEdit_mapWidth</zorder>
-   <zorder>pushButton_mapWidth</zorder>
-   <zorder>pushButton_resetAngle</zorder>
   </widget>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">
@@ -634,7 +564,7 @@
      <x>0</x>
      <y>0</y>
      <width>702</width>
-     <height>25</height>
+     <height>26</height>
     </rect>
    </property>
   </widget>
@@ -649,13 +579,6 @@
   <widget class="QStatusBar" name="statusBar"/>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
- <customwidgets>
-  <customwidget>
-   <class>mapQGraphicsView</class>
-   <extends>QGraphicsView</extends>
-   <header>mapQGraphicsView.h</header>
-  </customwidget>
- </customwidgets>
  <resources/>
  <connections/>
 </ui>

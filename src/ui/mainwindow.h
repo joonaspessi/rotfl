@@ -3,8 +3,13 @@
 
 #include <QMainWindow>
 #include <QStandardItemModel>
+#include <QGraphicsScene>
+#include <QLabel>
+#include <QLineEdit>
+#include <QSlider>
 #include "croi/posixSerial.h"
 #include "croi/iRoomba.h"
+#include "mapQGraphicsView.h"
 
 class ThreadReader;
 
@@ -33,7 +38,7 @@ private slots:
 
     void on_comboBox_currentIndexChanged(const QString &arg1);
 
-    void on_pushButton_3_clicked();
+    void on_pushButton_removeRedObjects_clicked();
 
     void on_pushButton_Connect_clicked();
 
@@ -52,13 +57,14 @@ private slots:
     void on_pushButton_playSong_clicked();
 
     void on_pushButton_simMov_clicked();
-    void on_velocity_horizontalSlider_sliderMoved(int position);
 
     void on_pushButton_unshowTraces_clicked();
 
     void on_pushButton_mapWidth_clicked();
 
     void on_pushButton_resetAngle_clicked();
+
+    void on_velocity_horizontalSlider_sliderMoved(int position);
 
 signals:
     
@@ -75,6 +81,25 @@ private:
     int radius_;
     Croi::IRoomba* iRoomba_;
     QTimer *updateSensorData_;
+    mapQGraphicsView* mapQGraphicsView_;
+    QGraphicsScene* scene_;
+    void createConnectDock();
+    void createActionDock();
+    void createStatusDock();
+    void createMapTestingDock();
+    QLineEdit *ipLineEdit_1_;
+    QLineEdit *ipLineEdit_2_;
+    QLineEdit *ipLineEdit_3_;
+    QLineEdit *ipLineEdit_4_;
+    QLabel *velocityValue_label_;
+    QLabel *temperature_label_;
+    QLabel *chargeLevel_label_;
+    QSlider *velocity_horizontalSlider_;
+    QLineEdit *mapWidth_lineEdit_;
+    QDockWidget *connection_dockWidget_;
+    QDockWidget *status_dockWidget_;
+    QDockWidget *action_dockWidget_;
+    QDockWidget *mapTesting_dockWidget_;
 };
 
 #endif // MAINWINDOW_H
