@@ -20,7 +20,6 @@ mapQGraphicsView::mapQGraphicsView(QWidget* parent) :
     //the view's rectangle's size 400 should instead be taken with function
     //currently the functions give an unwanted value for some reason
     scale(400.0/mapWidth_, 400.0/mapWidth_);
-    qDebug() << rect().width();
 }
 
 void mapQGraphicsView::removePoi(poiQGraphicsEllipseItem* poi)
@@ -33,6 +32,7 @@ void mapQGraphicsView::removePoi(poiQGraphicsEllipseItem* poi)
 void mapQGraphicsView::mouseDoubleClickEvent(QMouseEvent* event)
 {
     QPointF p = mapToScene(event->pos());
+    //qDebug() << "x: " << p.x() << "y: " << p.y();
 
     if (event->button() == Qt::LeftButton)
     {
@@ -171,15 +171,15 @@ void mapQGraphicsView::updateLoc(int distance, int angle, int radius, int veloci
     }
 
     //angle for distance calculation
-    double angleForDist = angle_-static_cast<double>(angle)*PI*ANGLECORRECTION/180.0;
+    double angleForDist = angle_-static_cast<double>(angle)*PI*DISTANCECORRECTION/180.0;
     //distance changed to cm
-    double dist = -static_cast<double>(distance)/10.0;
+    double dist = -static_cast<double>(distance)/10.0*ANGLECORRECTION;
     //special radiuses mean no adaptation needed
     if (radius != 32768 && radius != 32767 && radius != -1 && radius != 1)
     {
         //corrected distance (and change to cm)
         dist = -2.0*(static_cast<double>(radius))*
-                sin(static_cast<double>(distance)/radius/2)/10.0;
+                sin(static_cast<double>(distance)/radius/2)/10.0*DISTANCECORRECTION;
         //corrected angle in radians for distance calculation
         angleForDist = angle_-static_cast<double>(distance)/radius/2.0;
     }

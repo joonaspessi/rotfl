@@ -335,9 +335,9 @@ void MainWindow::on_pushButton_simMov_clicked()
 {
     double distance = -rand()%500;
     double angle = -(rand()%90-rand()%90);
-    ui->mapView->updateLoc(distance, angle/3.05, static_cast<int>(2000*(360-angle)/360),
-                           rand()%500);
-    //ui->mapView->updateLoc(-300, -10, 1, rand()%500);  //simple version
+    //ui->mapView->updateLoc(distance, angle/3.05, static_cast<int>(2000*(360-angle)/360),
+    //                       rand()%500);
+    ui->mapView->updateLoc(-1000/3.05, 0, 1, rand()%500);  //simple version
 }
 
 void MainWindow::on_velocity_horizontalSlider_sliderMoved(int position)

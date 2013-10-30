@@ -16,6 +16,7 @@ const double TRACEWIDTH = 34.0;
 const double ARROWWIDTH = 27.0;
 const double PI = 3.14159265;
 const double ANGLECORRECTION = 3.05;
+const double DISTANCECORRECTION = 10.0;
 
 class poiQGraphicsEllipseItem;
 
@@ -34,9 +35,9 @@ public:
     void removeRedObjects();
     void ifShowTraces();
     void removeTraces();
-    //gives map's width in mm
+    //gives map's width in cm
     int giveMapWidth();
-    //give new width in mm
+    //give new width in cm
     void changeMapWidth(int width);
     void resetAngle();
 

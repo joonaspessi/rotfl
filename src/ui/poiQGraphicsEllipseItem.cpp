@@ -1,5 +1,6 @@
 #include "poiQGraphicsEllipseItem.h"
 #include "mapQGraphicsView.h"
+#include <QDebug>
 
 poiQGraphicsEllipseItem::poiQGraphicsEllipseItem
     (qreal x, qreal y, qreal w, qreal h, QGraphicsItem* parent):
@@ -17,6 +18,8 @@ void poiQGraphicsEllipseItem::mousePressEvent(QGraphicsSceneMouseEvent* event)
     {
         return;
     }
+
+    qDebug() << "POI_x: " << pos().x() << "POI_y: " << pos().y();
 
     if (pen().color() == Qt::GlobalColor::darkCyan)
     {
