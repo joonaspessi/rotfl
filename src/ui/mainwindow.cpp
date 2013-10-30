@@ -222,7 +222,6 @@ void MainWindow::pushButton_removeRedObjects_clicked()
 
 void MainWindow::pushButton_Connect_clicked()
 {
-    grabKeyboard();
 //    Disabled until Roowifi AutoCapture is used instead
 //    updateSensorData_->start(500);
     QString ip = ipLineEdit_1_->text() + "." + ipLineEdit_2_->text() + "." + ipLineEdit_3_->text()
@@ -233,7 +232,6 @@ void MainWindow::pushButton_Connect_clicked()
 
 void MainWindow::pushButton_Disconnect_clicked()
 {
-    releaseKeyboard();
 //    Disabled until Roowifi AutoCapture is used instead
 //    updateSensorData_->stop();
     iRoomba_->disconnect();
@@ -260,11 +258,13 @@ void MainWindow::pushButton_allMotorsOff_clicked()
 
 void MainWindow::pushButton_Safe_clicked()
 {
+    grabKeyboard();
     iRoomba_->safeMode();
 }
 
 void MainWindow::pushButton_Full_clicked()
 {
+    grabKeyboard();
     iRoomba_->fullMode();
 }
 
@@ -328,6 +328,7 @@ void MainWindow::keyPressEvent(QKeyEvent* event)
         qDebug() << "Turn clockwise";
     }
     else {
+        releaseKeyboard();
         iRoomba_->Drive(0,32767);
         radius_ = 32767;
         moving_ = false;
