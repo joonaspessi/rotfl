@@ -44,6 +44,10 @@ MainWindow::MainWindow(QWidget *parent) :
     QMenu* fileMenu = menuBar()->addMenu(tr("&File"));
 
     QString temp;
+
+    QGraphicsScene* mapScene = new QGraphicsScene(QRect(0,0,398,398), this);
+    ui->mapView->setScene(mapScene);
+    ui->mapView->setMapWidth(600);
     //show the default real world width of map in cm
     ui->lineEdit_mapWidth->setText(temp.setNum(ui->mapView->giveMapWidth()));
 
@@ -350,7 +354,7 @@ void MainWindow::on_velocity_horizontalSlider_sliderMoved(int position)
 
 void MainWindow::on_pushButton_mapWidth_clicked()
 {
-    ui->mapView->changeMapWidth(ui->lineEdit_mapWidth->text().toInt());
+    ui->mapView->setMapWidth(ui->lineEdit_mapWidth->text().toInt());
 }
 
 void MainWindow::on_pushButton_resetAngle_clicked()

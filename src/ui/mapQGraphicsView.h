@@ -16,7 +16,7 @@ const double TRACEWIDTH = 34.0;
 const double ARROWWIDTH = 27.0;
 const double PI = 3.14159265;
 const double ANGLECORRECTION = 3.05;
-const double DISTANCECORRECTION = 10.0;
+const double DISTANCECORRECTION = 6.1;
 
 class poiQGraphicsEllipseItem;
 
@@ -38,7 +38,7 @@ public:
     //gives map's width in cm
     int giveMapWidth();
     //give new width in cm
-    void changeMapWidth(int width);
+    void setMapWidth(int width);
     void resetAngle();
 
 
@@ -48,7 +48,6 @@ public slots:
     void mouseDoubleClickEvent(QMouseEvent* event);
 
 private:
-    QGraphicsScene* mapScene_;
     QGraphicsRectItem* wallStartPoint_;
     std::set<wallQGraphicsLineItem*> walls_;
     std::set<poiQGraphicsEllipseItem*> pois_;

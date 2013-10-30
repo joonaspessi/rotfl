@@ -19,7 +19,7 @@ void poiQGraphicsEllipseItem::mousePressEvent(QGraphicsSceneMouseEvent* event)
         return;
     }
 
-    qDebug() << "POI_x: " << pos().x() << "POI_y: " << pos().y();
+    qDebug() << "POI_x: " << scenePos().x() << "POI_y: " << scenePos().y();
 
     if (pen().color() == Qt::GlobalColor::darkCyan)
     {

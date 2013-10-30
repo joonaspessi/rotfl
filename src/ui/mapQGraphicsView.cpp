@@ -14,17 +14,12 @@ mapQGraphicsView::mapQGraphicsView(QWidget* parent) :
     curPoint_(NULL), curSpeed_(NULL), initX_(0.0), initY_(0.0), angle_(0.0),
     mapWidth_(600), traceShown_(true)
 {
-    mapScene_ = new QGraphicsScene(childrenRect(), this);
-    setScene(mapScene_);
     setRenderHints(QPainter::Antialiasing);
-    //the view's rectangle's size 400 should instead be taken with function
-    //currently the functions give an unwanted value for some reason
-    scale(400.0/mapWidth_, 400.0/mapWidth_);
 }
 
 void mapQGraphicsView::removePoi(poiQGraphicsEllipseItem* poi)
 {
-    mapScene_->removeItem(poi);
+    scene()->removeItem(poi);
     pois_.erase(poi);
     delete poi;
 }
@@ -32,7 +27,7 @@ void mapQGraphicsView::removePoi(poiQGraphicsEllipseItem* poi)
 void mapQGraphicsView::mouseDoubleClickEvent(QMouseEvent* event)
 {
     QPointF p = mapToScene(event->pos());
-    //qDebug() << "x: " << p.x() << "y: " << p.y();
+    qDebug() << "x: " << p.x() << "y: " << p.y();
 
     if (event->button() == Qt::LeftButton)
     {
@@ -41,16 +36,20 @@ void mapQGraphicsView::mouseDoubleClickEvent(QMouseEvent* event)
             initX_ = p.x();
             initY_ = p.y();
             startPoint_ = new poiQGraphicsEllipseItem
-                    (p.x()-POIWIDTH*2/3, p.y()-POIWIDTH*2/3, POIWIDTH*4/3, POIWIDTH*4/3);
+                    (p.x()-POIWIDTH*2.0/3.0, p.y()-POIWIDTH*2.0/3.0,
+                     POIWIDTH*4.0/3.0, POIWIDTH*4.0/3.0);
+            //startPoint_->setPos();
             QBrush brush(Qt::GlobalColor::green);
             startPoint_->setBrush(brush);
-            mapScene_->addItem(startPoint_);
+            scene()->addItem(startPoint_);
         }
         else
         {
-            poiQGraphicsEllipseItem* poi = new poiQGraphicsEllipseItem
-                    (p.x()-POIWIDTH/2, p.y()-POIWIDTH/2, POIWIDTH, POIWIDTH);
-            mapScene_->addItem(poi);
+            poiQGraphicsEllipseItem* poi =
+                    new poiQGraphicsEllipseItem
+                        (-POIWIDTH/2.0, -POIWIDTH/2.0, POIWIDTH, POIWIDTH);
+            poi->setPos(p);
+            scene()->addItem(poi);
             pois_.insert(poi);
         }
     }
@@ -60,15 +59,15 @@ void mapQGraphicsView::mouseDoubleClickEvent(QMouseEvent* event)
         {
             wallStartPoint_ = new QGraphicsRectItem(0, 0, 2, 2);
             wallStartPoint_->setPos(p);
-            mapScene_->addItem(wallStartPoint_);
+            scene()->addItem(wallStartPoint_);
         }
         else
         {
             wallQGraphicsLineItem* wall = new wallQGraphicsLineItem
                     (wallStartPoint_->x(), wallStartPoint_->y(), p.x(), p.y());
             walls_.insert(wall);
-            mapScene_->addItem(wall);
-            mapScene_->removeItem(wallStartPoint_);
+            scene()->addItem(wall);
+            scene()->removeItem(wallStartPoint_);
             delete wallStartPoint_;
             wallStartPoint_ = NULL;
         }
@@ -82,7 +81,7 @@ void mapQGraphicsView::removeRedObjects()
     {
         if ((*i)->pen().color() == Qt::GlobalColor::red)
         {
-            mapScene_->removeItem(*i);
+            scene()->removeItem(*i);
             delete *i;
             pois_.erase(i);
         }
@@ -92,7 +91,7 @@ void mapQGraphicsView::removeRedObjects()
     {
         if ((*i)->pen().color() == Qt::GlobalColor::red)
         {
-            mapScene_->removeItem(*i);
+            scene()->removeItem(*i);
             delete *i;
             walls_.erase(i);
         }
@@ -104,10 +103,10 @@ void mapQGraphicsView::removeRedObjects()
         delete startPoint_;
         startPoint_ = NULL;
         removeTraces();
-        mapScene_->removeItem(curPoint_);
+        scene()->removeItem(curPoint_);
         delete curPoint_;
         curPoint_ = NULL;
-        mapScene_->removeItem(curSpeed_);
+        scene()->removeItem(curSpeed_);
         delete curSpeed_;
         curSpeed_ = NULL;
         initX_= 0.0;
@@ -145,7 +144,7 @@ void mapQGraphicsView::removeTraces()
     for (QVector<QGraphicsLineItem*>::iterator i = traces_.begin();
         i != traces_.end(); ++i)
     {
-        mapScene_->removeItem(*i);
+        scene()->removeItem(*i);
         delete *i;
     }
     traces_.clear();
@@ -171,9 +170,9 @@ void mapQGraphicsView::updateLoc(int distance, int angle, int radius, int veloci
     }
 
     //angle for distance calculation
-    double angleForDist = angle_-static_cast<double>(angle)*PI*DISTANCECORRECTION/180.0;
+    double angleForDist = angle_-static_cast<double>(angle)*PI*ANGLECORRECTION/180.0;
     //distance changed to cm
-    double dist = -static_cast<double>(distance)/10.0*ANGLECORRECTION;
+    double dist = -static_cast<double>(distance)/10.0*DISTANCECORRECTION;
     //special radiuses mean no adaptation needed
     if (radius != 32768 && radius != 32767 && radius != -1 && radius != 1)
     {
@@ -214,7 +213,7 @@ void mapQGraphicsView::updateLoc(int distance, int angle, int radius, int veloci
     linePen.setWidth(TRACEWIDTH);
     traceL->setPen(linePen);
     traces_.append(traceL);
-    mapScene_->addItem(traceL);
+    scene()->addItem(traceL);
 
     if (!traceShown_)
     {
@@ -223,13 +222,13 @@ void mapQGraphicsView::updateLoc(int distance, int angle, int radius, int veloci
 
     if (curPoint_ == NULL)  //first update
     {
-        curPoint_ = mapScene_->addPolygon(triangle);
+        curPoint_ = scene()->addPolygon(triangle);
         //color of the roombaTriangle is blue
         QBrush triangleBrush(Qt::GlobalColor::blue);
         curPoint_->setBrush(triangleBrush);
         QPen curSpeedPen(Qt::GlobalColor::blue);
         curSpeedPen.setWidth(TRACEWIDTH/4.0);
-        curSpeed_ = mapScene_->addLine(triangleX, triangleY,
+        curSpeed_ = scene()->addLine(triangleX, triangleY,
                                        triangleX-cos(angle_)*ARROWWIDTH*2.0*speed,
                                        triangleY-sin(angle_)*ARROWWIDTH*2.0*speed,
                                        curSpeedPen);
@@ -255,12 +254,11 @@ int mapQGraphicsView::giveMapWidth()
 }
 
 //give new width in mm.
-void mapQGraphicsView::changeMapWidth(int width)
+void mapQGraphicsView::setMapWidth(int width)
 {
     mapWidth_ = width;
-    //the view's rectangle's size 400.0 should instead be taken with function.
-    //currently the functions give an unwanted value for some reason
     resetTransform();
+    //MAP'S WIDTH IN PIXELS IS FIXED ATM
     scale(400.0/mapWidth_, 400.0/mapWidth_);
 }
 
@@ -277,14 +275,14 @@ mapQGraphicsView::~mapQGraphicsView()
     for (std::set<wallQGraphicsLineItem*>::iterator i = walls_.begin();
         i != walls_.end(); ++i)
     {
-        mapScene_->removeItem(*i);
+        scene()->removeItem(*i);
         delete *i;
     }
 
     for (std::set<poiQGraphicsEllipseItem*>::iterator i = pois_.begin();
         i != pois_.end(); ++i)
     {
-        mapScene_->removeItem(*i);
+        scene()->removeItem(*i);
         delete *i;
     }
 }
