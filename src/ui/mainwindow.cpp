@@ -276,7 +276,18 @@ void MainWindow::keyPressEvent(QKeyEvent* event)
     //Turn in place counter-clockwise = 1
     qDebug() << "KeyPress";
     if(event->key() == Qt::Key_W) {
-        iRoomba_->Drive(velocity_horizontalSlider_->value(),32767);
+        if (velocity_horizontalSlider_->value() < 0)
+        {
+            velocity_horizontalSlider_->setValue(velocity_horizontalSlider_->value()*-1);
+        }
+        else if (velocity_horizontalSlider_->value() == 0)
+        {
+            velocity_horizontalSlider_->setValue(100);
+        }
+        else
+        {
+            iRoomba_->Drive(velocity_horizontalSlider_->value(),32767);
+        }
         radius_ = 32767;
         moving_ = true;
         qDebug() << "UpArrow";
@@ -292,6 +303,23 @@ void MainWindow::keyPressEvent(QKeyEvent* event)
         radius_ = -200;
         moving_ = true;
         qDebug() << "LeftArrow";
+    }
+    else if(event->key() == Qt::Key_S) {
+        if (velocity_horizontalSlider_->value() > 0)
+        {
+            velocity_horizontalSlider_->setValue(velocity_horizontalSlider_->value()*-1);
+        }
+        else if (velocity_horizontalSlider_->value() == 0)
+        {
+            velocity_horizontalSlider_->setValue(-100);
+        }
+        else
+        {
+            iRoomba_->Drive(velocity_horizontalSlider_->value(),32767);
+        }
+        radius_ = 32767;
+        moving_ = true;
+        qDebug() << "BackArrow";
     }
     else if(event->key() == Qt::Key_E) {
         iRoomba_->Drive(velocity_horizontalSlider_->value(),65535);
