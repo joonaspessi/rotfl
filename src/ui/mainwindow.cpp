@@ -25,7 +25,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
     model = new QStandardItemModel(3, 3);
     ui->listView->setModel(model);
-    posixserial = new Croi::PosixSerial();
+//    posixserial = new Croi::PosixSerial();
 
     //combobox
     for(auto i = Croi::ROOMBA_COMMAND_MAP.begin(); i != Croi::ROOMBA_COMMAND_MAP.end(); ++i){
@@ -37,6 +37,7 @@ MainWindow::MainWindow(QWidget *parent) :
 //    connect(updateSensorData_,SIGNAL(timeout()),this,SLOT(sensorUpdateTimerTimeout()));
 
     iRoomba_ = new Croi::RoombaRoowifi(this);
+//    iRoomba_ = new Croi::RoombaSerial();
 
     //threadReader = new ThreadReader(posixserial, this);
     //threadReader->start();
@@ -101,8 +102,8 @@ void MainWindow::on_pushButton_clicked()
     }
 
     std::string optCommands(stream.str());
-    posixserial->writeSerial(optCommands);
-
+    //posixserial->writeSerial(optCommands);
+    //iRoomba_->getAngle();
 
     //send message to ui
     QString outputStr = "";

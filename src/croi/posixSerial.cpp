@@ -95,6 +95,50 @@ int PosixSerial::readSerial(std::string & buf) {
     return CROI_SUCCESS;
 }
 
+int PosixSerial::readSerial(char *buf, size_t &size)
+{
+    if(!initialized_) {
+        if( initializePort() == CROI_ERROR ) {
+            return CROI_ERROR;
+        }
+    }
+    //non blocking read
+    fcntl(fd_, F_SETFL, FNDELAY);
+    //int origflags = fcntl(fd_, F_GETFL, 0);
+    //fcntl(fd_, F_SETFL, origflags & ~O_NONBLOCK);
+
+    size = read(fd_, buf, MAX_READ);
+
+    fcntl(fd_, F_SETFL, 0);
+//    fcntl(fd_, F_SETFL, origflags | O_NONBLOCK);
+
+    if(size == -1){
+        return CROI_ERROR;
+    }
+
+    return CROI_SUCCESS;
+
+
+
+
+}
+
+int PosixSerial::writeSerial(char *buf, size_t size)
+{
+    if (!initialized_) {
+        if( initializePort() == CROI_ERROR ) {
+            return CROI_ERROR;
+        }
+    }
+
+    int n = write(fd_, buf, size);
+
+    if(n != size) {
+        return CROI_ERROR;
+    }
+    std::cout << buf << std::endl;
+    return CROI_SUCCESS;
+}
 
 
 int PosixSerial::openPort() {

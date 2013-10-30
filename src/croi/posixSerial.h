@@ -24,7 +24,11 @@ public:
 
     int writeSerial(const std::string buf);
 
+    int writeSerial(char *buf, size_t size);
+
     int readSerial(std::string & buf);
+
+    int readSerial(char * buf, size_t &size);
 
     int initializePort();
 

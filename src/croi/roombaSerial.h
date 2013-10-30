@@ -14,7 +14,7 @@ public:
     RoombaSerial();
     virtual ~RoombaSerial();
 
-    virtual int rmb_connect();
+    virtual int rmb_connect(std::string  ip);
     virtual int disconnect();
     virtual void safeMode();
     virtual void fullMode();
@@ -27,8 +27,11 @@ public:
     virtual unsigned short getChargeLevel();
     virtual short getDistance();
     virtual short getAngle();
+    virtual int getRadius();
+    virtual int getVelocity();
 
 private:
+    std::string optCodeToStr(int optCode);
     PosixSerial* posixSerial_;
 };
 

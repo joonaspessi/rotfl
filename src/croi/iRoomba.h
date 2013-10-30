@@ -12,7 +12,7 @@ class IRoomba
 public:
     virtual ~IRoomba() {}
 
-    virtual int rmb_connect(std::string) = 0;
+    virtual int rmb_connect(std::string ip) = 0;
     virtual int disconnect() = 0;
     virtual void safeMode() = 0;
     virtual void fullMode() = 0;
