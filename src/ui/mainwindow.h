@@ -61,6 +61,7 @@ private slots:
 
     void velocity_horizontalSlider_sliderMoved(int position);
 
+    void pushButton_Go2POI_clicked();
 signals:
     
 protected:
