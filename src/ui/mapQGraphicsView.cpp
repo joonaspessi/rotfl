@@ -259,7 +259,7 @@ void mapQGraphicsView::setMapWidth(int width)
     mapWidth_ = width;
     resetTransform();
     //MAP'S WIDTH IN PIXELS IS FIXED ATM
-    scale(398.0/mapWidth_, -398.0/mapWidth_);
+    scale(398.0/mapWidth_, 398.0/mapWidth_);
 }
 
 void mapQGraphicsView::resetAngle()
