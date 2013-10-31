@@ -44,14 +44,16 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(quitAct, SIGNAL(triggered()),this,SLOT(close()));
     fileMenu->addAction(quitAct);
 
-    resize(900,600);
+    // TODO: Magic fixed size for mainwindow
+    resize(750,450);
     scene_ = new QGraphicsScene(QRect(0,0,398,398), this);
     mapQGraphicsView_ = new mapQGraphicsView(this);
     mapQGraphicsView_->setScene(scene_);
     mapQGraphicsView_->centerOn(0,0);
-    mapQGraphicsView_->setMapWidth(600);
+    mapQGraphicsView_->setMapWidth(398);
     setCentralWidget(mapQGraphicsView_);
-    centralWidget()->setFixedWidth(600);
+    centralWidget()->setFixedWidth(400);
+    centralWidget()->setFixedHeight(400);
 
     qDebug() << "children width: " << mapQGraphicsView_->childrenRect().width();
     qDebug() << "children height: " << mapQGraphicsView_->childrenRect().height();
@@ -374,7 +376,7 @@ void MainWindow::velocity_horizontalSlider_sliderMoved(int position)
 
 void MainWindow::pushButton_mapWidth_clicked()
 {
-//    mapQGraphicsView_->changeMapWidth(mapWidth_lineEdit_->text().toInt());
+    mapQGraphicsView_->setMapWidth(mapWidth_lineEdit_->text().toInt());
 }
 
 void MainWindow::pushButton_resetAngle_clicked()

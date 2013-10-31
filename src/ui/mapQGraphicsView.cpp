@@ -12,7 +12,7 @@
 mapQGraphicsView::mapQGraphicsView(QWidget* parent) :
     QGraphicsView(parent), wallStartPoint_(NULL), startPoint_(NULL),
     curPoint_(NULL), curSpeed_(NULL), initX_(0.0), initY_(0.0), angle_(0.0),
-    mapWidth_(600), traceShown_(true)
+    mapWidth_(398), traceShown_(true)
 {
     setRenderHints(QPainter::Antialiasing);
 }
@@ -259,7 +259,7 @@ void mapQGraphicsView::setMapWidth(int width)
     mapWidth_ = width;
     resetTransform();
     //MAP'S WIDTH IN PIXELS IS FIXED ATM
-    scale(400.0/mapWidth_, 400.0/mapWidth_);
+    scale(398.0/mapWidth_, -398.0/mapWidth_);
 }
 
 void mapQGraphicsView::resetAngle()
