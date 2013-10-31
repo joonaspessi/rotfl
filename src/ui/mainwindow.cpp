@@ -125,10 +125,12 @@ void MainWindow::createActionDock()
     connect(full_pushButton,SIGNAL(clicked()),this,SLOT(pushButton_Full_clicked()));
     QPushButton *motorsOn_pushButton = new QPushButton("&Motors on", this);
     connect(motorsOn_pushButton,SIGNAL(clicked()),this,SLOT(pushButton_allMotorsOn_clicked()));
-    QPushButton *motorsOff_pushButton = new QPushButton("&Motors off", this);
+    QPushButton *motorsOff_pushButton = new QPushButton("Motors &off", this);
     connect(motorsOff_pushButton,SIGNAL(clicked()),this,SLOT(pushButton_allMotorsOff_clicked()));
     QPushButton *playSong_pushButton = new QPushButton("&Play song", this);
     connect(playSong_pushButton,SIGNAL(clicked()),this,SLOT(pushButton_playSong_clicked()));
+    QPushButton *Go2POI_pushButton = new QPushButton("&Go 2 POI", this);
+    connect(Go2POI_pushButton,SIGNAL(clicked()),this,SLOT(pushButton_Go2POI_clicked()));
     velocity_horizontalSlider_ = new QSlider(Qt::Horizontal);
     velocity_horizontalSlider_->setMaximum(500);
     velocity_horizontalSlider_->setMinimum(-500);
@@ -140,6 +142,7 @@ void MainWindow::createActionDock()
     action_layout->addWidget(motorsOn_pushButton);
     action_layout->addWidget(motorsOff_pushButton);
     action_layout->addWidget(playSong_pushButton);
+    action_layout->addWidget(Go2POI_pushButton);
     action_layout->addWidget(velocity_horizontalSlider_);
 
     QWidget *actionWidget = new QWidget;
@@ -383,4 +386,31 @@ void MainWindow::pushButton_mapWidth_clicked()
 void MainWindow::pushButton_resetAngle_clicked()
 {
     mapQGraphicsView_->resetAngle();
+}
+
+void MainWindow::pushButton_Go2POI_clicked()
+{
+    QPointF poiCoordinate = mapQGraphicsView_->getNextPoi();
+    QPointF roombaCoordinate = mapQGraphicsView_->getRoombasLocation();
+    qDebug() << "POI coordinate x: " << poiCoordinate.x()
+             << " , y: " << poiCoordinate.y();
+    qDebug() << "Roomba coordinate x: " << roombaCoordinate.x()
+             << " , y: " << roombaCoordinate.y();
+    float deltaX = abs(roombaCoordinate.x() - poiCoordinate.x());
+    float deltaY = abs(roombaCoordinate.y() - poiCoordinate.y());
+    float angleRadian = atan2(deltaY, deltaX);
+    //float anglePi = angleRadian*180 / PI;
+
+    //stop
+    iRoomba_->Drive(0,32767);
+    radius_ = 32767;
+    //moving_ = false;
+
+    double initialAngle = mapQGraphicsView_->getCurrentAngle();
+
+
+
+    //calculate
+
+
 }

@@ -14,6 +14,7 @@ mapQGraphicsView::mapQGraphicsView(QWidget* parent) :
     curPoint_(NULL), curSpeed_(NULL), initX_(0.0), initY_(0.0), angle_(0.0),
     mapWidth_(398), traceShown_(true)
 {
+   
     setRenderHints(QPainter::Antialiasing);
 }
 
@@ -27,7 +28,7 @@ void mapQGraphicsView::removePoi(poiQGraphicsEllipseItem* poi)
 void mapQGraphicsView::mouseDoubleClickEvent(QMouseEvent* event)
 {
     QPointF p = mapToScene(event->pos());
-    qDebug() << "x: " << p.x() << "y: " << p.y();
+    //qDebug() << "x: " << p.x() << "y: " << p.y();
 
     if (event->button() == Qt::LeftButton)
     {
@@ -45,12 +46,13 @@ void mapQGraphicsView::mouseDoubleClickEvent(QMouseEvent* event)
         }
         else
         {
-            poiQGraphicsEllipseItem* poi =
-                    new poiQGraphicsEllipseItem
-                        (-POIWIDTH/2.0, -POIWIDTH/2.0, POIWIDTH, POIWIDTH);
+            poiQGraphicsEllipseItem* poi = new poiQGraphicsEllipseItem
+                    (0.0-POIWIDTH/2.0, 0.0-POIWIDTH/2.0, POIWIDTH, POIWIDTH);
             poi->setPos(p);
             scene()->addItem(poi);
             pois_.insert(poi);
+            qDebug() << "Adding POI with x: " << poi->scenePos().x()
+                     << " , y: " << poi->scenePos().y();
         }
     }
     else if (event->button() == Qt::RightButton)
@@ -265,6 +267,35 @@ void mapQGraphicsView::setMapWidth(int width)
 void mapQGraphicsView::resetAngle()
 {
     angle_ = 0.0;
+}
+
+QPointF mapQGraphicsView::getNextPoi()
+{
+    std::set<poiQGraphicsEllipseItem*>::iterator i = pois_.begin();
+    if (i == pois_.end())
+    {
+        QPointF point(0, 0);
+        return point;
+    }
+    //x = (*i)->pos().x();
+    //y = (*i)->pos().y();
+    QPointF point = (*i)->pos();
+    return point;
+
+}
+
+QPointF mapQGraphicsView::getRoombasLocation()
+{
+    //x = curPoint_->pos().x();
+    //y = curPoint_->pos().y();
+    QPointF point(initX_, initY_);
+    return point;
+
+}
+
+double mapQGraphicsView::getCurrentAngle()
+{
+    return angle_;
 }
 
 mapQGraphicsView::~mapQGraphicsView()

@@ -41,6 +41,10 @@ public:
     void setMapWidth(int width);
     void resetAngle();
 
+    QPointF getNextPoi();
+    QPointF getRoombasLocation();
+    double getCurrentAngle();
+
 
     virtual ~mapQGraphicsView();
 
