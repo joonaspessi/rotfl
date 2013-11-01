@@ -13,6 +13,7 @@
 #include <QButtonGroup>
 #include <QFileDialog>
 #include <QMessageBox>
+#include <cmath>
 
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
@@ -41,7 +42,6 @@ MainWindow::MainWindow(QWidget *parent) :
     //threadReader->start();
 
     QMenu* fileMenu = menuBar()->addMenu(tr("&File"));
-
     QAction* openAct = new QAction(tr("&Open"),this);
     openAct->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_O));
     connect(openAct, SIGNAL(triggered()),this,SLOT(actionOpen_triggered()));
@@ -87,7 +87,6 @@ MainWindow::MainWindow(QWidget *parent) :
     tabifyDockWidget(mapTesting_dockWidget_,connection_dockWidget_);
 
     createToolbar();
-
     setCurrentFile("");
 
     //show the default real world width of map in cm
@@ -95,7 +94,6 @@ MainWindow::MainWindow(QWidget *parent) :
     // TODO: Height in this one?
     //show the default real world width of map in cm
     //    mapWidth_lineEdit_->setText(QString::number(map_->giveMapWidth()));
-
     // TODO: Improve this to NOT trigger on start
     connect(map_,SIGNAL(mapChanged()),this,SLOT(mapModified()));
 }
@@ -616,4 +614,89 @@ void MainWindow::closeEvent(QCloseEvent *event)
     {
         event->ignore();
     }
+}
+
+void MainWindow::pushButton_Go2POI_clicked()
+{
+    QPointF poiCoordinate = mapQGraphicsView_->getNextPoi();
+    QPointF roombaCoordinate = mapQGraphicsView_->getRoombasLocation();
+    qDebug() << "POI coordinate x: " << poiCoordinate.x()
+             << " , y: " << poiCoordinate.y();
+    qDebug() << "Roomba coordinate x: " << roombaCoordinate.x()
+             << " , y: " << roombaCoordinate.y();
+
+    //stop
+    iRoomba_->Drive(0,32767);
+    radius_ = 32767;
+    moving_ = false;
+
+    //calculate the angle
+
+    float deltaX = poiCoordinate.x()-roombaCoordinate.x();
+    float deltaY = roombaCoordinate.y() - poiCoordinate.y();
+    //float angleRadian = atan2(deltaY, deltaX);
+    //float anglePi = angleRadian*180 / PI;
+
+    qDebug() << "Delta X: " << deltaX;
+    qDebug() << "Delta Y: " << deltaY;
+
+    float calculatedAngle = 0;
+
+    if (deltaX == 0 && deltaY > 0)
+    {
+        calculatedAngle = -0.5*PI;
+    }
+    else
+    {
+        calculatedAngle = atan2(deltaY, deltaX);
+        qDebug() << "Calculated angle in degrees: " << calculatedAngle*(180/PI);
+    }
+    /*
+    else if ( deltaX>0 && deltaY <=0 )
+    {
+        //calculatedAngle = -atan2(deltaY, deltaX);
+        calculatedAngle = atan2(deltaY, deltaX);
+        qDebug() << "Calculated angle in degrees: " << calculatedAngle*(180/PI);
+    }
+    else if ( deltaX<=0 && deltaY <0 )
+    {
+        //calculatedAngle = PI/2+atan2(deltaX, deltaY);
+        calculatedAngle = atan2(deltaY, deltaX);
+        qDebug() << "Calculated angle in degrees: " << calculatedAngle*(180/PI);
+    }
+    else if ( deltaX<0 && deltaY >=0 )
+    {
+        //calculatedAngle = PI-atan2(deltaY,deltaX);
+        calculatedAngle = atan2(deltaY, deltaX);
+        qDebug() << "Calculated angle in degrees: " << calculatedAngle*(180/PI);
+    }
+    else if ( deltaX>0 && deltaY >0 )
+    {
+        //calculatedAngle = 2*PI-atan2(deltaY, deltaX);
+        calculatedAngle = atan2(deltaY, deltaX);
+        qDebug() << "Calculated angle in degrees: " << calculatedAngle*(180/PI);
+    }
+    else
+    {
+        qDebug() << "Calculating the turning angle failed";
+    }*/
+
+    float turningAngle = mapQGraphicsView_->getCurrentAngle() - calculatedAngle;
+    int turningSpeed = 50;
+    float turningTime = 0;
+
+    qDebug() << "Turning angle in degrees: " << turningAngle*(180/PI);
+
+
+    if (turningAngle < 0) //Turn counter-clockwise
+    {
+        turningTime = -(((PI*TRACEWIDTH*10)/turningSpeed)/(2*PI))*turningAngle;
+    }
+    else //Turn clockwise
+    {
+        turningTime = (((PI*TRACEWIDTH*10)/turningSpeed)/(2*PI))*turningAngle;
+    }
+
+    qDebug() << "Turning time: " << turningTime;
+
 }
