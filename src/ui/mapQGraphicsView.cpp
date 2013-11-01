@@ -315,20 +315,20 @@ void mapQGraphicsView::checkPoiCollision()
 
 mapQGraphicsView::~mapQGraphicsView()
 { 
-    delete curPoint_;
-    removeTraces();
+//    delete curPoint_;
+//    removeTraces();
 
-    for (std::set<wallQGraphicsLineItem*>::iterator i = walls_.begin();
-        i != walls_.end(); ++i)
-    {
-        scene()->removeItem(*i);
-        delete *i;
-    }
+//    for (std::set<wallQGraphicsLineItem*>::iterator i = walls_.begin();
+//        i != walls_.end(); ++i)
+//    {
+//        scene()->removeItem(*i);
+//        delete *i;
+//    }
 
-    for (std::set<poiQGraphicsEllipseItem*>::iterator i = pois_.begin();
-        i != pois_.end(); ++i)
-    {
-        scene()->removeItem(*i);
-        delete *i;
-    }
+//    for (std::set<poiQGraphicsEllipseItem*>::iterator i = pois_.begin();
+//        i != pois_.end(); ++i)
+//    {
+//        scene()->removeItem(*i);
+//        delete *i;
+//    }
 }
