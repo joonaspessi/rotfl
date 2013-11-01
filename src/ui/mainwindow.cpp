@@ -175,9 +175,12 @@ void MainWindow::createStatusDock()
     velocity_layout->addWidget(velocityValue_label_);
     velocity_layout->addWidget(velocityUnit_label);
 
+    rmbPosition_label_ = new QLabel("(0 , 0)");
+
     status_layout->addLayout(temperature_layout);
     status_layout->addLayout(chargeLevel_layout);
     status_layout->addLayout(velocity_layout);
+    status_layout->addWidget(rmbPosition_label_);
 
     status_dockWidget_ = new QDockWidget(tr("Status"), this);
     QWidget *statusWidget = new QWidget;
@@ -347,6 +350,8 @@ void MainWindow::sensorUpdateTimerTimeout()
 //    qDebug() << "sensorUpdateTimerTimeout";
     temperature_label_->setText( QString::number( ( unsigned char )( iRoomba_->getTemperature() ) ) );
     chargeLevel_label_->setText( QString::number( (unsigned short)( iRoomba_->getChargeLevel() ) ) );
+    QPointF rmbPosition = mapQGraphicsView_->getRoombasLocation();
+    rmbPosition_label_->setText( "(" + QString::number(rmbPosition.x()) + " , " + QString::number(rmbPosition.y()) + ")" );
     mapQGraphicsView_->updateLoc(iRoomba_->getDistance(), iRoomba_->getAngle(), iRoomba_->getRadius(),
                            iRoomba_->getVelocity());
 }

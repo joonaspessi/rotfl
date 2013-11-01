@@ -88,6 +88,7 @@ private:
     QLabel *velocityValue_label_;
     QLabel *temperature_label_;
     QLabel *chargeLevel_label_;
+    QLabel *rmbPosition_label_;
     QSlider *velocity_horizontalSlider_;
     QLineEdit *mapWidth_lineEdit_;
     QDockWidget *connection_dockWidget_;
