@@ -1,6 +1,7 @@
 #include <QListView>
 #include <QDebug>
 #include <QString>
+#include <QTime>
 #include <iomanip>
 #include <sstream>
 #include <iostream>
@@ -460,6 +461,28 @@ void MainWindow::pushButton_Go2POI_clicked()
     float turningTime = 0;
 
     qDebug() << "Turning angle in degrees: " << turningAngle*(180/PI);
+
+
+    iRoomba_->Drive(velocity_horizontalSlider_->value(),65535);
+    radius_ = 65535;
+    moving_ = true;
+
+    short dRoombaAngle = 0;
+
+    QTime dieTime = QTime::currentTime().addSecs(5);
+    while( true/*QTime::currentTime() < dieTime */) {
+
+        dRoombaAngle += iRoomba_->getAngle();
+        qDebug() << "Roomba sensor read angle " << dRoombaAngle;
+
+        if(dRoombaAngle > (-3,05)*turningAngle*(180/PI)) break;
+
+        QCoreApplication::processEvents(QEventLoop::AllEvents, 50);
+    }
+
+    iRoomba_->Drive(0,32767);
+    radius_ = 32767;
+    moving_ = false;
 
 
     if (turningAngle < 0) //Turn counter-clockwise
