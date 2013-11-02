@@ -47,7 +47,7 @@
 #include <QObject>
 
 //Uncomment this to see debug output
-#define ROOWIFI_DEBUG
+//#define ROOWIFI_DEBUG
 
 //Default Period of AutoCapture Request
 #define AUTO_CAPTURE_DEFAULT_PERIOD     500 //(ms)
