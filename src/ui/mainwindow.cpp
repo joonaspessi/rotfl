@@ -75,6 +75,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 MainWindow::~MainWindow()
 {
+    iRoomba_->disconnect();
     releaseKeyboard();
     delete ui;
 }
