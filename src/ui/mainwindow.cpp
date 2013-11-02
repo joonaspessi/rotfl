@@ -419,12 +419,13 @@ void MainWindow::pushButton_Go2POI_clicked()
     {
         calculatedAngle = -0.5*PI;
     }
+    /*
     else
     {
         calculatedAngle = atan2(deltaY, deltaX);
         qDebug() << "Calculated angle in degrees: " << calculatedAngle*(180/PI);
     }
-    /*
+    */
     else if ( deltaX>0 && deltaY <=0 )
     {
         //calculatedAngle = -atan2(deltaY, deltaX);
@@ -452,7 +453,7 @@ void MainWindow::pushButton_Go2POI_clicked()
     else
     {
         qDebug() << "Calculating the turning angle failed";
-    }*/
+    }
 
     float turningAngle = mapQGraphicsView_->getCurrentAngle() - calculatedAngle;
     int turningSpeed = 50;
