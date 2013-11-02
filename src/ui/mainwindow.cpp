@@ -1,6 +1,7 @@
 #include <QListView>
 #include <QDebug>
 #include <QString>
+#include <QTime>
 #include <iomanip>
 #include <sstream>
 #include <iostream>
@@ -14,6 +15,7 @@
 #include <QFileDialog>
 #include <QMessageBox>
 #include <cmath>
+#include <unistd.h>
 
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
@@ -32,11 +34,12 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    //    posixserial = new Croi::PosixSerial();
+//    posixserial = new Croi::PosixSerial();
 
-    //    Disabled until Roowifi AutoCapture is used instead
-    //    updateSensorData_ = new QTimer(this);
-    //    connect(updateSensorData_,SIGNAL(timeout()),this,SLOT(sensorUpdateTimerTimeout()));
+//    Disabled until Roowifi AutoCapture is used instead
+//    updateSensorData_ = new QTimer(this);
+//    connect(updateSensorData_,SIGNAL(timeout()),this,SLOT(sensorUpdateTimerTimeout()));
+
 
     //threadReader = new ThreadReader(posixserial, this);
     //threadReader->start();
@@ -64,7 +67,6 @@ MainWindow::MainWindow(QWidget *parent) :
 
     // TODO: Magic fixed size for mainwindow
     resize(750,450);
-
     fleetManager_ = new FleetManager(this);
     map_ = new MapQGraphicsView(fleetManager_, this);
     map_->setScene(new QGraphicsScene(QRect(0,0,398,398), this));
@@ -85,7 +87,6 @@ MainWindow::MainWindow(QWidget *parent) :
     tabifyDockWidget(status_dockWidget_,action_dockWidget_);
     tabifyDockWidget(action_dockWidget_,mapTesting_dockWidget_);
     tabifyDockWidget(mapTesting_dockWidget_,connection_dockWidget_);
-
     createToolbar();
     setCurrentFile("");
 
@@ -178,7 +179,7 @@ void MainWindow::createActionDock()
     action_dockWidget_ = new QDockWidget(tr("Action"), this);
     action_dockWidget_->setWidget(actionWidget);
     addDockWidget(Qt::BottomDockWidgetArea, action_dockWidget_);
-    //    action_dockWidget->setFeatures(QDockWidget::NoDockWidgetFeatures);
+//    action_dockWidget->setFeatures(QDockWidget::NoDockWidgetFeatures);
 }
 
 void MainWindow::createStatusDock()
@@ -246,7 +247,7 @@ void MainWindow::createMapTestingDock()
     mapTesting_dockWidget_ = new QDockWidget(tr("Map testing"), this);
     mapTesting_dockWidget_->setWidget(mapTestingWidget);
     addDockWidget(Qt::RightDockWidgetArea, mapTesting_dockWidget_);
-    //    action_dockWidget->setFeatures(QDockWidget::NoDockWidgetFeatures);
+//    action_dockWidget->setFeatures(QDockWidget::NoDockWidgetFeatures);
 }
 
 void MainWindow::createToolbar()
@@ -302,8 +303,8 @@ void MainWindow::pushButton_Connect_clicked()
 
 void MainWindow::pushButton_Disconnect_clicked()
 {
-    //    Disabled until Roowifi AutoCapture is used instead
-    //    updateSensorData_->stop();
+//    Disabled until Roowifi AutoCapture is used instead
+//    updateSensorData_->stop();
     fleetManager_->disconnect();
     temperature_label_->setText("0");
     chargeLevel_label_->setText("0");
@@ -363,7 +364,7 @@ void MainWindow::keyPressEvent(QKeyEvent* event)
     else if(event->key() == Qt::Key_A) {
         fleetManager_->drive(velocity_horizontalSlider_->value(),200);
         qDebug() << "RightArrow";
-    }
+     }
     else if(event->key() == Qt::Key_D) {
         fleetManager_->drive(velocity_horizontalSlider_->value(),-200);
         qDebug() << "LeftArrow";
@@ -626,7 +627,7 @@ void MainWindow::pushButton_Go2POI_clicked()
              << " , y: " << roombaCoordinate.y();
 
     //stop
-    iRoomba_->Drive(0,32767);
+//    iRoomba_->Drive(0,32767);
     radius_ = 32767;
     moving_ = false;
 
@@ -646,46 +647,98 @@ void MainWindow::pushButton_Go2POI_clicked()
     {
         calculatedAngle = -0.5*PI;
     }
+    /*
     else
     {
         calculatedAngle = atan2(deltaY, deltaX);
         qDebug() << "Calculated angle in degrees: " << calculatedAngle*(180/PI);
     }
-    /*
+    */
     else if ( deltaX>0 && deltaY <=0 )
     {
-        //calculatedAngle = -atan2(deltaY, deltaX);
-        calculatedAngle = atan2(deltaY, deltaX);
+        calculatedAngle = -atan2(deltaY, deltaX);
+//        calculatedAngle = atan2(deltaY, deltaX);
         qDebug() << "Calculated angle in degrees: " << calculatedAngle*(180/PI);
     }
     else if ( deltaX<=0 && deltaY <0 )
     {
-        //calculatedAngle = PI/2+atan2(deltaX, deltaY);
-        calculatedAngle = atan2(deltaY, deltaX);
+        calculatedAngle = PI/2+atan2(deltaX, deltaY);
+//        calculatedAngle = atan2(deltaY, deltaX);
         qDebug() << "Calculated angle in degrees: " << calculatedAngle*(180/PI);
     }
     else if ( deltaX<0 && deltaY >=0 )
     {
-        //calculatedAngle = PI-atan2(deltaY,deltaX);
-        calculatedAngle = atan2(deltaY, deltaX);
+        calculatedAngle = PI-atan2(deltaY,deltaX);
+//        calculatedAngle = atan2(deltaY, deltaX);
         qDebug() << "Calculated angle in degrees: " << calculatedAngle*(180/PI);
     }
     else if ( deltaX>0 && deltaY >0 )
     {
-        //calculatedAngle = 2*PI-atan2(deltaY, deltaX);
-        calculatedAngle = atan2(deltaY, deltaX);
+        calculatedAngle = 2*PI-atan2(deltaY, deltaX);
+//        calculatedAngle = atan2(deltaY, deltaX);
         qDebug() << "Calculated angle in degrees: " << calculatedAngle*(180/PI);
     }
     else
     {
         qDebug() << "Calculating the turning angle failed";
-    }*/
+    }
 
-    float turningAngle = mapQGraphicsView_->getCurrentAngle() - calculatedAngle;
+    float turningAngle = 0.0;
+    if (mapQGraphicsView_->getCurrentAngle() > 0)
+    {
+        turningAngle = mapQGraphicsView_->getCurrentAngle() - calculatedAngle;
+    }
+    else
+    {
+        turningAngle = mapQGraphicsView_->getCurrentAngle() + calculatedAngle;
+    }
     int turningSpeed = 50;
     float turningTime = 0;
 
     qDebug() << "Turning angle in degrees: " << turningAngle*(180/PI);
+
+
+//    iRoomba_->Drive(-100,65535);
+    radius_ = 65535;
+    moving_ = true;
+
+    short dRoombaAngle = 0;
+
+    QTime dieTime = QTime::currentTime().addSecs(5);
+//    while( true/*QTime::currentTime() < dieTime */) {
+
+//        short ang = iRoomba_->getAngle();
+//        if (ang != 0)
+//            qDebug() << "angle: " << ang << "Rimpsu: " << (-3.05)*turningAngle*(180/PI) <<"\n";
+//        dRoombaAngle += ang;
+
+//        qDebug() << "Roomba sensor read angle " << dRoombaAngle << "Rimpsu: " << (-3.05)*turningAngle*(180/PI) <<"\n";
+
+//        if(dRoombaAngle > (-3.05)*turningAngle*(180/PI)) break;
+
+//        QCoreApplication::processEvents(QEventLoop::AllEvents, 1);
+//    }
+
+
+    if (turningAngle > 0)
+    {
+        iRoomba_->Drive(100,65535);
+    }
+    else
+    {
+        iRoomba_->Drive(-100,65535);
+    }
+
+    QCoreApplication::processEvents(QEventLoop::AllEvents, 1);
+    float tabs = abs(turningAngle*(180/PI));
+    useconds_t ttime = tabs * 18055;
+    // Roomba turns 1 degree in 18055 microseconds, when speed is 100
+    qDebug() << "turningAngle: " << turningAngle << "tabs: " << tabs << "ttime: " << ttime  << "\ns";
+    usleep(ttime);
+    iRoomba_->Drive(0,32767);
+//    iRoomba_->Drive(0,32767);
+    radius_ = 32767;
+    moving_ = false;
 
 
     if (turningAngle < 0) //Turn counter-clockwise
@@ -697,6 +750,12 @@ void MainWindow::pushButton_Go2POI_clicked()
         turningTime = (((PI*TRACEWIDTH*10)/turningSpeed)/(2*PI))*turningAngle;
     }
 
+
+
     qDebug() << "Turning time: " << turningTime;
+
+
+
+
 
 }
