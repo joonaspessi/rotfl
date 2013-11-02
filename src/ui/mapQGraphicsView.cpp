@@ -14,7 +14,6 @@ mapQGraphicsView::mapQGraphicsView(QWidget* parent) :
     curPoint_(NULL), curSpeed_(NULL), initX_(0.0), initY_(0.0), angle_(0.0),
     mapWidth_(398), traceShown_(true)
 {
-   
     setRenderHints(QPainter::Antialiasing);
 }
 
@@ -28,7 +27,7 @@ void mapQGraphicsView::removePoi(poiQGraphicsEllipseItem* poi)
 void mapQGraphicsView::mouseDoubleClickEvent(QMouseEvent* event)
 {
     QPointF p = mapToScene(event->pos());
-    //qDebug() << "x: " << p.x() << "y: " << p.y();
+    qDebug() << "x: " << p.x() << "y: " << p.y();
 
     if (event->button() == Qt::LeftButton)
     {
@@ -74,6 +73,7 @@ void mapQGraphicsView::mouseDoubleClickEvent(QMouseEvent* event)
             wallStartPoint_ = NULL;
         }
     }
+    checkPoiCollision();
 }
 
 void mapQGraphicsView::removeRedObjects()
@@ -182,6 +182,8 @@ void mapQGraphicsView::updateLoc(int distance, int angle, int radius, int veloci
         dist = -2.0*(static_cast<double>(radius))*
                 sin(static_cast<double>(distance)/radius/2)/10.0*DISTANCECORRECTION;
         //corrected angle in radians for distance calculation
+        //angleForDist = static_cast<double>(angle)*PI/180.0*ANGLECORRECTION/2.0;
+        //other version that doesn't work curently
         angleForDist = angle_-static_cast<double>(distance)/radius/2.0;
     }
     //real angle (always used for roomba's angle)
@@ -247,6 +249,7 @@ void mapQGraphicsView::updateLoc(int distance, int angle, int radius, int veloci
     curSpeed_->setZValue(1);
     initX_ = x;
     initY_ = y;
+    checkPoiCollision();
 }
 
 //gives map's width in mm
@@ -296,6 +299,18 @@ QPointF mapQGraphicsView::getRoombasLocation()
 double mapQGraphicsView::getCurrentAngle()
 {
     return angle_;
+}
+
+void mapQGraphicsView::checkPoiCollision()
+{
+    for (std::set<poiQGraphicsEllipseItem*>::iterator i = pois_.begin();
+        i != pois_.end(); ++i)
+    {
+        if (!(*i)->collidingItems().empty())
+        {
+            removePoi(*i);
+        }
+    }
 }
 
 mapQGraphicsView::~mapQGraphicsView()
