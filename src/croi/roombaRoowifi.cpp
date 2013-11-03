@@ -113,6 +113,7 @@ void RoombaRoowifi::drive(int velocity, int radius)
 
 void RoombaRoowifi::drive(int velocity)
 {
+		qDebug() << "ROOMBAROOWIFI DRIVE" << "velocity: "<< velocity << " Radius: "<<  getRadius();
     roowifi_->Drive(velocity, getRadius());
     IRoomba::drive(velocity);
 }
