@@ -372,7 +372,7 @@ void MainWindow::pushButton_simMov_clicked()
     double angle = -(rand()%90-rand()%90);
     //mapQGraphicsView_->updateLoc(distance, angle/3.05, static_cast<int>(2000*(360-angle)/360),
     //                       rand()%500);
-    mapQGraphicsView_->updateLoc(-1000/3.05, 0, 1, rand()%500);  //simple version
+    mapQGraphicsView_->updateLoc(-80, -10, 1, 100);  //simple version
 }
 
 void MainWindow::velocity_horizontalSlider_sliderMoved(int position)
