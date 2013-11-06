@@ -35,13 +35,25 @@ void mapQGraphicsView::mouseDoubleClickEvent(QMouseEvent* event)
         {
             initX_ = p.x();
             initY_ = p.y();
-            startPoint_ = new poiQGraphicsEllipseItem
+            QPixmap pixmap;
+            pixmap.load("./pics/Roomba_round_icon_small.png");
+            QGraphicsPixmapItem * item = scene()->addPixmap(pixmap);
+            item->setPos(initX_-16, initY_-16);
+            qDebug() << item->rotation();
+            item->setRotation(90);
+            qDebug() << item->rotation();
+
+            //QGraphicsPixmapItem item(QPixmap("Roomba_round_icon_small.png"));
+            //scene()->addItem(&item);
+
+            /*startPoint_ = new poiQGraphicsEllipseItem
                     (p.x()-POIWIDTH*2.0/3.0, p.y()-POIWIDTH*2.0/3.0,
                      POIWIDTH*4.0/3.0, POIWIDTH*4.0/3.0);
             //startPoint_->setPos();
             QBrush brush(Qt::GlobalColor::green);
             startPoint_->setBrush(brush);
-            scene()->addItem(startPoint_);
+            scene()->addItem(startPoint_);*/
+
         }
         else
         {
@@ -216,6 +228,7 @@ void mapQGraphicsView::updateLoc(int distance, int angle, int radius, int veloci
     QPen linePen(Qt::GlobalColor::gray);
     linePen.setWidth(TRACEWIDTH);
     traceL->setPen(linePen);
+    traceL->setOpacity(0.25);
     traces_.append(traceL);
     scene()->addItem(traceL);
 
