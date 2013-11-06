@@ -8,9 +8,11 @@
 #include "poiQGraphicsEllipseItem.h"
 #include "wallQGraphicsLineItem.h"
 #include <QMouseEvent>
-
+#include "croi/iRoomba.h"
 #include <set>
 
+//SOME OF THESE CONSTANTS ARE TO BE MOVED
+//AND SOME CHANGED TO VARIABLES
 const double POIWIDTH = 10.0;
 const double TRACEWIDTH = 34.0;
 const double ARROWWIDTH = 27.0;
@@ -20,48 +22,36 @@ const double DISTANCECORRECTION = 6.1;
 
 class poiQGraphicsEllipseItem;
 
+//NOTE: handles all additions and deletions from scene
 class mapQGraphicsView : public QGraphicsView
 {
     Q_OBJECT
 public:
-    explicit mapQGraphicsView(QWidget* parent = 0);
+    explicit mapQGraphicsView(QWidget* parent = NULL);
     void removePoi(poiQGraphicsEllipseItem* poi);
-    //updates roomba's location and heading. Keeps a trace
-    //Remember following special radiuses
-    //Straight = 32768 or 32767
-    //Turn in place clockwise = -1
-    //Turn in place counter-clockwise = 1
-    void updateLoc(int distance, int angle, int radius, int velocity);
+    //updates roomba's location and heading in map. Keeps a trace
+    void updateLoc(QVector<Croi::IRoomba *>* roombas);
     void removeRedObjects();
-    void ifShowTraces();
-    void removeTraces();
+    void ifShowTraces(QVector<Croi::IRoomba*>* roombas);
+    void removeTraces(QVector<Croi::IRoomba*>* roombas);
     //gives map's width in cm
     int giveMapWidth();
     //give new width in cm
     void setMapWidth(int width);
-    void resetAngle();
 
     QPointF getNextPoi();
-    QPointF getRoombasLocation();
-    double getCurrentAngle();
     void checkPoiCollision();
 
     virtual ~mapQGraphicsView();
 
 public slots:
-    void mouseDoubleClickEvent(QMouseEvent* event);
+    //void mouseDoubleClickEvent(QMouseEvent* event);
 
 private:
     QGraphicsRectItem* wallStartPoint_;
     std::set<wallQGraphicsLineItem*> walls_;
     std::set<poiQGraphicsEllipseItem*> pois_;
-    QVector<QGraphicsLineItem*> traces_;
-    poiQGraphicsEllipseItem* startPoint_;
-    QGraphicsPolygonItem* curPoint_;
-    QGraphicsLineItem* curSpeed_;
-    double initX_;
-    double initY_;
-    double angle_;
+    Croi::IRoomba* selectedRoomba_;
     int mapWidth_;
     bool traceShown_;
 };

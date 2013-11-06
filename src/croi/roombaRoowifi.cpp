@@ -3,8 +3,8 @@
 
 namespace Croi {
 
-RoombaRoowifi::RoombaRoowifi(QObject *parent) :
-    QObject(parent), radius_(1), velocity_(0)
+RoombaRoowifi::RoombaRoowifi(QObject *parent):
+    IRoomba(parent)
 {
     roowifi_ = new RooWifi(this);
     connect(roowifi_,SIGNAL(AutoCaptureUpdated()), parent, SLOT(sensorUpdateTimerTimeout()));
@@ -97,21 +97,10 @@ short RoombaRoowifi::getAngle()
     return roowifi_->Sensors.Angle;
 }
 
-int RoombaRoowifi::getRadius()
-{
-    return radius_;
-}
-
-int RoombaRoowifi::getVelocity()
-{
-    return velocity_;
-}
-
 void RoombaRoowifi::Drive(int Velocity, int Radius)
 {
     roowifi_->Drive(Velocity, Radius);
-    radius_ = Radius;
-    velocity_ = Velocity;
+    IRoomba::Drive(Velocity, Radius);
 }
 
 void RoombaRoowifi::playSong(int songNumber)

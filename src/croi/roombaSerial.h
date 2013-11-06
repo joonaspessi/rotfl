@@ -27,8 +27,8 @@ public:
     virtual unsigned short getChargeLevel();
     virtual short getDistance();
     virtual short getAngle();
-    virtual int getRadius();
-    virtual int getVelocity();
+    //virtual int getRadius();
+    //virtual int getVelocity();
 
 private:
     std::string optCodeToStr(int optCode);

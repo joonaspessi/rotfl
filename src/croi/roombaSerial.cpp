@@ -115,15 +115,15 @@ short RoombaSerial::getAngle()
 
 }
 
-int RoombaSerial::getRadius()
-{
+//int RoombaSerial::getRadius()
+//{
 
-}
+//}
 
-int RoombaSerial::getVelocity()
-{
+//int RoombaSerial::getVelocity()
+//{
 
-}
+//}
 
 std::string RoombaSerial::optCodeToStr(int optCode)
 {

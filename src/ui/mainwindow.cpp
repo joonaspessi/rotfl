@@ -31,8 +31,9 @@ MainWindow::MainWindow(QWidget *parent) :
 //    updateSensorData_ = new QTimer(this);
 //    connect(updateSensorData_,SIGNAL(timeout()),this,SLOT(sensorUpdateTimerTimeout()));
 
-    iRoomba_ = new Croi::RoombaRoowifi(this);
-//    iRoomba_ = new Croi::RoombaSerial();
+    selectedRoomba_ = new Croi::RoombaRoowifi(this);
+//    selectedRoomba_ = new Croi::RoombaSerial();
+    roombas_.append(selectedRoomba_);
 
     //threadReader = new ThreadReader(posixserial, this);
     //threadReader->start();
@@ -75,7 +76,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 MainWindow::~MainWindow()
 {
-    iRoomba_->disconnect();
+    selectedRoomba_->disconnect();
     releaseKeyboard();
     delete ui;
 }
@@ -236,14 +237,14 @@ void MainWindow::pushButton_Connect_clicked()
     QString ip = ipLineEdit_1_->text() + "." + ipLineEdit_2_->text() + "." + ipLineEdit_3_->text()
             + "." + ipLineEdit_4_->text();
     std::string stdip = ip.toStdString();
-    iRoomba_->rmb_connect(stdip);
+    selectedRoomba_->rmb_connect(stdip);
 }
 
 void MainWindow::pushButton_Disconnect_clicked()
 {
 //    Disabled until Roowifi AutoCapture is used instead
 //    updateSensorData_->stop();
-    iRoomba_->disconnect();
+    selectedRoomba_->disconnect();
     temperature_label_->setText("0");
     chargeLevel_label_->setText("0");
     velocity_horizontalSlider_->setValue(0);
@@ -252,29 +253,34 @@ void MainWindow::pushButton_Disconnect_clicked()
 
 void MainWindow::pushButton_Clean_clicked()
 {
-    iRoomba_->clean();
+    selectedRoomba_->clean();
 }
 
 void MainWindow::pushButton_allMotorsOn_clicked()
 {
-    iRoomba_->allMotorsOn();
+    selectedRoomba_->allMotorsOn();
 }
 
 void MainWindow::pushButton_allMotorsOff_clicked()
 {
-    iRoomba_->allMotorsOff();
+    selectedRoomba_->allMotorsOff();
 }
 
 void MainWindow::pushButton_Safe_clicked()
 {
     grabKeyboard();
-    iRoomba_->safeMode();
+    selectedRoomba_->safeMode();
 }
 
 void MainWindow::pushButton_Full_clicked()
 {
     grabKeyboard();
-    iRoomba_->fullMode();
+    selectedRoomba_->fullMode();
+}
+
+void MainWindow::pushButton_resetAngle_clicked()
+{
+    selectedRoomba_->resetAngle();
 }
 
 void MainWindow::keyPressEvent(QKeyEvent* event)
@@ -295,20 +301,20 @@ void MainWindow::keyPressEvent(QKeyEvent* event)
         }
         else
         {
-            iRoomba_->Drive(velocity_horizontalSlider_->value(),32767);
+            selectedRoomba_->Drive(velocity_horizontalSlider_->value(),32767);
         }
         radius_ = 32767;
         moving_ = true;
         qDebug() << "UpArrow";
     }
     else if(event->key() == Qt::Key_A) {
-        iRoomba_->Drive(velocity_horizontalSlider_->value(),200);
+        selectedRoomba_->Drive(velocity_horizontalSlider_->value(),200);
         radius_ = 200;
         moving_ = true;
         qDebug() << "RightArrow";
      }
     else if(event->key() == Qt::Key_D) {
-        iRoomba_->Drive(velocity_horizontalSlider_->value(),-200);
+        selectedRoomba_->Drive(velocity_horizontalSlider_->value(),-200);
         radius_ = -200;
         moving_ = true;
         qDebug() << "LeftArrow";
@@ -324,21 +330,21 @@ void MainWindow::keyPressEvent(QKeyEvent* event)
         }
         else
         {
-            iRoomba_->Drive(velocity_horizontalSlider_->value(),32767);
+            selectedRoomba_->Drive(velocity_horizontalSlider_->value(),32767);
         }
         radius_ = 32767;
         moving_ = true;
         qDebug() << "BackArrow";
     }
     else if(event->key() == Qt::Key_E) {
-        iRoomba_->Drive(velocity_horizontalSlider_->value(),65535);
+        selectedRoomba_->Drive(velocity_horizontalSlider_->value(),65535);
         radius_ = 65535;
         moving_ = true;
         qDebug() << "Turn clockwise";
     }
     else {
         releaseKeyboard();
-        iRoomba_->Drive(0,32767);
+        selectedRoomba_->Drive(0,32767);
         radius_ = 32767;
         moving_ = false;
         qDebug() << "Stop";
@@ -348,22 +354,22 @@ void MainWindow::keyPressEvent(QKeyEvent* event)
 void MainWindow::sensorUpdateTimerTimeout()
 {
 //    qDebug() << "sensorUpdateTimerTimeout";
-    temperature_label_->setText( QString::number( ( unsigned char )( iRoomba_->getTemperature() ) ) );
-    chargeLevel_label_->setText( QString::number( (unsigned short)( iRoomba_->getChargeLevel() ) ) );
-    QPointF rmbPosition = mapQGraphicsView_->getRoombasLocation();
+    temperature_label_->setText( QString::number( ( unsigned char )( selectedRoomba_->getTemperature() ) ) );
+    chargeLevel_label_->setText( QString::number( (unsigned short)( selectedRoomba_->getChargeLevel() ) ) );
+    QPointF rmbPosition = roombas_.at(0)->getRoombasLocation();
     rmbPosition_label_->setText( "(" + QString::number(rmbPosition.x()) + " , " + QString::number(rmbPosition.y()) + ")" );
-    mapQGraphicsView_->updateLoc(iRoomba_->getDistance(), iRoomba_->getAngle(), iRoomba_->getRadius(),
-                           iRoomba_->getVelocity());
+
+    mapQGraphicsView_->updateLoc(&roombas_);
 }
 
 void MainWindow::pushButton_playSong_clicked()
 {
-    iRoomba_->playSong(1);
+    selectedRoomba_->playSong(1);
 }
 
 void MainWindow::pushButton_unshowTraces_clicked()
 {
-    mapQGraphicsView_->ifShowTraces();
+    mapQGraphicsView_->ifShowTraces(&roombas_);
 }
 
 void MainWindow::pushButton_simMov_clicked()
@@ -372,14 +378,14 @@ void MainWindow::pushButton_simMov_clicked()
     double angle = -(rand()%90-rand()%90);
     //mapQGraphicsView_->updateLoc(distance, angle/3.05, static_cast<int>(2000*(360-angle)/360),
     //                       rand()%500);
-    mapQGraphicsView_->updateLoc(-1000/3.05, 0, 1, rand()%500);  //simple version
+    //mapQGraphicsView_->updateLoc(-1000/3.05, 0, 1, rand()%500);  //simple version
 }
 
 void MainWindow::velocity_horizontalSlider_sliderMoved(int position)
 {
     velocityValue_label_->setText(QString::number(position));
     if (moving_) {
-        iRoomba_->Drive(position,radius_);
+        selectedRoomba_->Drive(position,radius_);
     }
 }
 
@@ -388,15 +394,10 @@ void MainWindow::pushButton_mapWidth_clicked()
     mapQGraphicsView_->setMapWidth(mapWidth_lineEdit_->text().toInt());
 }
 
-void MainWindow::pushButton_resetAngle_clicked()
-{
-    mapQGraphicsView_->resetAngle();
-}
-
 void MainWindow::pushButton_Go2POI_clicked()
 {
     QPointF poiCoordinate = mapQGraphicsView_->getNextPoi();
-    QPointF roombaCoordinate = mapQGraphicsView_->getRoombasLocation();
+    QPointF roombaCoordinate = roombas_.at(0)->getRoombasLocation();
     qDebug() << "POI coordinate x: " << poiCoordinate.x()
              << " , y: " << poiCoordinate.y();
     qDebug() << "Roomba coordinate x: " << roombaCoordinate.x()
@@ -407,11 +408,11 @@ void MainWindow::pushButton_Go2POI_clicked()
     //float anglePi = angleRadian*180 / PI;
 
     //stop
-    iRoomba_->Drive(0,32767);
+    selectedRoomba_->Drive(0,32767);
     radius_ = 32767;
     //moving_ = false;
 
-    double initialAngle = mapQGraphicsView_->getCurrentAngle();
+    double initialAngle = roombas_.at(0)->getAngle();
 
 
 

@@ -73,7 +73,8 @@ private:
     ThreadReader *threadReader;
     bool moving_;
     int radius_;
-    Croi::IRoomba* iRoomba_;
+    Croi::IRoomba* selectedRoomba_;
+    QVector<Croi::IRoomba*> roombas_;
     QTimer *updateSensorData_;
     mapQGraphicsView* mapQGraphicsView_;
     QGraphicsScene* scene_;

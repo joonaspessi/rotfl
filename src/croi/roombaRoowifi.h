@@ -6,11 +6,10 @@
 
 namespace Croi {
 
-class RoombaRoowifi : public QObject, public IRoomba
+class RoombaRoowifi : public IRoomba
 {
-    Q_OBJECT
 public:
-    RoombaRoowifi(QObject *parent);
+    RoombaRoowifi(QObject *parent = NULL);
     virtual ~RoombaRoowifi();
 
     virtual int rmb_connect(std::string ip);
@@ -27,14 +26,12 @@ public:
 
     virtual short getDistance();
     virtual short getAngle();
-    virtual int getRadius();
-    virtual int getVelocity();
+    //virtual int getRadius();
+    //virtual int getVelocity();
 public slots:
     void testSlot();
 private:
     RooWifi* roowifi_;
-    int radius_;
-    int velocity_;
 };
 
 } //namespace Croi

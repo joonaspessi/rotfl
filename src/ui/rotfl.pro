@@ -23,7 +23,8 @@ SOURCES += main.cpp\
     poiQGraphicsEllipseItem.cpp \
     ../../ext_lib/RooWifi_11b/roowifi.cpp \
     ../croi/roombaRoowifi.cpp \
-    wallQGraphicsLineItem.cpp
+    wallQGraphicsLineItem.cpp \
+    ../croi/iRoomba.cpp
 
 HEADERS  += mainwindow.h \
     threadReader.h \
