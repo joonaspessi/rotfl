@@ -12,10 +12,7 @@ public:
     (qreal x1, qreal y1, qreal x2, qreal y2, QGraphicsItem *parent = 0);
 
     virtual ~wallQGraphicsLineItem();
-signals:
-
-public slots:
-    void mousePressEvent(QGraphicsSceneMouseEvent* event);
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
 
 private:
 };

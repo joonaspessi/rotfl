@@ -8,6 +8,9 @@
 #include <QGridLayout>
 #include <QDockWidget>
 #include <QHBoxLayout>
+#include <QToolBar>
+#include <QToolButton>
+#include <QButtonGroup>
 
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
@@ -66,6 +69,8 @@ MainWindow::MainWindow(QWidget *parent) :
     tabifyDockWidget(status_dockWidget_,action_dockWidget_);
     tabifyDockWidget(action_dockWidget_,mapTesting_dockWidget_);
     tabifyDockWidget(mapTesting_dockWidget_,connection_dockWidget_);
+
+    createToolbar();
 
     //show the default real world width of map in cm
     mapWidth_lineEdit_->setText(QString::number(mapQGraphicsView_->giveMapWidth()));
@@ -223,6 +228,44 @@ void MainWindow::createMapTestingDock()
     mapTesting_dockWidget_->setWidget(mapTestingWidget);
     addDockWidget(Qt::RightDockWidgetArea, mapTesting_dockWidget_);
 //    action_dockWidget->setFeatures(QDockWidget::NoDockWidgetFeatures);
+}
+
+void MainWindow::createToolbar()
+{
+    toolbar_ = new QToolBar(this);
+    toolbar_->setMovable(false);
+    toolbar_->setFloatable(false);
+
+    QActionGroup *actionGroup = new QActionGroup(this);
+
+    QAction* cursor_action = new QAction("Cursor", actionGroup);
+    cursor_action->setIcon(QIcon(":icons/graphics/wall"));
+    cursor_action->setCheckable(true);
+    cursor_action->setChecked(true);
+    mapQGraphicsView_->setSelectedPaintTool(Util::SelectedPaintTool::CURSOR);
+    connect(cursor_action,SIGNAL(toggled(bool)),this,SLOT(action_Cursor_toggled(bool)));
+    toolbar_->addAction(cursor_action);
+
+    QAction* wall_action = new QAction("Wall", actionGroup);
+    wall_action->setIcon(QIcon(":icons/graphics/wall"));
+    wall_action->setCheckable(true);
+    connect(wall_action,SIGNAL(toggled(bool)),this,SLOT(action_Wall_toggled(bool)));
+    toolbar_->addAction(wall_action);
+
+    QAction* poi_action = new QAction("Poi", actionGroup);
+    poi_action->setIcon(QIcon(":icons/graphics/wall"));
+    poi_action->setCheckable(true);
+    connect(poi_action,SIGNAL(toggled(bool)),this,SLOT(action_Poi_toggled(bool)));
+    toolbar_->addAction(poi_action);
+
+    QAction* start_action = new QAction("Start", actionGroup);
+    start_action->setIcon(QIcon(":icons/graphics/wall"));
+    start_action->setCheckable(true);
+    connect(start_action,SIGNAL(toggled(bool)),this,SLOT(action_Start_toggled(bool)));
+    toolbar_->addAction(start_action);
+
+    toolbar_->adjustSize();
+    this->addToolBar(toolbar_);
 }
 
 void MainWindow::pushButton_removeRedObjects_clicked()
@@ -419,4 +462,32 @@ void MainWindow::pushButton_Go2POI_clicked()
     //calculate
 
 
+}
+
+void MainWindow::action_Cursor_toggled(bool toggleStatus)
+{
+    if (toggleStatus) {
+        mapQGraphicsView_->setSelectedPaintTool(Util::SelectedPaintTool::CURSOR);
+    }
+}
+
+void MainWindow::action_Wall_toggled(bool toggleStatus)
+{
+    if (toggleStatus) {
+        mapQGraphicsView_->setSelectedPaintTool(Util::SelectedPaintTool::WALL);
+    }
+}
+
+void MainWindow::action_Poi_toggled(bool toggleStatus)
+{
+    if (toggleStatus) {
+        mapQGraphicsView_->setSelectedPaintTool(Util::SelectedPaintTool::POI);
+    }
+}
+
+void MainWindow::action_Start_toggled(bool toggleStatus)
+{
+    if (toggleStatus) {
+        mapQGraphicsView_->setSelectedPaintTool(Util::SelectedPaintTool::START);
+    }
 }

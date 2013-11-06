@@ -12,10 +12,7 @@ public:
     (qreal x, qreal y, qreal w, qreal h, QGraphicsItem* parent = 0);
 
     virtual ~poiQGraphicsEllipseItem();
-signals:
-
-public slots:
-    void mousePressEvent(QGraphicsSceneMouseEvent* event);
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
 
 private:
 

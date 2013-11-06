@@ -1,35 +1,25 @@
 #include "wallQGraphicsLineItem.h"
 #include "mapQGraphicsView.h"
+#include <QStyleOption>
 
 wallQGraphicsLineItem::wallQGraphicsLineItem
     (qreal x1, qreal y1, qreal x2, qreal y2, QGraphicsItem *parent):
         QGraphicsLineItem(x1, y1, x2, y2, parent)
 {
-    QPen pen(Qt::GlobalColor::black);
-    pen.setWidth(3);
-    setPen(pen);
     setZValue(1);
 }
 
-void wallQGraphicsLineItem::mousePressEvent(QGraphicsSceneMouseEvent* event)
+void wallQGraphicsLineItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
-    if (event->button() != Qt::LeftButton)
-    {
-        return;
+    QStyleOptionGraphicsItem myoption = (*option);
+    myoption.state &= !QStyle::State_Selected;
+    QPen pen(Qt::GlobalColor::black);
+    pen.setWidth(3);
+    if (isSelected()) {
+        pen.setColor(Qt::GlobalColor::red);
     }
-
-    if (pen().color() == Qt::GlobalColor::black)
-    {
-        QPen pen(Qt::GlobalColor::red);
-        pen.setWidth(3);
-        setPen(pen);
-    }
-    else
-    {
-        QPen pen(Qt::GlobalColor::black);
-        pen.setWidth(3);
-        setPen(pen);
-    }
+    this->setPen(pen);
+    QGraphicsLineItem::paint(painter, &myoption, widget);
 }
 
 wallQGraphicsLineItem::~wallQGraphicsLineItem()

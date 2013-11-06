@@ -10,9 +10,9 @@
 #include <QDebug>
 
 mapQGraphicsView::mapQGraphicsView(QWidget* parent) :
-    QGraphicsView(parent), wallStartPoint_(NULL),
+    QGraphicsView(parent), wallToBeAddedStartPoint_(NULL),
     mapWidth_(398), traceShown_(true),
-    selectedRoomba_(NULL)
+	selectedRoomba_(NULL)
 {
     setRenderHints(QPainter::Antialiasing);
 }
@@ -24,17 +24,100 @@ void mapQGraphicsView::removePoi(poiQGraphicsEllipseItem* poi)
     delete poi;
 }
 
-//OLD CODE LEFT TEMPORARILY REFERENCE. TO BE REMOVED
+void mapQGraphicsView::mousePressEvent(QMouseEvent *event)
+{
+    QPointF p = mapToScene(event->pos());
+    if (selectedPaintTool_ == Util::SelectedPaintTool::CURSOR)
+    {
+        setDragMode(QGraphicsView::RubberBandDrag);
+        qDebug() << "Draw a cursor!";
+    }
+    else if (selectedPaintTool_ == Util::SelectedPaintTool::WALL)
+    {
+        setDragMode(QGraphicsView::NoDrag);
+        qDebug() << "Start a wall!";
+        wallToBeAdded_ = new wallQGraphicsLineItem
+                (p.x(), p.y(), p.x(), p.y());
+        wallToBeAddedStartPoint_ = new QPointF(p.x(), p.y());
+        scene()->addItem(wallToBeAdded_);
+        qDebug() << "Pos: " << p.x() << "y: "<< p.y();
+    }
+    else if (selectedPaintTool_ == Util::SelectedPaintTool::POI)
+    {
+        qDebug() << "Draw a poi!";
+        setDragMode(QGraphicsView::NoDrag);
+        poiQGraphicsEllipseItem* poi = new poiQGraphicsEllipseItem
+                (0.0-POIWIDTH/2.0, 0.0-POIWIDTH/2.0, POIWIDTH, POIWIDTH);
+        poi->setPos(p);
+        poi->setFlag(QGraphicsItem::ItemIsSelectable,true);
+        poi->setFlag(QGraphicsItem::ItemIsMovable,true);
+        scene()->addItem(poi);
+        pois_.insert(poi);
+        qDebug() << "Adding POI with x: " << poi->scenePos().x()
+                 << " , y: " << poi->scenePos().y();
+    }
+    else if (selectedPaintTool_ == Util::SelectedPaintTool::START)// && selectedRoomba_->getStartPoint() == NULL)
+    {
+        qDebug() << "Draw a start!";
+        setDragMode(QGraphicsView::NoDrag);
+        poiQGraphicsEllipseItem *startPoint = new poiQGraphicsEllipseItem
+                (p.x()-POIWIDTH*2.0/3.0, p.y()-POIWIDTH*2.0/3.0,
+                 POIWIDTH*4.0/3.0, POIWIDTH*4.0/3.0);
+        //startPoint->setPos();
+        QBrush brush(Qt::GlobalColor::green);
+        startPoint->setBrush(brush);
+        startPoint->setFlag(QGraphicsItem::ItemIsSelectable,true);
+        startPoint->setFlag(QGraphicsItem::ItemIsMovable,true);
+        scene()->addItem(startPoint);
+    }
+    // Call the base class implementation to deliver the event for QGraphicsScene
+    QGraphicsView::mousePressEvent(event);
+}
+
+void mapQGraphicsView::mouseMoveEvent(QMouseEvent *event)
+{
+    if (wallToBeAddedStartPoint_ != NULL)
+    {
+        QPointF p = mapToScene(event->pos());
+        if (selectedPaintTool_ == Util::SelectedPaintTool::WALL)
+        {
+            wallToBeAdded_->setLine(wallToBeAddedStartPoint_->x(), wallToBeAddedStartPoint_->y(),
+                                    p.x(), p.y());
+        }
+    }
+    // Call the base class implementation to deliver the event for QGraphicsScene
+    QGraphicsView::mouseMoveEvent(event);
+}
+
+void mapQGraphicsView::mouseReleaseEvent(QMouseEvent *event)
+{
+    Q_UNUSED(event);
+    if (selectedPaintTool_ == Util::SelectedPaintTool::WALL)
+    {
+        wallToBeAdded_->setFlag(QGraphicsItem::ItemIsSelectable,true);
+        wallToBeAdded_->setFlag(QGraphicsItem::ItemIsMovable,true);
+        walls_.insert(wallToBeAdded_);
+        delete wallToBeAddedStartPoint_;
+        wallToBeAddedStartPoint_ = NULL;
+    }
+    // Call the base class implementation to deliver the event for QGraphicsScene
+    QGraphicsView::mouseReleaseEvent(event);
+}
+
+void mapQGraphicsView::setSelectedPaintTool(Util::SelectedPaintTool tool)
+{
+    selectedPaintTool_ = tool;
+}
+
+// TODO: OLD CODE LEFT TEMPORARILY REFERENCE. TO BE REMOVED
 //void mapQGraphicsView::mouseDoubleClickEvent(QMouseEvent* event)
 //{
 //    QPointF p = mapToScene(event->pos());
 //    qDebug() << "x: " << p.x() << "y: " << p.y();
-
 //    if (event->button() == Qt::LeftButton)
 //    {
 //        if(selectedRoomba_->getStartPoint() == NULL)
 //        {
-
 //            startPoint_ = new poiQGraphicsEllipseItem
 //                    (p.x()-POIWIDTH*2.0/3.0, p.y()-POIWIDTH*2.0/3.0,
 //                     POIWIDTH*4.0/3.0, POIWIDTH*4.0/3.0);
@@ -127,14 +210,14 @@ void mapQGraphicsView::ifShowTraces(QVector<Croi::IRoomba*>* roombas)
 }
 
 void mapQGraphicsView::removeTraces(QVector<Croi::IRoomba*>* roombas)
-{
+        {
     for (unsigned int i = 0; i < roombas->size(); ++i)
-    {
+{
         QVector<QGraphicsLineItem*>* traces = roombas->at(i)->getTraces();
         for (unsigned int i = 0; i < traces->size(); ++i)
-        {
+    {
             scene()->removeItem(traces->at(i));
-        }
+    }
         roombas->at(i)->removeTraces();
     }
 }
@@ -152,37 +235,37 @@ void mapQGraphicsView::updateLoc(QVector<Croi::IRoomba *>* roombas)
         if (roombas->at(i)->getStartPoint()== NULL)
         {
             continue;
-        }
-        //normalized speed
+    }
+    //normalized speed
         double speed = static_cast<double>(roombas->at(i)->getVelocity())/500.0;
 
-        if(speed < 0)
-        {
-            speed *= -1;
-        }
+    if(speed < 0)
+    {
+        speed *= -1;
+    }
 
-        //making the correctly angled roombaTriangle
+    //making the correctly angled roombaTriangle
         //THIS WILL BE REPLACED WITH ROOMBA ICON
         double angle = static_cast<double>(roombas->at(i)->getCurrentAngle());
-        QVector<QPointF> points;
+    QVector<QPointF> points;
         QPointF first(roombas->at(i)->getRoombasLocation().x()+cos(angle)*ARROWWIDTH,
                       roombas->at(i)->getRoombasLocation().y()+sin(angle)*ARROWWIDTH);
-        points.append(first);
+    points.append(first);
         double tempAngle = angle+40.0*PI/180.0;
         points.append(QPointF(roombas->at(i)->getRoombasLocation().x()
                               -cos(tempAngle)*ARROWWIDTH,
                               roombas->at(i)->getRoombasLocation().y()
                               -sin(tempAngle)*ARROWWIDTH));
-        tempAngle -= 80.0*PI/180.0;
+    tempAngle -= 80.0*PI/180.0;
         points.append(QPointF(roombas->at(i)->getRoombasLocation().x()
                               -cos(tempAngle)*ARROWWIDTH,
                               roombas->at(i)->getRoombasLocation().y()
                               -sin(tempAngle)*ARROWWIDTH));
-        points.append(first);
-        QPolygonF triangle(points);
-        //calculate the point at the back of the triangle
-        double triangleX = (points.at(1).x()+points.at(2).x())/2.0;
-        double triangleY = (points.at(1).y()+points.at(2).y())/2.0;
+    points.append(first);
+    QPolygonF triangle(points);
+    //calculate the point at the back of the triangle
+    double triangleX = (points.at(1).x()+points.at(2).x())/2.0;
+    double triangleY = (points.at(1).y()+points.at(2).y())/2.0;
 
         QVector<QGraphicsLineItem*>* traces = roombas->at(i)->getTraces();
 
@@ -196,13 +279,13 @@ void mapQGraphicsView::updateLoc(QVector<Croi::IRoomba *>* roombas)
             }
             else
             {
-                if (!traceShown_)
-                {
+    if (!traceShown_)
+    {
                     traces->at(i)->setVisible(false);
                 }
                 scene()->addItem(traces->at(i));
             }
-        }
+    }
 
         //ROOMBA'S ICON WILL REPLACE THIS IMPLEMENTATION
         //AND IT WILL BE PLACED IN IROOMBA CLASS AND HERE IT WILL
@@ -210,34 +293,32 @@ void mapQGraphicsView::updateLoc(QVector<Croi::IRoomba *>* roombas)
         QGraphicsPolygonItem* curPoint = roombas->at(i)->getCurPoint();
         QGraphicsLineItem* curSpeed = roombas->at(i)->getCurSpeed();
         if (curPoint == NULL)  //first update
-        {
+    {
             curPoint = scene()->addPolygon(triangle);
-            //color of the roombaTriangle is blue
-            QBrush triangleBrush(Qt::GlobalColor::blue);
+        //color of the roombaTriangle is blue
+        QBrush triangleBrush(Qt::GlobalColor::blue);
             curPoint->setBrush(triangleBrush);
             roombas->at(i)->setCurPoint(curPoint);
-
-            QPen curSpeedPen(Qt::GlobalColor::blue);
-            curSpeedPen.setWidth(TRACEWIDTH/4.0);
+        QPen curSpeedPen(Qt::GlobalColor::blue);
+        curSpeedPen.setWidth(TRACEWIDTH/4.0);
             //don't you dare say that this here piece of code is not beautiful!
             roombas->at(i)->setCurSpeed(scene()->addLine(triangleX, triangleY,
                                          triangleX-cos(angle)*ARROWWIDTH*2.0*speed,
                                          triangleY-sin(angle)*ARROWWIDTH*2.0*speed,
                                          curSpeedPen));
-        }
-        else
-        {
+    }
+    else
+    {
             curPoint->setPolygon(triangle);
             curSpeed->setLine(triangleX, triangleY,
                                triangleX-cos(angle)*ARROWWIDTH*2.0*speed,
                                triangleY-sin(angle)*ARROWWIDTH*2.0*speed);
-       }
+    }
 
         curPoint->setZValue(1);
         curSpeed->setZValue(1);
 
     }
-
     checkPoiCollision();
 }
 
@@ -270,6 +351,7 @@ QPointF mapQGraphicsView::getNextPoi()
     return point;
 
 }
+
 
 void mapQGraphicsView::checkPoiCollision()
 {

@@ -1,38 +1,26 @@
 #include "poiQGraphicsEllipseItem.h"
 #include "mapQGraphicsView.h"
 #include <QDebug>
+#include <QStyleOption>
 
 poiQGraphicsEllipseItem::poiQGraphicsEllipseItem
     (qreal x, qreal y, qreal w, qreal h, QGraphicsItem* parent):
         QGraphicsEllipseItem(x, y, w, h, parent)
 {    
-    QPen pen(Qt::GlobalColor::darkCyan);
-    pen.setWidth(2);
-    setPen(pen);
     setZValue(1);
 }
 
-void poiQGraphicsEllipseItem::mousePressEvent(QGraphicsSceneMouseEvent* event)
+void poiQGraphicsEllipseItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
-    if (event->button() != Qt::LeftButton)
-    {
-        return;
+    QStyleOptionGraphicsItem myoption = (*option);
+    myoption.state &= !QStyle::State_Selected;
+    QPen pen(Qt::GlobalColor::darkCyan);
+    pen.setWidth(2);
+    if (isSelected()) {
+        pen.setColor(Qt::GlobalColor::red);
     }
-
-    qDebug() << "POI_x: " << scenePos().x() << "POI_y: " << scenePos().y();
-
-    if (pen().color() == Qt::GlobalColor::darkCyan)
-    {
-        QPen pen(Qt::GlobalColor::red);
-        pen.setWidth(2);
-        setPen(pen);
-    }
-    else
-    {
-        QPen pen(Qt::GlobalColor::darkCyan);
-        pen.setWidth(2);
-        setPen(pen);
-    }
+    this->setPen(pen);
+    QGraphicsEllipseItem::paint(painter, &myoption, widget);
 }
 
 poiQGraphicsEllipseItem::~poiQGraphicsEllipseItem()

@@ -7,7 +7,9 @@
 #include <QGraphicsRectItem>
 #include "poiQGraphicsEllipseItem.h"
 #include "wallQGraphicsLineItem.h"
+#include "uiUtils.h"
 #include <QMouseEvent>
+
 #include "croi/iRoomba.h"
 #include <set>
 
@@ -41,19 +43,25 @@ public:
 
     QPointF getNextPoi();
     void checkPoiCollision();
+    void setSelectedPaintTool(Util::SelectedPaintTool tool);
 
     virtual ~mapQGraphicsView();
 
 public slots:
-    //void mouseDoubleClickEvent(QMouseEvent* event);
+    void mousePressEvent(QMouseEvent *event);
+    void mouseReleaseEvent(QMouseEvent *event);
+    void mouseMoveEvent(QMouseEvent *event);
+	//void mouseDoubleClickEvent(QMouseEvent* event);
 
 private:
-    QGraphicsRectItem* wallStartPoint_;
+    wallQGraphicsLineItem* wallToBeAdded_;
+    QPointF* wallToBeAddedStartPoint_;
     std::set<wallQGraphicsLineItem*> walls_;
     std::set<poiQGraphicsEllipseItem*> pois_;
     Croi::IRoomba* selectedRoomba_;
     int mapWidth_;
     bool traceShown_;
+    Util::SelectedPaintTool selectedPaintTool_;
 };
 
 #endif // MAPQGRAPHICSVIEW_H

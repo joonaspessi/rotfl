@@ -38,6 +38,10 @@ HEADERS  += mainwindow.h \
     ../../ext_lib/RooWifi_11b/roowifi.h \
     ../../ext_lib/RooWifi_11b/roomba.h \
     ../croi/roombaRoowifi.h \
-    wallQGraphicsLineItem.h
+    wallQGraphicsLineItem.h \
+    uiUtils.h
 
 FORMS    += mainwindow.ui
+
+RESOURCES += \
+    graphics.qrc

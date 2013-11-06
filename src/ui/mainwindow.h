@@ -11,8 +11,10 @@
 #include "croi/posixSerial.h"
 #include "croi/iRoomba.h"
 #include "mapQGraphicsView.h"
+#include "uiUtils.h"
 
 class ThreadReader;
+class mapQGraphicsView;
 
 namespace Ui {
 class MainWindow;
@@ -62,6 +64,14 @@ private slots:
     void velocity_horizontalSlider_sliderMoved(int position);
 
     void pushButton_Go2POI_clicked();
+
+    void action_Cursor_toggled(bool toggleStatus);
+
+    void action_Wall_toggled(bool toggleStatus);
+
+    void action_Poi_toggled(bool toggleStatus);
+
+    void action_Start_toggled(bool toggleStatus);
 signals:
     
 protected:
@@ -82,6 +92,7 @@ private:
     void createActionDock();
     void createStatusDock();
     void createMapTestingDock();
+    void createToolbar();
     QLineEdit *ipLineEdit_1_;
     QLineEdit *ipLineEdit_2_;
     QLineEdit *ipLineEdit_3_;
@@ -96,6 +107,7 @@ private:
     QDockWidget *status_dockWidget_;
     QDockWidget *action_dockWidget_;
     QDockWidget *mapTesting_dockWidget_;
+    QToolBar *toolbar_;
 };
 
 #endif // MAINWINDOW_H
