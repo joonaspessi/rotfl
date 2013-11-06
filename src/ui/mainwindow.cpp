@@ -200,12 +200,16 @@ void MainWindow::createMapTestingDock()
     connect(simMov_pushButton,SIGNAL(clicked()),this,SLOT(pushButton_simMov_clicked()));
     QPushButton *resetAngle_pushButton = new QPushButton("Reset angle", this);
     connect(resetAngle_pushButton,SIGNAL(clicked()),this,SLOT(pushButton_resetAngle_clicked()));
+   //QPushButton *saveMap_pushButton = new QPushButton("Save the map", this);
+   // connect(saveMap_pushButton,SIGNAL(clicked()),this,SLOT(pushButton_saveMap_clicked()));
 
     QHBoxLayout *mapWidth_layout = new QHBoxLayout;
     QLabel *mapWidth_label = new QLabel("Define map's width (cm):");
     mapWidth_lineEdit_ = new QLineEdit("");
-    QPushButton *mapWidth_pushButton = new QPushButton("Ok", this);
-    connect(mapWidth_pushButton,SIGNAL(clicked()),this,SLOT(pushButton_mapWidth_clicked()));
+//    QPushButton *mapWidth_pushButton = new QPushButton("Ok", this);
+//    connect(mapWidth_pushButton,SIGNAL(clicked()),this,SLOT(pushButton_mapWidth_clicked()));
+    QPushButton *mapWidth_pushButton = new QPushButton("zoom in", this);
+     connect(mapWidth_pushButton,SIGNAL(clicked()),this,SLOT(pushButton_mapWidth_clicked()));
     mapWidth_layout->addWidget(mapWidth_label);
     mapWidth_layout->addWidget(mapWidth_lineEdit_);
     mapWidth_layout->addWidget(mapWidth_pushButton);
@@ -371,7 +375,7 @@ void MainWindow::pushButton_simMov_clicked()
     double distance = -rand()%500;
     double angle = -(rand()%90-rand()%90);
     //mapQGraphicsView_->updateLoc(distance, angle/3.05, static_cast<int>(2000*(360-angle)/360),
-    //                       rand()%500);
+     //                      rand()%500);
     mapQGraphicsView_->updateLoc(-1000/3.05, 0, 1, rand()%500);  //simple version
 }
 
@@ -383,9 +387,14 @@ void MainWindow::velocity_horizontalSlider_sliderMoved(int position)
     }
 }
 
+//void MainWindow::pushButton_mapWidth_clicked()
+//{
+//    mapQGraphicsView_->setMapWidth(mapWidth_lineEdit_->text().toInt());
+//}
 void MainWindow::pushButton_mapWidth_clicked()
 {
-    mapQGraphicsView_->setMapWidth(mapWidth_lineEdit_->text().toInt());
+    int MapWith=mapQGraphicsView_->getMapWidth();
+    mapQGraphicsView_->setMapWidth(MapWith+100);
 }
 
 void MainWindow::pushButton_resetAngle_clicked()
@@ -393,6 +402,10 @@ void MainWindow::pushButton_resetAngle_clicked()
     mapQGraphicsView_->resetAngle();
 }
 
+//void MainWindow::pushButton_saveMap_clicked()
+//{
+  //  mapQGraphicsView_->resetAngle();
+//}
 void MainWindow::pushButton_Go2POI_clicked()
 {
     QPointF poiCoordinate = mapQGraphicsView_->getNextPoi();

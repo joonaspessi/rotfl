@@ -44,6 +44,7 @@ public:
     QPointF getNextPoi();
     QPointF getRoombasLocation();
     double getCurrentAngle();
+    int getMapWidth();
     void checkPoiCollision();
 
     virtual ~mapQGraphicsView();

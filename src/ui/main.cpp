@@ -3,7 +3,7 @@
 #include <QApplication>
 #include "mapQGraphicsView.h"
 #include <QObject>
-
+//
 
 int main(int argc, char *argv[])
 {

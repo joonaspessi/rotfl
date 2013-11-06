@@ -301,6 +301,11 @@ double mapQGraphicsView::getCurrentAngle()
     return angle_;
 }
 
+int mapQGraphicsView::getMapWidth()
+{
+    return mapWidth_;
+}
+
 void mapQGraphicsView::checkPoiCollision()
 {
     for (std::set<poiQGraphicsEllipseItem*>::iterator i = pois_.begin();

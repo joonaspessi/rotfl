@@ -59,6 +59,8 @@ private slots:
 
     void pushButton_resetAngle_clicked();
 
+     //void pushButton_saveMap_clicked();
+
     void velocity_horizontalSlider_sliderMoved(int position);
 
     void pushButton_Go2POI_clicked();
