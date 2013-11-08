@@ -9,7 +9,7 @@ namespace Croi {
 class RoombaRoowifi : public IRoomba
 {
 public:
-    RoombaRoowifi(QObject *parent = NULL);
+    RoombaRoowifi(poiQGraphicsEllipseItem *startPoint, QObject *parent = NULL);
     virtual ~RoombaRoowifi();
 
     virtual int rmb_connect(std::string ip);

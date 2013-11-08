@@ -3,8 +3,8 @@
 
 namespace Croi {
 
-RoombaRoowifi::RoombaRoowifi(QObject *parent):
-    IRoomba(parent)
+RoombaRoowifi::RoombaRoowifi(poiQGraphicsEllipseItem *startPoint, QObject *parent):
+    IRoomba(startPoint, parent)
 {
     roowifi_ = new RooWifi(this);
     connect(roowifi_,SIGNAL(AutoCaptureUpdated()), parent, SLOT(sensorUpdateTimerTimeout()));
@@ -23,7 +23,7 @@ int RoombaRoowifi::rmb_connect(std::string ip)
     roowifi_->SetIP(qip);
     roowifi_->Connect();
     roowifi_->StartAutoCapture();
-    roowifi_->SetAutoCaptureTime(100);
+    roowifi_->SetAutoCaptureTime(500);
 }
 
 int RoombaRoowifi::disconnect()

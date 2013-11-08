@@ -10,9 +10,10 @@
 
 namespace Croi {
 
-RoombaSerial::RoombaSerial() :
-    posixSerial_(new PosixSerial())
+RoombaSerial::RoombaSerial(poiQGraphicsEllipseItem *startPoint, QObject *parent) :
+    IRoomba(startPoint, parent)
 {
+    posixSerial_ = new PosixSerial();
 }
 
 RoombaSerial::~RoombaSerial()

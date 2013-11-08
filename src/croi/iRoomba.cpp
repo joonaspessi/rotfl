@@ -3,10 +3,10 @@
 
 namespace Croi {
 
-IRoomba::IRoomba(QObject *parent):
+IRoomba::IRoomba(poiQGraphicsEllipseItem *startPoint, QObject *parent):
     QObject(parent),
-    startPoint_(NULL), curPoint_(NULL), curSpeed_(NULL),
-    initX_(0.0), initY_(0.0), angle_(0.0),
+    startPoint_(startPoint), curPoint_(NULL), curSpeed_(NULL),
+    initX_(startPoint->x()), initY_(startPoint->y()), angle_(0.0),
     radius_(1), velocity_(0), traceShown_(true)
 {
 
@@ -60,22 +60,25 @@ int IRoomba::getVelocity()
     return velocity_;
 }
 
-void IRoomba::updateState(int distance, int angle, int radius, int speed)
+void IRoomba::updateState()
 {
+    int distance = getDistance();
+    int angle = getAngle();
+
     //angle for distance calculation
     double angleForDist = angle_-static_cast<double>(angle)*PI*ANGLECORRECTION/180.0;
     //distance changed to cm
     double dist = -static_cast<double>(distance)/10.0*DISTANCECORRECTION;
     //special radiuses mean no adaptation needed
-    if (radius != 32768 && radius != 32767 && radius != -1 && radius != 1)
+    if (radius_ != 32768 && radius_ != 32767 && radius_ != -1 && radius_ != 1)
     {
         //corrected distance (and change to cm)
-        dist = -2.0*(static_cast<double>(radius))*
-                sin(static_cast<double>(distance)/radius/2)/10.0*DISTANCECORRECTION;
+        dist = -2.0*(static_cast<double>(radius_))*
+                sin(static_cast<double>(distance)/radius_/2)/10.0*DISTANCECORRECTION;
         //corrected angle in radians for distance calculation
         //angleForDist = static_cast<double>(angle)*PI/180.0*ANGLECORRECTION/2.0;
         //other version that doesn't work curently
-        angleForDist = angle_-static_cast<double>(distance)/radius/2.0;
+        angleForDist = angle_-static_cast<double>(distance)/radius_/2.0;
     }
     //real angle (always used for roomba's angle)
     angle_ -= static_cast<double>(angle)*PI*ANGLECORRECTION/180.0;

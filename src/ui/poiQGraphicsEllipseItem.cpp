@@ -4,8 +4,8 @@
 #include <QStyleOption>
 
 poiQGraphicsEllipseItem::poiQGraphicsEllipseItem
-    (qreal x, qreal y, qreal w, qreal h, QGraphicsItem* parent):
-        QGraphicsEllipseItem(x, y, w, h, parent)
+(qreal x, qreal y, qreal w, qreal h, QGraphicsItem* parent):
+    QGraphicsEllipseItem(x, y, w, h, parent)
 {    
     setZValue(1);
 }

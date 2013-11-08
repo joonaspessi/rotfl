@@ -16,7 +16,7 @@ class IRoomba: public QObject
 
 public:
 
-    IRoomba(QObject* parent = NULL);
+    IRoomba(poiQGraphicsEllipseItem *startPoint, QObject* parent = NULL);
     virtual ~IRoomba();
 
     virtual int rmb_connect(std::string ip) = 0;
@@ -38,7 +38,7 @@ public:
     void resetAngle();
     QPointF getRoombasLocation();
     double getCurrentAngle();
-    void updateState(int distance, int angle, int radius, int speed);
+    void updateState();
     poiQGraphicsEllipseItem* getStartPoint();
     void setStartPoint(poiQGraphicsEllipseItem* startPoint);
     QGraphicsPolygonItem* getCurPoint();

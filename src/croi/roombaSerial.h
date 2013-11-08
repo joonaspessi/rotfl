@@ -11,7 +11,7 @@ class RoombaSerial : public IRoomba
 {
 
 public:
-    RoombaSerial();
+    RoombaSerial(poiQGraphicsEllipseItem *startPoint, QObject *parent);
     virtual ~RoombaSerial();
 
     virtual int rmb_connect(std::string  ip);

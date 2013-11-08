@@ -28,15 +28,11 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-//    posixserial = new Croi::PosixSerial();
+    //    posixserial = new Croi::PosixSerial();
 
-//    Disabled until Roowifi AutoCapture is used instead
-//    updateSensorData_ = new QTimer(this);
-//    connect(updateSensorData_,SIGNAL(timeout()),this,SLOT(sensorUpdateTimerTimeout()));
-
-    selectedRoomba_ = new Croi::RoombaRoowifi(this);
-//    selectedRoomba_ = new Croi::RoombaSerial();
-    roombas_.append(selectedRoomba_);
+    //    Disabled until Roowifi AutoCapture is used instead
+    //    updateSensorData_ = new QTimer(this);
+    //    connect(updateSensorData_,SIGNAL(timeout()),this,SLOT(sensorUpdateTimerTimeout()));
 
     //threadReader = new ThreadReader(posixserial, this);
     //threadReader->start();
@@ -76,7 +72,7 @@ MainWindow::MainWindow(QWidget *parent) :
     mapWidth_lineEdit_->setText(QString::number(mapQGraphicsView_->giveMapWidth()));
     // TODO: Height in this one?
     //show the default real world width of map in cm
-//    mapWidth_lineEdit_->setText(QString::number(mapQGraphicsView_->giveMapWidth()));
+    //    mapWidth_lineEdit_->setText(QString::number(mapQGraphicsView_->giveMapWidth()));
 }
 
 MainWindow::~MainWindow()
@@ -86,9 +82,12 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-Ui::MainWindow* MainWindow::giveUiPointer()
+Croi::IRoomba* MainWindow::createRoomba(poiQGraphicsEllipseItem *startPoint)
 {
-    return ui;
+    selectedRoomba_ = new Croi::RoombaRoowifi(startPoint, this);
+    //    selectedRoomba_ = new Croi::RoombaSerial();
+    roombas_.append(selectedRoomba_);
+    return selectedRoomba_;
 }
 
 void MainWindow::createConnectDock()
@@ -156,7 +155,7 @@ void MainWindow::createActionDock()
     action_dockWidget_ = new QDockWidget(tr("Action"), this);
     action_dockWidget_->setWidget(actionWidget);
     addDockWidget(Qt::BottomDockWidgetArea, action_dockWidget_);
-//    action_dockWidget->setFeatures(QDockWidget::NoDockWidgetFeatures);
+    //    action_dockWidget->setFeatures(QDockWidget::NoDockWidgetFeatures);
 }
 
 void MainWindow::createStatusDock()
@@ -227,7 +226,7 @@ void MainWindow::createMapTestingDock()
     mapTesting_dockWidget_ = new QDockWidget(tr("Map testing"), this);
     mapTesting_dockWidget_->setWidget(mapTestingWidget);
     addDockWidget(Qt::RightDockWidgetArea, mapTesting_dockWidget_);
-//    action_dockWidget->setFeatures(QDockWidget::NoDockWidgetFeatures);
+    //    action_dockWidget->setFeatures(QDockWidget::NoDockWidgetFeatures);
 }
 
 void MainWindow::createToolbar()
@@ -275,8 +274,8 @@ void MainWindow::pushButton_removeRedObjects_clicked()
 
 void MainWindow::pushButton_Connect_clicked()
 {
-//    Disabled until Roowifi AutoCapture is used instead
-//    updateSensorData_->start(500);
+    //    Disabled until Roowifi AutoCapture is used instead
+    //    updateSensorData_->start(500);
     QString ip = ipLineEdit_1_->text() + "." + ipLineEdit_2_->text() + "." + ipLineEdit_3_->text()
             + "." + ipLineEdit_4_->text();
     std::string stdip = ip.toStdString();
@@ -285,8 +284,8 @@ void MainWindow::pushButton_Connect_clicked()
 
 void MainWindow::pushButton_Disconnect_clicked()
 {
-//    Disabled until Roowifi AutoCapture is used instead
-//    updateSensorData_->stop();
+    //    Disabled until Roowifi AutoCapture is used instead
+    //    updateSensorData_->stop();
     selectedRoomba_->disconnect();
     temperature_label_->setText("0");
     chargeLevel_label_->setText("0");
@@ -355,7 +354,7 @@ void MainWindow::keyPressEvent(QKeyEvent* event)
         radius_ = 200;
         moving_ = true;
         qDebug() << "RightArrow";
-     }
+    }
     else if(event->key() == Qt::Key_D) {
         selectedRoomba_->Drive(velocity_horizontalSlider_->value(),-200);
         radius_ = -200;
@@ -396,12 +395,12 @@ void MainWindow::keyPressEvent(QKeyEvent* event)
 
 void MainWindow::sensorUpdateTimerTimeout()
 {
-//    qDebug() << "sensorUpdateTimerTimeout";
+    //    qDebug() << "sensorUpdateTimerTimeout";
     temperature_label_->setText( QString::number( ( unsigned char )( selectedRoomba_->getTemperature() ) ) );
     chargeLevel_label_->setText( QString::number( (unsigned short)( selectedRoomba_->getChargeLevel() ) ) );
+    selectedRoomba_->updateState();
     QPointF rmbPosition = roombas_.at(0)->getRoombasLocation();
     rmbPosition_label_->setText( "(" + QString::number(rmbPosition.x()) + " , " + QString::number(rmbPosition.y()) + ")" );
-
     mapQGraphicsView_->updateLoc(&roombas_);
 }
 

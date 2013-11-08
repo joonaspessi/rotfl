@@ -28,7 +28,8 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
-    Ui::MainWindow *giveUiPointer();
+    //TODO: Move createRoomba to FleetManager
+    Croi::IRoomba *createRoomba(poiQGraphicsEllipseItem *startPoint);
 
 public slots:
 //    Move to private when Roowifi AutoCapture removed
