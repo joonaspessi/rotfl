@@ -8,6 +8,7 @@
 #include "mapQGraphicsView.h"
 #include <cmath>
 #include <QDebug>
+#include "Flogger.h"
 
 mapQGraphicsView::mapQGraphicsView(QWidget* parent) :
     QGraphicsView(parent), wallStartPoint_(NULL), startPoint_(NULL),
@@ -26,8 +27,19 @@ void mapQGraphicsView::removePoi(poiQGraphicsEllipseItem* poi)
 
 void mapQGraphicsView::mouseDoubleClickEvent(QMouseEvent* event)
 {
+
+    QString txt;
+
     QPointF p = mapToScene(event->pos());
     qDebug() << "x: " << p.x() << "y: " << p.y();
+
+    txt=QString("x: %1 y: %2").arg(p.x()).arg(p.y());
+
+    // qDebug() <<p.x();
+
+    //Flogger
+    Flogger flog;
+    (*flog.ts) << txt << endl;
 
     if (event->button() == Qt::LeftButton)
     {
