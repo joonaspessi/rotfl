@@ -19,6 +19,7 @@
 #include "croi/roombaRoowifi.h"
 #include "croi/croiUtil.h"
 #include "mapQGraphicsView.h"
+#include "Flogger.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     moving_(false), QMainWindow(parent),
@@ -220,6 +221,10 @@ void MainWindow::createMapTestingDock()
 void MainWindow::pushButton_removeRedObjects_clicked()
 {
     mapQGraphicsView_->removeRedObjects();
+
+    //Flogger
+    Flogger flog;
+    (*flog.ts) << "Remove red objects Button pressed." << endl;
 }
 
 void MainWindow::pushButton_Connect_clicked()
@@ -230,6 +235,12 @@ void MainWindow::pushButton_Connect_clicked()
             + "." + ipLineEdit_4_->text();
     std::string stdip = ip.toStdString();
     iRoomba_->rmb_connect(stdip);
+
+    //Flogger
+    Flogger flog;
+    (*flog.ts) << "Connect Button pressed." << endl;
+
+
 }
 
 void MainWindow::pushButton_Disconnect_clicked()
@@ -241,33 +252,57 @@ void MainWindow::pushButton_Disconnect_clicked()
     chargeLevel_label_->setText("0");
     velocity_horizontalSlider_->setValue(0);
     velocityValue_label_->setText("0");
+
+    //Flogger
+    Flogger flog;
+    (*flog.ts) << "Disconnect Button pressed." << endl;
+
 }
 
 void MainWindow::pushButton_Clean_clicked()
 {
     iRoomba_->clean();
+    //Flogger
+    Flogger flog;
+    (*flog.ts) << "Clean Button pressed." << endl;
 }
 
 void MainWindow::pushButton_allMotorsOn_clicked()
 {
     iRoomba_->allMotorsOn();
+
+    //Flogger
+    Flogger flog;
+    (*flog.ts) << "Motors on Button pressed." << endl;
 }
 
 void MainWindow::pushButton_allMotorsOff_clicked()
 {
     iRoomba_->allMotorsOff();
+
+    //Flogger
+    Flogger flog;
+    (*flog.ts) << "Motors off Button pressed." << endl;
 }
 
 void MainWindow::pushButton_Safe_clicked()
 {
     grabKeyboard();
     iRoomba_->safeMode();
+
+    //Flogger
+    Flogger flog;
+    (*flog.ts) << "Safe Button pressed." << endl;
 }
 
 void MainWindow::pushButton_Full_clicked()
 {
     grabKeyboard();
     iRoomba_->fullMode();
+
+    //Flogger
+    Flogger flog;
+    (*flog.ts) << "Full Button pressed." << endl;
 }
 
 void MainWindow::keyPressEvent(QKeyEvent* event)
@@ -350,11 +385,19 @@ void MainWindow::sensorUpdateTimerTimeout()
 void MainWindow::pushButton_playSong_clicked()
 {
     iRoomba_->playSong(1);
+
+    //Flogger
+    Flogger flog;
+    (*flog.ts) << "Play song Button pressed." << endl;
 }
 
 void MainWindow::pushButton_unshowTraces_clicked()
 {
     mapQGraphicsView_->ifShowTraces();
+
+    //Flogger
+    Flogger flog;
+    (*flog.ts) << "(un)show Button pressed." << endl;
 }
 
 void MainWindow::pushButton_simMov_clicked()
@@ -364,6 +407,10 @@ void MainWindow::pushButton_simMov_clicked()
     //mapQGraphicsView_->updateLoc(distance, angle/3.05, static_cast<int>(2000*(360-angle)/360),
     //                       rand()%500);
     mapQGraphicsView_->updateLoc(-1000/3.05, 0, 1, rand()%500);  //simple version
+
+    //Flogger
+    Flogger flog;
+    (*flog.ts) << "Simulate movement Button pressed." << endl;
 }
 
 void MainWindow::velocity_horizontalSlider_sliderMoved(int position)
@@ -377,9 +424,17 @@ void MainWindow::velocity_horizontalSlider_sliderMoved(int position)
 void MainWindow::pushButton_mapWidth_clicked()
 {
     mapQGraphicsView_->setMapWidth(mapWidth_lineEdit_->text().toInt());
+
+    //Flogger
+    Flogger flog;
+    (*flog.ts) << "Define maps's width(cm) area clicked." << endl;
 }
 
 void MainWindow::pushButton_resetAngle_clicked()
 {
     mapQGraphicsView_->resetAngle();
+
+    //Flogger
+    Flogger flog;
+    (*flog.ts) << "Reset angle Button pressed." << endl;
 }
