@@ -92,6 +92,16 @@ void FleetManager::addWall(WallQGraphicsLineItem* wall)
     walls_.insert(wall);
 }
 
+std::set<WallQGraphicsLineItem *> FleetManager::getWalls()
+{
+    return walls_;
+}
+
+std::set<PoiQGraphicsEllipseItem *> FleetManager::getPOIs()
+{
+    return pois_;
+}
+
 void FleetManager::removeRedObjects()
 {
     for (std::set<PoiQGraphicsEllipseItem*>::iterator i = pois_.begin();
@@ -132,6 +142,24 @@ void FleetManager::removeRedObjects()
     //        initY_= 0.0;
 
     //    }
+}
+
+void FleetManager::removeAllObjects()
+{
+    for (std::set<PoiQGraphicsEllipseItem*>::iterator i = pois_.begin();
+         i != pois_.end(); ++i)
+    {
+        map_->scene()->removeItem(*i);
+        delete *i;
+        pois_.erase(i);
+    }
+    for (std::set<WallQGraphicsLineItem*>::iterator i = walls_.begin();
+         i != walls_.end(); ++i)
+    {
+        map_->scene()->removeItem(*i);
+        delete *i;
+        walls_.erase(i);
+    }
 }
 
 void FleetManager::removePoi(PoiQGraphicsEllipseItem* poi)

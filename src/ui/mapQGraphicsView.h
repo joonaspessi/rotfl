@@ -28,6 +28,9 @@ public:
 
     virtual ~MapQGraphicsView();
 
+signals:
+    void mapChanged();
+
 public slots:
     void mousePressEvent(QMouseEvent *event);
     void mouseReleaseEvent(QMouseEvent *event);

@@ -31,8 +31,11 @@ public:
 
     void setRoombaStatusData(Croi::IRoomba* selectedRoomba);
 
+    void setCurrentFile(const QString &fileName);
+    void closeEvent(QCloseEvent *event);
 public slots:
 
+    void mapModified();
 private slots:
     void pushButton_removeRedObjects_clicked();
 
@@ -69,12 +72,17 @@ private slots:
     void action_Poi_toggled(bool toggleStatus);
 
     void action_Start_toggled(bool toggleStatus);
+    void actionSave_triggered();
+    void actionSaveAs_triggered();
+    void actionOpen_triggered();
 signals:
     
 protected:
     void keyPressEvent(QKeyEvent *event);
 private:
     void init();
+    void saveToFile(QString &fileName);
+    void openFile(const QString &fileName);
     Ui::MainWindow *ui;
     Croi::PosixSerial* posixserial;
     ThreadReader *threadReader;
@@ -101,6 +109,8 @@ private:
     QDockWidget *action_dockWidget_;
     QDockWidget *mapTesting_dockWidget_;
     QToolBar *toolbar_;
+    QString currentFile_;
+    bool saveUnsavedChanges();
 };
 
 #endif // MAINWINDOW_H

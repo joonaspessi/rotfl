@@ -32,9 +32,12 @@ public:
     void setMap(MapQGraphicsView* map);
     void addPoi(PoiQGraphicsEllipseItem* poi);
     void addWall(WallQGraphicsLineItem* wall);
+    std::set<WallQGraphicsLineItem*> getWalls();
+    std::set<PoiQGraphicsEllipseItem *> getPOIs();
     void removePoi(PoiQGraphicsEllipseItem* poi);
     //removes all selected objects except roombas and startPoints
     void removeRedObjects();
+    void removeAllObjects();
     void ifShowTraces();
     void removeTraces();
     void go2Poi();

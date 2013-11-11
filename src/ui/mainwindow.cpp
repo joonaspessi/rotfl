@@ -11,6 +11,8 @@
 #include <QToolBar>
 #include <QToolButton>
 #include <QButtonGroup>
+#include <QFileDialog>
+#include <QMessageBox>
 
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
@@ -39,6 +41,21 @@ MainWindow::MainWindow(QWidget *parent) :
     //threadReader->start();
 
     QMenu* fileMenu = menuBar()->addMenu(tr("&File"));
+
+    QAction* openAct = new QAction(tr("&Open"),this);
+    openAct->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_O));
+    connect(openAct, SIGNAL(triggered()),this,SLOT(actionOpen_triggered()));
+    fileMenu->addAction(openAct);
+
+    QAction* saveAct = new QAction(tr("&Save"),this);
+    saveAct->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_S));
+    connect(saveAct, SIGNAL(triggered()),this,SLOT(actionSave_triggered()));
+    fileMenu->addAction(saveAct);
+
+    QAction* saveAsAct = new QAction(tr("S&ave as"),this);
+    saveAsAct->setShortcut(QKeySequence(Qt::SHIFT + Qt::CTRL + Qt::Key_S));
+    connect(saveAsAct, SIGNAL(triggered()),this,SLOT(actionSaveAs_triggered()));
+    fileMenu->addAction(saveAsAct);
 
     QAction* quitAct = new QAction(tr("&Quit"),this);
     quitAct->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_Q));
@@ -71,11 +88,16 @@ MainWindow::MainWindow(QWidget *parent) :
 
     createToolbar();
 
+    setCurrentFile("");
+
     //show the default real world width of map in cm
     mapWidth_lineEdit_->setText(QString::number(map_->giveMapWidth()));
     // TODO: Height in this one?
     //show the default real world width of map in cm
     //    mapWidth_lineEdit_->setText(QString::number(map_->giveMapWidth()));
+
+    // TODO: Improve this to NOT trigger on start
+    connect(map_,SIGNAL(mapChanged()),this,SLOT(mapModified()));
 }
 
 MainWindow::~MainWindow()
@@ -425,5 +447,173 @@ void MainWindow::action_Start_toggled(bool toggleStatus)
 {
     if (toggleStatus) {
         map_->setSelectedPaintTool(Util::SelectedPaintTool::START);
+    }
+}
+
+void MainWindow::mapModified()
+{
+    setWindowModified(true);
+}
+
+void MainWindow::setCurrentFile(const QString &fileName)
+{
+    currentFile_ = fileName;
+    setWindowModified(false);
+
+    QString fileNameToShow = currentFile_;
+    if(currentFile_.isEmpty())
+    {
+        fileNameToShow = "untitled.rmap";
+    }
+    setWindowFilePath(fileNameToShow);
+}
+
+void MainWindow::actionSave_triggered()
+{
+    if(currentFile_.isEmpty())
+    {
+        actionSaveAs_triggered();
+    }
+    else
+    {
+        saveToFile(currentFile_);
+    }
+}
+
+void MainWindow::actionSaveAs_triggered()
+{
+    QString fileName = QFileDialog::getSaveFileName(this, "Save as", QDir::homePath(), "ROTFL (*.rmap)");
+    if(!fileName.isEmpty()){
+        if (!fileName.endsWith(".rmap"))
+        {
+            fileName.append(".rmap");
+        }
+        saveToFile(fileName);
+    }
+}
+
+void MainWindow::actionOpen_triggered()
+{
+    if (saveUnsavedChanges())
+    {
+        QString fileName = QFileDialog::getOpenFileName(this,  "Open", QDir::homePath(), "ROTFL (*.rmap)");
+        if(!fileName.isEmpty())
+        {
+            openFile(fileName);
+        }
+    }
+}
+
+bool MainWindow::saveUnsavedChanges()
+{
+    if(isWindowModified())
+    {
+        int decision = 0;
+        QString fileNameToShow = currentFile_;
+        if(currentFile_.isEmpty())
+        {
+            fileNameToShow = "untitled.rmap";
+        }
+        QString savingQuestion = "The map \"" + fileNameToShow + "\" has been modified.\nDo you want to save your changes?";
+        decision = QMessageBox::warning(this, "ROTFL", savingQuestion, "&Save", "&Discard", "&Cancel", 0, 2);
+
+        if(decision == QMessageBox::AcceptRole)
+        {
+            actionSave_triggered();
+            return true;
+        }
+        else if(decision == QMessageBox::DestructiveRole)
+        {
+            return false;
+        }
+    }
+    return true;
+}
+
+void MainWindow::saveToFile(QString &fileName)
+{
+    QFile file(fileName);
+    if(!file.open(QFile::WriteOnly)){
+        QMessageBox::warning(this, "", tr("No permission for writing to file."));
+    }
+
+    QSettings roomba_map(fileName, QSettings::IniFormat);
+
+    unsigned int index = 0;
+    roomba_map.beginGroup("Walls");
+    std::set<WallQGraphicsLineItem *> walls = fleetManager_->getWalls();
+    for (std::set<WallQGraphicsLineItem*>::iterator it = walls.begin();
+         it != walls.end(); ++it)
+    {
+        QLineF line = (*it)->line();
+        roomba_map.setValue(QString::number(index),line);
+        ++index;
+    }
+    roomba_map.endGroup();
+
+    roomba_map.beginGroup("POIs");
+    std::set<PoiQGraphicsEllipseItem *> pois = fleetManager_->getPOIs();
+    index = 0;
+    for (std::set<PoiQGraphicsEllipseItem*>::iterator it = pois.begin();
+         it != pois.end(); ++it)
+    {
+        QPointF point = (*it)->pos();
+        roomba_map.setValue(QString::number(index),point);
+        ++index;
+    }
+    roomba_map.endGroup();
+
+    setCurrentFile(fileName);
+}
+
+void MainWindow::openFile(const QString &fileName)
+{
+    // Clear the current map first
+    fleetManager_->removeAllObjects();
+
+    QSettings roomba_map(fileName, QSettings::IniFormat);
+    roomba_map.beginGroup("Walls");
+    QStringList walls = roomba_map.childKeys();
+
+    for (QStringList::iterator it = walls.begin(); it != walls.end(); ++it)
+    {
+        WallQGraphicsLineItem* wall = new WallQGraphicsLineItem((roomba_map.value(*it)).toLineF().x1(),
+                                                                (roomba_map.value(*it)).toLineF().y1(),
+                                                                (roomba_map.value(*it)).toLineF().x2(),
+                                                                (roomba_map.value(*it)).toLineF().y2());
+        wall->setFlag(QGraphicsItem::ItemIsSelectable,true);
+        wall->setFlag(QGraphicsItem::ItemIsMovable,true);
+        map_->scene()->addItem(wall);
+        fleetManager_->addWall(wall);
+    }
+    roomba_map.endGroup();
+
+    roomba_map.beginGroup("POIs");
+    QStringList pois = roomba_map.childKeys();
+
+    for (QStringList::iterator it = pois.begin(); it != pois.end(); ++it)
+    {
+        PoiQGraphicsEllipseItem* poi = new PoiQGraphicsEllipseItem
+                (0.0-POIWIDTH/2.0, 0.0-POIWIDTH/2.0, POIWIDTH, POIWIDTH);
+        poi->setPos((roomba_map.value(*it)).toPointF());
+        poi->setFlag(QGraphicsItem::ItemIsSelectable,true);
+        poi->setFlag(QGraphicsItem::ItemIsMovable,true);
+        map_->scene()->addItem(poi);
+        fleetManager_->addPoi(poi);
+    }
+    roomba_map.endGroup();
+
+    setCurrentFile(fileName);
+}
+
+void MainWindow::closeEvent(QCloseEvent *event)
+{
+    if(saveUnsavedChanges())
+    {
+        event->accept();
+    }
+    else
+    {
+        event->ignore();
     }
 }

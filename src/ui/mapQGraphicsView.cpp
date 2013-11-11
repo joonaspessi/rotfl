@@ -47,6 +47,7 @@ void MapQGraphicsView::mousePressEvent(QMouseEvent *event)
         fleetManager_->addPoi(poi);
         qDebug() << "Adding POI with x: " << poi->scenePos().x()
                  << " , y: " << poi->scenePos().y();
+        emit mapChanged();
     }
     else if (selectedPaintTool_ == Util::SelectedPaintTool::START)
     {
@@ -63,7 +64,6 @@ void MapQGraphicsView::mousePressEvent(QMouseEvent *event)
         startPoint->setFlag(QGraphicsItem::ItemIsMovable,false);
         //TODO: Add deleleting of startPoint when moving it
         scene()->addItem(startPoint);
-        MainWindow* mainwindow = qobject_cast<MainWindow*>(parent());
         fleetManager_->createRoomba(startPoint);
     }
     // Call the base class implementation to deliver the event for QGraphicsScene
@@ -95,6 +95,7 @@ void MapQGraphicsView::mouseReleaseEvent(QMouseEvent *event)
         fleetManager_->addWall(wallToBeAdded_);
         delete wallToBeAddedStartPoint_;
         wallToBeAddedStartPoint_ = NULL;
+        emit mapChanged();
     }
     // Call the base class implementation to deliver the event for QGraphicsScene
     QGraphicsView::mouseReleaseEvent(event);
