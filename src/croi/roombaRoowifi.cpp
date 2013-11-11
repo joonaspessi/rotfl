@@ -3,10 +3,11 @@
 
 namespace Croi {
 
-RoombaRoowifi::RoombaRoowifi(poiQGraphicsEllipseItem *startPoint, QObject *parent):
+RoombaRoowifi::RoombaRoowifi(PoiQGraphicsEllipseItem *startPoint, QObject *parent):
     IRoomba(startPoint, parent)
 {
     roowifi_ = new RooWifi(this);
+    //TODO: implement own timer
     connect(roowifi_,SIGNAL(AutoCaptureUpdated()), parent, SLOT(sensorUpdateTimerTimeout()));
 }
 
@@ -22,6 +23,7 @@ int RoombaRoowifi::rmb_connect(std::string ip)
     qDebug() << "set ip to:" << qip;
     roowifi_->SetIP(qip);
     roowifi_->Connect();
+    //TODO: implement own timer
     roowifi_->StartAutoCapture();
     roowifi_->SetAutoCaptureTime(500);
 }
@@ -97,10 +99,16 @@ short RoombaRoowifi::getAngle()
     return roowifi_->Sensors.Angle;
 }
 
-void RoombaRoowifi::Drive(int Velocity, int Radius)
+void RoombaRoowifi::drive(int velocity, int radius)
 {
-    roowifi_->Drive(Velocity, Radius);
-    IRoomba::Drive(Velocity, Radius);
+    roowifi_->Drive(velocity, radius);
+    IRoomba::drive(velocity, radius);
+}
+
+void RoombaRoowifi::drive(int velocity)
+{
+    roowifi_->Drive(velocity, getRadius());
+    IRoomba::drive(velocity);
 }
 
 void RoombaRoowifi::playSong(int songNumber)

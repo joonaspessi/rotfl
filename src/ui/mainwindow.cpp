@@ -22,9 +22,10 @@
 #include "croi/roombaRoowifi.h"
 #include "croi/croiUtil.h"
 #include "mapQGraphicsView.h"
+#include "fleetManager.h"
 
 MainWindow::MainWindow(QWidget *parent) :
-    moving_(false), QMainWindow(parent),
+    QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
@@ -46,17 +47,19 @@ MainWindow::MainWindow(QWidget *parent) :
 
     // TODO: Magic fixed size for mainwindow
     resize(750,450);
-    scene_ = new QGraphicsScene(QRect(0,0,398,398), this);
-    mapQGraphicsView_ = new mapQGraphicsView(this);
-    mapQGraphicsView_->setScene(scene_);
-    mapQGraphicsView_->centerOn(0,0);
-    mapQGraphicsView_->setMapWidth(398);
-    setCentralWidget(mapQGraphicsView_);
+
+    fleetManager_ = new FleetManager(this);
+    map_ = new MapQGraphicsView(fleetManager_, this);
+    map_->setScene(new QGraphicsScene(QRect(0,0,398,398), this));
+    map_->centerOn(0,0);
+    map_->setMapWidth(398);
+    fleetManager_->setMap(map_);
+    setCentralWidget(map_);
     centralWidget()->setFixedWidth(400);
     centralWidget()->setFixedHeight(400);
 
-    qDebug() << "children width: " << mapQGraphicsView_->childrenRect().width();
-    qDebug() << "children height: " << mapQGraphicsView_->childrenRect().height();
+    //qDebug() << "children width: " << map_->childrenRect().width();
+    //qDebug() << "children height: " << map_->childrenRect().height();
 
     createConnectDock();
     createActionDock();
@@ -69,25 +72,26 @@ MainWindow::MainWindow(QWidget *parent) :
     createToolbar();
 
     //show the default real world width of map in cm
-    mapWidth_lineEdit_->setText(QString::number(mapQGraphicsView_->giveMapWidth()));
+    mapWidth_lineEdit_->setText(QString::number(map_->giveMapWidth()));
     // TODO: Height in this one?
     //show the default real world width of map in cm
-    //    mapWidth_lineEdit_->setText(QString::number(mapQGraphicsView_->giveMapWidth()));
+    //    mapWidth_lineEdit_->setText(QString::number(map_->giveMapWidth()));
 }
 
 MainWindow::~MainWindow()
 {
-    selectedRoomba_->disconnect();
+    fleetManager_->disconnect();
     releaseKeyboard();
     delete ui;
 }
 
-Croi::IRoomba* MainWindow::createRoomba(poiQGraphicsEllipseItem *startPoint)
+//NOTE: selectedRoomba_ is going to be taken away (parameter then necessary)
+void MainWindow::setRoombaStatusData(Croi::IRoomba* selectedRoomba)
 {
-    selectedRoomba_ = new Croi::RoombaRoowifi(startPoint, this);
-    //    selectedRoomba_ = new Croi::RoombaSerial();
-    roombas_.append(selectedRoomba_);
-    return selectedRoomba_;
+    temperature_label_->setText( QString::number( ( unsigned char )( selectedRoomba->getTemperature() ) ) );
+    chargeLevel_label_->setText( QString::number( (unsigned short)( selectedRoomba->getChargeLevel() ) ) );
+    QPointF rmbPosition = selectedRoomba->getLoc();
+    rmbPosition_label_->setText( "(" + QString::number(rmbPosition.x()) + " , " + QString::number(rmbPosition.y()) + ")" );
 }
 
 void MainWindow::createConnectDock()
@@ -201,8 +205,6 @@ void MainWindow::createMapTestingDock()
     connect(removeRedObjects_pushButton,SIGNAL(clicked()),this,SLOT(pushButton_removeRedObjects_clicked()));
     QPushButton *unshowTraces_pushButton = new QPushButton("(Un)show traces", this);
     connect(unshowTraces_pushButton,SIGNAL(clicked()),this,SLOT(pushButton_unshowTraces_clicked()));
-    QPushButton *simMov_pushButton = new QPushButton("Simulate movement", this);
-    connect(simMov_pushButton,SIGNAL(clicked()),this,SLOT(pushButton_simMov_clicked()));
     QPushButton *resetAngle_pushButton = new QPushButton("Reset angle", this);
     connect(resetAngle_pushButton,SIGNAL(clicked()),this,SLOT(pushButton_resetAngle_clicked()));
 
@@ -217,7 +219,6 @@ void MainWindow::createMapTestingDock()
 
     mapTesting_layout->addWidget(removeRedObjects_pushButton);
     mapTesting_layout->addWidget(unshowTraces_pushButton);
-    mapTesting_layout->addWidget(simMov_pushButton);
     mapTesting_layout->addWidget(resetAngle_pushButton);
     mapTesting_layout->addLayout(mapWidth_layout);
 
@@ -241,7 +242,7 @@ void MainWindow::createToolbar()
     cursor_action->setIcon(QIcon(":icons/graphics/wall"));
     cursor_action->setCheckable(true);
     cursor_action->setChecked(true);
-    mapQGraphicsView_->setSelectedPaintTool(Util::SelectedPaintTool::CURSOR);
+    map_->setSelectedPaintTool(Util::SelectedPaintTool::CURSOR);
     connect(cursor_action,SIGNAL(toggled(bool)),this,SLOT(action_Cursor_toggled(bool)));
     toolbar_->addAction(cursor_action);
 
@@ -269,24 +270,22 @@ void MainWindow::createToolbar()
 
 void MainWindow::pushButton_removeRedObjects_clicked()
 {
-    mapQGraphicsView_->removeRedObjects();
+    fleetManager_->removeRedObjects();
 }
 
 void MainWindow::pushButton_Connect_clicked()
 {
-    //    Disabled until Roowifi AutoCapture is used instead
-    //    updateSensorData_->start(500);
     QString ip = ipLineEdit_1_->text() + "." + ipLineEdit_2_->text() + "." + ipLineEdit_3_->text()
             + "." + ipLineEdit_4_->text();
     std::string stdip = ip.toStdString();
-    selectedRoomba_->rmb_connect(stdip);
+    fleetManager_->connect(stdip);
 }
 
 void MainWindow::pushButton_Disconnect_clicked()
 {
     //    Disabled until Roowifi AutoCapture is used instead
     //    updateSensorData_->stop();
-    selectedRoomba_->disconnect();
+    fleetManager_->disconnect();
     temperature_label_->setText("0");
     chargeLevel_label_->setText("0");
     velocity_horizontalSlider_->setValue(0);
@@ -295,42 +294,38 @@ void MainWindow::pushButton_Disconnect_clicked()
 
 void MainWindow::pushButton_Clean_clicked()
 {
-    selectedRoomba_->clean();
+    fleetManager_->clean();
 }
 
 void MainWindow::pushButton_allMotorsOn_clicked()
 {
-    selectedRoomba_->allMotorsOn();
+    fleetManager_->allMotorsOn();
 }
 
 void MainWindow::pushButton_allMotorsOff_clicked()
 {
-    selectedRoomba_->allMotorsOff();
+    fleetManager_->allMotorsOff();
 }
 
 void MainWindow::pushButton_Safe_clicked()
 {
     grabKeyboard();
-    selectedRoomba_->safeMode();
+    fleetManager_->safeMode();
 }
 
 void MainWindow::pushButton_Full_clicked()
 {
     grabKeyboard();
-    selectedRoomba_->fullMode();
+    fleetManager_->fullMode();
 }
 
 void MainWindow::pushButton_resetAngle_clicked()
 {
-    selectedRoomba_->resetAngle();
+    fleetManager_->resetAngle();
 }
 
 void MainWindow::keyPressEvent(QKeyEvent* event)
 {
-    //Remember following special radiuses
-    //Straight = 32768 or 32767
-    //Turn in place clockwise = 65535
-    //Turn in place counter-clockwise = 1
     qDebug() << "KeyPress";
     if(event->key() == Qt::Key_W) {
         if (velocity_horizontalSlider_->value() < 0)
@@ -343,22 +338,16 @@ void MainWindow::keyPressEvent(QKeyEvent* event)
         }
         else
         {
-            selectedRoomba_->Drive(velocity_horizontalSlider_->value(),32767);
+            fleetManager_->drive(velocity_horizontalSlider_->value(), RADSTRAIGHT);
         }
-        radius_ = 32767;
-        moving_ = true;
         qDebug() << "UpArrow";
     }
     else if(event->key() == Qt::Key_A) {
-        selectedRoomba_->Drive(velocity_horizontalSlider_->value(),200);
-        radius_ = 200;
-        moving_ = true;
+        fleetManager_->drive(velocity_horizontalSlider_->value(),200);
         qDebug() << "RightArrow";
     }
     else if(event->key() == Qt::Key_D) {
-        selectedRoomba_->Drive(velocity_horizontalSlider_->value(),-200);
-        radius_ = -200;
-        moving_ = true;
+        fleetManager_->drive(velocity_horizontalSlider_->value(),-200);
         qDebug() << "LeftArrow";
     }
     else if(event->key() == Qt::Key_S) {
@@ -372,121 +361,71 @@ void MainWindow::keyPressEvent(QKeyEvent* event)
         }
         else
         {
-            selectedRoomba_->Drive(velocity_horizontalSlider_->value(),32767);
+            fleetManager_->drive(velocity_horizontalSlider_->value(),RADSTRAIGHT);
         }
-        radius_ = 32767;
-        moving_ = true;
         qDebug() << "BackArrow";
     }
     else if(event->key() == Qt::Key_E) {
-        selectedRoomba_->Drive(velocity_horizontalSlider_->value(),65535);
-        radius_ = 65535;
-        moving_ = true;
+        fleetManager_->drive(velocity_horizontalSlider_->value(), RADTURNCW);
         qDebug() << "Turn clockwise";
     }
     else {
         releaseKeyboard();
-        selectedRoomba_->Drive(0,32767);
-        radius_ = 32767;
-        moving_ = false;
+        fleetManager_->drive(0, RADSTRAIGHT);
         qDebug() << "Stop";
     }
 }
 
-void MainWindow::sensorUpdateTimerTimeout()
-{
-    //    qDebug() << "sensorUpdateTimerTimeout";
-    temperature_label_->setText( QString::number( ( unsigned char )( selectedRoomba_->getTemperature() ) ) );
-    chargeLevel_label_->setText( QString::number( (unsigned short)( selectedRoomba_->getChargeLevel() ) ) );
-    selectedRoomba_->updateState();
-    QPointF rmbPosition = roombas_.at(0)->getRoombasLocation();
-    rmbPosition_label_->setText( "(" + QString::number(rmbPosition.x()) + " , " + QString::number(rmbPosition.y()) + ")" );
-    mapQGraphicsView_->updateLoc(&roombas_);
-}
-
 void MainWindow::pushButton_playSong_clicked()
 {
-    selectedRoomba_->playSong(1);
+    fleetManager_->playSong(1);
 }
 
 void MainWindow::pushButton_unshowTraces_clicked()
 {
-    mapQGraphicsView_->ifShowTraces(&roombas_);
-}
-
-void MainWindow::pushButton_simMov_clicked()
-{
-    double distance = -rand()%500;
-    double angle = -(rand()%90-rand()%90);
-    //mapQGraphicsView_->updateLoc(distance, angle/3.05, static_cast<int>(2000*(360-angle)/360),
-    //                       rand()%500);
-    //mapQGraphicsView_->updateLoc(-1000/3.05, 0, 1, rand()%500);  //simple version
+    fleetManager_->ifShowTraces();
 }
 
 void MainWindow::velocity_horizontalSlider_sliderMoved(int position)
 {
     velocityValue_label_->setText(QString::number(position));
-    if (moving_) {
-        selectedRoomba_->Drive(position,radius_);
-    }
+    fleetManager_->drive(position);
 }
 
 void MainWindow::pushButton_mapWidth_clicked()
 {
-    mapQGraphicsView_->setMapWidth(mapWidth_lineEdit_->text().toInt());
+    map_->setMapWidth(mapWidth_lineEdit_->text().toInt());
 }
 
 void MainWindow::pushButton_Go2POI_clicked()
 {
-    QPointF poiCoordinate = mapQGraphicsView_->getNextPoi();
-    QPointF roombaCoordinate = roombas_.at(0)->getRoombasLocation();
-    qDebug() << "POI coordinate x: " << poiCoordinate.x()
-             << " , y: " << poiCoordinate.y();
-    qDebug() << "Roomba coordinate x: " << roombaCoordinate.x()
-             << " , y: " << roombaCoordinate.y();
-    float deltaX = abs(roombaCoordinate.x() - poiCoordinate.x());
-    float deltaY = abs(roombaCoordinate.y() - poiCoordinate.y());
-    float angleRadian = atan2(deltaY, deltaX);
-    //float anglePi = angleRadian*180 / PI;
-
-    //stop
-    selectedRoomba_->Drive(0,32767);
-    radius_ = 32767;
-    //moving_ = false;
-
-    double initialAngle = roombas_.at(0)->getAngle();
-
-
-
-    //calculate
-
-
+    fleetManager_->go2Poi();
 }
 
 void MainWindow::action_Cursor_toggled(bool toggleStatus)
 {
     if (toggleStatus) {
-        mapQGraphicsView_->setSelectedPaintTool(Util::SelectedPaintTool::CURSOR);
+        map_->setSelectedPaintTool(Util::SelectedPaintTool::CURSOR);
     }
 }
 
 void MainWindow::action_Wall_toggled(bool toggleStatus)
 {
     if (toggleStatus) {
-        mapQGraphicsView_->setSelectedPaintTool(Util::SelectedPaintTool::WALL);
+        map_->setSelectedPaintTool(Util::SelectedPaintTool::WALL);
     }
 }
 
 void MainWindow::action_Poi_toggled(bool toggleStatus)
 {
     if (toggleStatus) {
-        mapQGraphicsView_->setSelectedPaintTool(Util::SelectedPaintTool::POI);
+        map_->setSelectedPaintTool(Util::SelectedPaintTool::POI);
     }
 }
 
 void MainWindow::action_Start_toggled(bool toggleStatus)
 {
     if (toggleStatus) {
-        mapQGraphicsView_->setSelectedPaintTool(Util::SelectedPaintTool::START);
+        map_->setSelectedPaintTool(Util::SelectedPaintTool::START);
     }
 }

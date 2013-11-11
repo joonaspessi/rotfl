@@ -1,29 +1,36 @@
 #include "iRoomba.h"
 #include "mapQGraphicsView.h"
+#include "fleetManager.h"
 
 namespace Croi {
 
-IRoomba::IRoomba(poiQGraphicsEllipseItem *startPoint, QObject *parent):
+IRoomba::IRoomba(PoiQGraphicsEllipseItem *startPoint, QObject *parent):
     QObject(parent),
-    startPoint_(startPoint), curPoint_(NULL), curSpeed_(NULL),
-    initX_(startPoint->x()), initY_(startPoint->y()), angle_(0.0),
-    radius_(1), velocity_(0), traceShown_(true)
+    startPoint_(startPoint), polygon_(NULL), curSpeed_(NULL),
+    Xloc_(startPoint->x()), Yloc_(startPoint->y()), angle_(0.0),
+    radius_(RADSTRAIGHT), velocity_(0), traceShown_(true)
 {
 
 }
 
-void IRoomba::Drive( int Velocity, int Radius )
+void IRoomba::drive( int velocity, int radius )
 {
-    radius_ = Radius;
-    velocity_ = Velocity;
+    radius_ = radius;
+    velocity_ = velocity;
 }
 
-poiQGraphicsEllipseItem* IRoomba::getStartPoint()
+//this overloaded function does not change radius
+void IRoomba::drive( int velocity)
+{
+    velocity_ = velocity;
+}
+
+PoiQGraphicsEllipseItem* IRoomba::getStartPoint()
 {
     return startPoint_;
 }
 
-void IRoomba::setStartPoint(poiQGraphicsEllipseItem* startPoint)
+void IRoomba::setStartPoint(PoiQGraphicsEllipseItem* startPoint)
 {
     startPoint_= startPoint;
 }
@@ -33,9 +40,9 @@ void IRoomba::resetAngle()
     angle_ = 0.0;
 }
 
-QPointF IRoomba::getRoombasLocation()
+QPointF IRoomba::getLoc()
 {
-    QPointF point(initX_, initY_);
+    QPointF point(Xloc_, Yloc_);
     return point;
 
 }
@@ -84,28 +91,28 @@ void IRoomba::updateState()
     angle_ -= static_cast<double>(angle)*PI*ANGLECORRECTION/180.0;
 
     //coordinates are updated
-    double x = initX_+cos(angleForDist)*dist;
-    double y = initY_+sin(angleForDist)*dist;
+    double x = Xloc_+cos(angleForDist)*dist;
+    double y = Yloc_+sin(angleForDist)*dist;
 
     QGraphicsLineItem* traceL = new QGraphicsLineItem
-            (initX_, initY_, x, y);
+            (Xloc_, Yloc_, x, y);
     QPen linePen(Qt::GlobalColor::gray);
     linePen.setWidth(TRACEWIDTH);
     traceL->setPen(linePen);
     traces_.append(traceL);
 
-    initX_ = x;
-    initY_ = y;
+    Xloc_ = x;
+    Yloc_ = y;
 }
 
-QGraphicsPolygonItem* IRoomba::getCurPoint()
+QGraphicsPolygonItem* IRoomba::getPolygon()
 {
-    return curPoint_;
+    return polygon_;
 }
 
-void IRoomba::setCurPoint(QGraphicsPolygonItem* curPoint)
+void IRoomba::setPolygon(QGraphicsPolygonItem* polygon)
 {
-    curPoint_ = curPoint;
+    polygon_ = polygon;
 }
 
 QGraphicsLineItem* IRoomba::getCurSpeed()
@@ -142,11 +149,12 @@ void IRoomba::ifShowTraces()
     }
 }
 
-void IRoomba::removeTraces()
+void IRoomba::removeTraces(MapQGraphicsView *map)
 {
     for (QVector<QGraphicsLineItem*>::iterator i = traces_.begin();
         i != traces_.end(); ++i)
     {
+        map->scene()->removeItem(*i);
         delete *i;
     }
     traces_.clear();

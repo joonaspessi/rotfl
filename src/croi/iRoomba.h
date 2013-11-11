@@ -4,9 +4,11 @@
 #include <exception>
 #include <string>
 #include <QObject>
-#include "poiQGraphicsEllipseItem.h"
 #include <QGraphicsPolygonItem>
 #include <QPointF>
+#include "poiQGraphicsEllipseItem.h"
+
+class MapQGraphicsView;
 
 namespace Croi {
 
@@ -16,7 +18,7 @@ class IRoomba: public QObject
 
 public:
 
-    IRoomba(poiQGraphicsEllipseItem *startPoint, QObject* parent = NULL);
+    explicit IRoomba(PoiQGraphicsEllipseItem *startPoint, QObject* parent = NULL);
     virtual ~IRoomba();
 
     virtual int rmb_connect(std::string ip) = 0;
@@ -26,7 +28,8 @@ public:
     virtual void allMotorsOn() = 0;
     virtual void allMotorsOff() = 0;
     virtual void clean() = 0;
-    virtual void Drive( int Velocity, int Radius );
+    virtual void drive( int velocity, int radius );
+    virtual void drive( int velocity);
     virtual void playSong( int songNumber ) = 0;
     virtual char getTemperature() = 0;
     virtual unsigned short getChargeLevel() = 0;
@@ -36,27 +39,27 @@ public:
     int getVelocity();
     //virtual bool isConnected = 0;
     void resetAngle();
-    QPointF getRoombasLocation();
+    QPointF getLoc();
     double getCurrentAngle();
     void updateState();
-    poiQGraphicsEllipseItem* getStartPoint();
-    void setStartPoint(poiQGraphicsEllipseItem* startPoint);
-    QGraphicsPolygonItem* getCurPoint();
-    void setCurPoint(QGraphicsPolygonItem*);
+    PoiQGraphicsEllipseItem* getStartPoint();
+    void setStartPoint(PoiQGraphicsEllipseItem* startPoint);
+    QGraphicsPolygonItem* getPolygon();
+    void setPolygon(QGraphicsPolygonItem*);
     QGraphicsLineItem* getCurSpeed();
     void setCurSpeed(QGraphicsLineItem* curSpeed);
     QVector<QGraphicsLineItem*>* getTraces();
     void ifShowTraces();
-    void removeTraces();
+    void removeTraces(MapQGraphicsView* map);
 
 private:
-    poiQGraphicsEllipseItem* startPoint_;
-    QGraphicsPolygonItem* curPoint_;
+    PoiQGraphicsEllipseItem* startPoint_;
+    QGraphicsPolygonItem* polygon_;
     QGraphicsLineItem* curSpeed_;
     QVector<QGraphicsLineItem*> traces_;
     bool traceShown_;
-    double initX_;
-    double initY_;
+    double Xloc_;
+    double Yloc_;
     double angle_;
     int radius_;
     int velocity_;

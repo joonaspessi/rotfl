@@ -12,9 +12,10 @@
 #include "croi/iRoomba.h"
 #include "mapQGraphicsView.h"
 #include "uiUtils.h"
+//#include "fleetManager.h"
 
 class ThreadReader;
-class mapQGraphicsView;
+class FleetManager;
 
 namespace Ui {
 class MainWindow;
@@ -28,12 +29,9 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
-    //TODO: Move createRoomba to FleetManager
-    Croi::IRoomba *createRoomba(poiQGraphicsEllipseItem *startPoint);
+    void setRoombaStatusData(Croi::IRoomba* selectedRoomba);
 
 public slots:
-//    Move to private when Roowifi AutoCapture removed
-    void sensorUpdateTimerTimeout();
 
 private slots:
     void pushButton_removeRedObjects_clicked();
@@ -53,8 +51,6 @@ private slots:
     void pushButton_allMotorsOff_clicked();
 
     void pushButton_playSong_clicked();
-
-    void pushButton_simMov_clicked();
 
     void pushButton_unshowTraces_clicked();
 
@@ -82,13 +78,9 @@ private:
     Ui::MainWindow *ui;
     Croi::PosixSerial* posixserial;
     ThreadReader *threadReader;
-    bool moving_;
-    int radius_;
-    Croi::IRoomba* selectedRoomba_;
-    QVector<Croi::IRoomba*> roombas_;
+    FleetManager* fleetManager_;
     QTimer *updateSensorData_;
-    mapQGraphicsView* mapQGraphicsView_;
-    QGraphicsScene* scene_;
+    MapQGraphicsView* map_;
     void createConnectDock();
     void createActionDock();
     void createStatusDock();

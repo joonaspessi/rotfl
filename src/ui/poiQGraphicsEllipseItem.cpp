@@ -3,14 +3,14 @@
 #include <QDebug>
 #include <QStyleOption>
 
-poiQGraphicsEllipseItem::poiQGraphicsEllipseItem
+PoiQGraphicsEllipseItem::PoiQGraphicsEllipseItem
 (qreal x, qreal y, qreal w, qreal h, QGraphicsItem* parent):
     QGraphicsEllipseItem(x, y, w, h, parent)
 {    
     setZValue(1);
 }
 
-void poiQGraphicsEllipseItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
+void PoiQGraphicsEllipseItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
     QStyleOptionGraphicsItem myoption = (*option);
     myoption.state &= !QStyle::State_Selected;
@@ -23,7 +23,7 @@ void poiQGraphicsEllipseItem::paint(QPainter *painter, const QStyleOptionGraphic
     QGraphicsEllipseItem::paint(painter, &myoption, widget);
 }
 
-poiQGraphicsEllipseItem::~poiQGraphicsEllipseItem()
+PoiQGraphicsEllipseItem::~PoiQGraphicsEllipseItem()
 {
 }
 

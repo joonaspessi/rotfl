@@ -10,7 +10,7 @@
 
 namespace Croi {
 
-RoombaSerial::RoombaSerial(poiQGraphicsEllipseItem *startPoint, QObject *parent) :
+RoombaSerial::RoombaSerial(PoiQGraphicsEllipseItem *startPoint, QObject *parent) :
     IRoomba(startPoint, parent)
 {
     posixSerial_ = new PosixSerial();
@@ -136,19 +136,38 @@ std::string RoombaSerial::optCodeToStr(int optCode)
 
 }
 
-void RoombaSerial::Drive(int Velocity, int Radius)
+void RoombaSerial::drive(int velocity, int radius)
 {
     char command[5];
 
     command[0] = DRIVE;
-    command[1] = ( Velocity >> 8 ) & 0x00FF;
-    command[2] = Velocity & 0x00FF;
+    command[1] = ( velocity >> 8 ) & 0x00FF;
+    command[2] = velocity & 0x00FF;
 
-    command[3] = ( Radius >> 8 ) & 0x00FF;
-    command[4] = Radius & 0x00FF;
+    command[3] = ( radius >> 8 ) & 0x00FF;
+    command[4] = radius & 0x00FF;
 
     if(posixSerial_->writeSerial(command, 5) != CROI_SUCCESS){
     }
+
+    IRoomba::drive(velocity, radius);
+}
+
+void RoombaSerial::drive(int velocity)
+{
+    char command[5];
+
+    command[0] = DRIVE;
+    command[1] = ( velocity >> 8 ) & 0x00FF;
+    command[2] = velocity & 0x00FF;
+
+    command[3] = ( getRadius() >> 8 ) & 0x00FF;
+    command[4] = getRadius() & 0x00FF;
+
+    if(posixSerial_->writeSerial(command, 5) != CROI_SUCCESS){
+    }
+
+    IRoomba::drive(velocity);
 }
 
 void RoombaSerial::playSong(int songNumber)

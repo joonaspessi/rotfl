@@ -24,7 +24,8 @@ SOURCES += main.cpp\
     ../../ext_lib/RooWifi_11b/roowifi.cpp \
     ../croi/roombaRoowifi.cpp \
     wallQGraphicsLineItem.cpp \
-    ../croi/iRoomba.cpp
+    ../croi/iRoomba.cpp \
+    fleetManager.cpp \
 
 HEADERS  += mainwindow.h \
     threadReader.h \
@@ -39,7 +40,8 @@ HEADERS  += mainwindow.h \
     ../../ext_lib/RooWifi_11b/roomba.h \
     ../croi/roombaRoowifi.h \
     wallQGraphicsLineItem.h \
-    uiUtils.h
+    uiUtils.h \
+    fleetManager.h \
 
 FORMS    += mainwindow.ui
 
