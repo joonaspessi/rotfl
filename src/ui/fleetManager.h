@@ -22,7 +22,7 @@ public:
 
     //makes new roomba, adds it to class variables and
     //also returns a pointer to the added roomba
-    Croi::IRoomba *createRoomba(PoiQGraphicsEllipseItem *startPoint);
+    void createRoomba(PoiQGraphicsEllipseItem *startPoint);
 
     void setMap(MapQGraphicsView* map);
     void addPoi(PoiQGraphicsEllipseItem* poi);

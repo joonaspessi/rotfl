@@ -18,6 +18,10 @@ void FleetManager::setMap(MapQGraphicsView* map)
 void FleetManager::sensorUpdateTimerTimeout()
 {
     //qDebug() << "sensorUpdateTimerTimeout";
+    if(roombas_.empty()) //in case timer is on and there is no roombas
+    {
+        return;
+    }
 
     for(int i = 0; i < roombas_.size(); ++i)
     {
@@ -26,15 +30,56 @@ void FleetManager::sensorUpdateTimerTimeout()
     map_->updateLoc(&roombas_);
 
     mainWindow_->setRoombaStatusData(selectedRoomba_);
+
+    //rest of the function is selection logic upon cursor select.
+    //Always makes selectedRoomba_'s starting point and roomba-icon selected
+    //if either one is selected by cursor but does nothing if nothing is
+    //selected. changes selectedRoomba_ if it isn't selected and another roomba
+    //is selected (either start point or roomba).
+    //no NULL-pointer check needed if updateLoc already called
+    if(selectedRoomba_->getPolygon()->isSelected())
+    {
+       selectedRoomba_->getStartPoint()->setSelected(true);
+    }
+    else if(selectedRoomba_->getStartPoint()->isSelected())
+    {
+        selectedRoomba_->getPolygon()->setSelected(true);
+    }
+    else //neither is selected by cursor
+    {
+        for (int i = 0; i < roombas_.size(); ++i)
+        {
+            //selected roomba found
+            if(roombas_.at(i)->getPolygon()->isSelected() ||
+               roombas_.at(i)->getStartPoint()->isSelected())
+            {
+                selectedRoomba_ = roombas_.at(i);
+                //both the roomba and it's startPoint are selected for clarity
+                selectedRoomba_->getPolygon()->setSelected(true);
+                selectedRoomba_->getStartPoint()->setSelected(true);
+                //
+                break;
+            }
+        }
+    }
+
+    //unselects other roombas that are selected by cursor
+    for (int i = 0; i < roombas_.size(); ++i)
+    {
+        if(roombas_.at(i) != selectedRoomba_)
+        {
+            roombas_.at(i)->getPolygon()->setSelected(false);
+            roombas_.at(i)->getStartPoint()->setSelected(false);
+        }
+    }
 }
 
-Croi::IRoomba* FleetManager::createRoomba(PoiQGraphicsEllipseItem *startPoint)
+void FleetManager::createRoomba(PoiQGraphicsEllipseItem *startPoint)
 {
-    selectedRoomba_ = new Croi::RoombaRoowifi(startPoint, this);
+    selectedRoomba_ = new Croi::RoombaRoowifi(startPoint, map_, this);
     //selectedRoomba_ = new Croi::RoombaSerial();
     //TODO: selectedRoomba_ = new Croi::RoombaVirtual();
     roombas_.append(selectedRoomba_);
-    return selectedRoomba_;
 }
 
 void FleetManager::addPoi(PoiQGraphicsEllipseItem* poi)
@@ -108,7 +153,7 @@ void FleetManager::ifShowTraces()
 //removes selectedRoomba's traces
 void FleetManager::removeTraces()
 {
-    selectedRoomba_->removeTraces(map_);
+    selectedRoomba_->removeTraces();
 }
 
 void FleetManager::go2Poi()

@@ -10,8 +10,9 @@
 
 namespace Croi {
 
-RoombaSerial::RoombaSerial(PoiQGraphicsEllipseItem *startPoint, QObject *parent) :
-    IRoomba(startPoint, parent)
+RoombaSerial::RoombaSerial(PoiQGraphicsEllipseItem *startPoint,
+                           MapQGraphicsView* map, QObject *parent) :
+    IRoomba(startPoint, map, parent)
 {
     posixSerial_ = new PosixSerial();
 }
@@ -42,18 +43,19 @@ int RoombaSerial::rmb_connect(std::string ip)
 
 int RoombaSerial::disconnect()
 {
-
+    IRoomba::disconnect();
 }
 
 void RoombaSerial::safeMode()
 {
     char buf = SAFE;
     posixSerial_->writeSerial(&buf,1);
+    IRoomba::safeMode();
 }
 
 void RoombaSerial::fullMode()
 {
-
+    IRoomba::fullMode();
 }
 
 void RoombaSerial::allMotorsOn()

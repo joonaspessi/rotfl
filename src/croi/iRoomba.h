@@ -8,6 +8,10 @@
 #include <QPointF>
 #include "poiQGraphicsEllipseItem.h"
 
+const double PI = 3.14159265;
+const double ANGLECORRECTION = 3.05;
+const double DISTANCECORRECTION = 6.1;
+
 class MapQGraphicsView;
 
 namespace Croi {
@@ -18,13 +22,14 @@ class IRoomba: public QObject
 
 public:
 
-    explicit IRoomba(PoiQGraphicsEllipseItem *startPoint, QObject* parent = NULL);
+    explicit IRoomba(PoiQGraphicsEllipseItem *startPoint,
+                     MapQGraphicsView* map, QObject* parent = NULL);
     virtual ~IRoomba();
 
     virtual int rmb_connect(std::string ip) = 0;
-    virtual int disconnect() = 0;
-    virtual void safeMode() = 0;
-    virtual void fullMode() = 0;
+    virtual int disconnect();
+    virtual void safeMode();
+    virtual void fullMode();
     virtual void allMotorsOn() = 0;
     virtual void allMotorsOff() = 0;
     virtual void clean() = 0;
@@ -50,10 +55,12 @@ public:
     void setCurSpeed(QGraphicsLineItem* curSpeed);
     QVector<QGraphicsLineItem*>* getTraces();
     void ifShowTraces();
-    void removeTraces(MapQGraphicsView* map);
+    void removeTraces();
+    bool isReady();
 
 private:
     PoiQGraphicsEllipseItem* startPoint_;
+    MapQGraphicsView* map_;
     QGraphicsPolygonItem* polygon_;
     QGraphicsLineItem* curSpeed_;
     QVector<QGraphicsLineItem*> traces_;
@@ -63,6 +70,7 @@ private:
     double angle_;
     int radius_;
     int velocity_;
+    bool isReady_;
 };
 
 

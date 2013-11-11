@@ -4,13 +4,28 @@
 
 namespace Croi {
 
-IRoomba::IRoomba(PoiQGraphicsEllipseItem *startPoint, QObject *parent):
+IRoomba::IRoomba(PoiQGraphicsEllipseItem *startPoint, MapQGraphicsView *map, QObject *parent):
     QObject(parent),
-    startPoint_(startPoint), polygon_(NULL), curSpeed_(NULL),
+    startPoint_(startPoint), map_(map), polygon_(NULL), curSpeed_(NULL),
     Xloc_(startPoint->x()), Yloc_(startPoint->y()), angle_(0.0),
-    radius_(RADSTRAIGHT), velocity_(0), traceShown_(true)
+    radius_(RADSTRAIGHT), velocity_(0), traceShown_(true), isReady_(false)
 {
 
+}
+
+int IRoomba::disconnect()
+{
+    isReady_ = false;
+}
+
+void IRoomba::safeMode()
+{
+    isReady_ = true;
+}
+
+void IRoomba::fullMode()
+{
+    isReady_ = true;
 }
 
 void IRoomba::drive( int velocity, int radius )
@@ -100,6 +115,11 @@ void IRoomba::updateState()
     linePen.setWidth(TRACEWIDTH);
     traceL->setPen(linePen);
     traces_.append(traceL);
+    if (!traceShown_)
+    {
+        traceL->setVisible(false);
+    }
+    map_->scene()->addItem(traceL);
 
     Xloc_ = x;
     Yloc_ = y;
@@ -113,6 +133,8 @@ QGraphicsPolygonItem* IRoomba::getPolygon()
 void IRoomba::setPolygon(QGraphicsPolygonItem* polygon)
 {
     polygon_ = polygon;
+    polygon_->setFlag(QGraphicsItem::ItemIsSelectable, true);
+    polygon_->setFlag(QGraphicsItem::ItemIsMovable,false);
 }
 
 QGraphicsLineItem* IRoomba::getCurSpeed()
@@ -149,15 +171,20 @@ void IRoomba::ifShowTraces()
     }
 }
 
-void IRoomba::removeTraces(MapQGraphicsView *map)
+void IRoomba::removeTraces()
 {
     for (QVector<QGraphicsLineItem*>::iterator i = traces_.begin();
         i != traces_.end(); ++i)
     {
-        map->scene()->removeItem(*i);
+        map_->scene()->removeItem(*i);
         delete *i;
     }
     traces_.clear();
+}
+
+bool IRoomba::isReady()
+{
+    return isReady_;
 }
 
 IRoomba::~IRoomba()

@@ -85,7 +85,6 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-//NOTE: selectedRoomba_ is going to be taken away (parameter then necessary)
 void MainWindow::setRoombaStatusData(Croi::IRoomba* selectedRoomba)
 {
     temperature_label_->setText( QString::number( ( unsigned char )( selectedRoomba->getTemperature() ) ) );

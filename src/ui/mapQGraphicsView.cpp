@@ -59,7 +59,8 @@ void MapQGraphicsView::mousePressEvent(QMouseEvent *event)
         QBrush brush(Qt::GlobalColor::green);
         startPoint->setBrush(brush);
         startPoint->setFlag(QGraphicsItem::ItemIsSelectable,true);
-        startPoint->setFlag(QGraphicsItem::ItemIsMovable,true);
+        //movable needs additional logic before allowing
+        startPoint->setFlag(QGraphicsItem::ItemIsMovable,false);
         //TODO: Add deleleting of startPoint when moving it
         scene()->addItem(startPoint);
         MainWindow* mainwindow = qobject_cast<MainWindow*>(parent());
@@ -144,32 +145,6 @@ void MapQGraphicsView::updateLoc(QVector<Croi::IRoomba *>* roombas)
         double triangleX = (points.at(1).x()+points.at(2).x())/2.0;
         double triangleY = (points.at(1).y()+points.at(2).y())/2.0;
 
-        QVector<QGraphicsLineItem*>* traces = roombas->at(i)->getTraces();
-
-        //adds all new tracelines (usually just 1 but this supports calling
-        //updateLoc less frequently
-        if(!traces->empty())
-        {
-            for (unsigned int i = traces->size()-1; i >= 0; --i)
-            {
-                if (scene()->items().contains(traces->at(i)))
-                {
-                    break; //all new tracelines added
-                }
-                else
-                {
-                    if (!traceShown_)
-                    {
-                        traces->at(i)->setVisible(false);
-                    }
-                    scene()->addItem(traces->at(i));
-                }
-                if(i==0)
-                {
-                    break;
-                }
-            }
-        }
         //ROOMBA'S ICON WILL REPLACE THIS IMPLEMENTATION
         //AND IT WILL BE PLACED IN IROOMBA CLASS AND HERE IT WILL
         //BE SIMPLY ADDED TO THE SCENE

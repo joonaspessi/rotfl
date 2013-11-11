@@ -1,10 +1,12 @@
 #include "roombaRoowifi.h"
 #include "croiUtil.h"
+#include "mapQGraphicsView.h"
 
 namespace Croi {
 
-RoombaRoowifi::RoombaRoowifi(PoiQGraphicsEllipseItem *startPoint, QObject *parent):
-    IRoomba(startPoint, parent)
+RoombaRoowifi::RoombaRoowifi(PoiQGraphicsEllipseItem *startPoint,
+                             MapQGraphicsView* map, QObject *parent):
+    IRoomba(startPoint, map, parent)
 {
     roowifi_ = new RooWifi(this);
     //TODO: implement own timer
@@ -32,6 +34,7 @@ int RoombaRoowifi::disconnect()
 {
     roowifi_->StopAutoCapture();
     roowifi_->Disconnect();
+    IRoomba::disconnect();
 }
 
 void RoombaRoowifi::safeMode()
@@ -57,11 +60,13 @@ void RoombaRoowifi::safeMode()
     Song[13] = 70;  SongDuration[13] = RooWifi::NotesDuration::Quaver;
 
     roowifi_->StoreSong( 1, 14, Song, SongDuration );
+    IRoomba::safeMode();
 }
 
 void RoombaRoowifi::fullMode()
 {
     roowifi_->FullMode();
+    IRoomba::fullMode();
 }
 
 void RoombaRoowifi::allMotorsOn()

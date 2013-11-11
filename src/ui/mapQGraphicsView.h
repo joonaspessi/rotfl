@@ -12,9 +12,6 @@
 const double POIWIDTH = 10.0;
 const double TRACEWIDTH = 34.0;
 const double ARROWWIDTH = 27.0;
-const double PI = 3.14159265;
-const double ANGLECORRECTION = 3.05;
-const double DISTANCECORRECTION = 6.1;
 
 class FleetManager;
 
