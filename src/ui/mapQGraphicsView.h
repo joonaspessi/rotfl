@@ -3,9 +3,11 @@
 
 #include <QGraphicsView>
 #include "wallQGraphicsLineItem.h"
+#include "atcQGraphicsRectItem.h"
 #include "uiUtils.h"
 #include <QMouseEvent>
 #include "croi/iRoomba.h"
+
 //#include "fleetManager.h"
 
 class FleetManager;
@@ -32,10 +34,14 @@ public slots:
     void mouseMoveEvent(QMouseEvent *event);
 
 private:
+    AtcQGraphicsRectItem* atcToBeAdded_;
     WallQGraphicsLineItem* wallToBeAdded_;
     QPointF* wallToBeAddedStartPoint_;
+    QPointF* atcToBeAddedStartPoint_;
     QGraphicsSimpleTextItem* wallToBeAddedStartPointText_;
     QGraphicsSimpleTextItem* wallToBeAddedEndPointText_;
+	QGraphicsSimpleTextItem* atcToBeAddedStartPointText_;
+    QGraphicsSimpleTextItem* atcToBeAddedEndPointText_;
     unsigned int mapScale_;
     bool traceShown_;
     Util::SelectedPaintTool selectedPaintTool_;

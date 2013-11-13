@@ -12,6 +12,7 @@
         <file alias="wall2">graphics/wall_red.png</file>
         <file alias="DEBUG_roomba_small">graphics/DEBUG_Roomba_round_icon_small.png</file>
         <file alias="DEBUG_roomba_virtual_small">graphics/DEBUG_RoombaVirtual_round_icon_small.png</file>
+		<file>graphics/atc.png</file>
     </qresource>
     <qresource prefix="/widgets">
         <file alias="gauges">qml/gauges.qml</file>

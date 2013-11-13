@@ -89,7 +89,6 @@ MainWindow::MainWindow(QWidget *parent) :
     createActionDock();
     createStatusDock();
     createMapTestingDock();
-
     //QML
     QQuickView * qmlview = new QQuickView();
     QWidget *container = QWidget::createWindowContainer(qmlview,this);
@@ -105,7 +104,6 @@ MainWindow::MainWindow(QWidget *parent) :
 
      roombaStatus_ = qmlview->rootObject();
     //End of QML
-
     tabifyDockWidget(status_dockWidget_,action_dockWidget_);
     tabifyDockWidget(action_dockWidget_,mapTesting_dockWidget_);
     tabifyDockWidget(mapTesting_dockWidget_,connection_dockWidget_);
@@ -117,7 +115,6 @@ MainWindow::MainWindow(QWidget *parent) :
 
     // TODO: Improve this to NOT trigger on start
     connect(map_,SIGNAL(mapChanged()),this,SLOT(mapModified()));
-
     // This event filter is implemented in eventFilter function, keeps mouse coordinates in status bar
     qApp->installEventFilter(this);
 }
@@ -139,6 +136,7 @@ void MainWindow::setRoombaStatusData(Croi::IRoomba* selectedRoomba)
 
     //QML
     QVariant returnedValue;
+	// TODO: Change getChargeLevel to getBatteryLevel
     QMetaObject::invokeMethod(roombaStatus_, "setBatteryLevelmAh", Q_RETURN_ARG(QVariant, returnedValue),
                               Q_ARG(QVariant, selectedRoomba->getChargeLevel()) );
 
@@ -154,7 +152,6 @@ void MainWindow::setRoombaStatusData(Croi::IRoomba* selectedRoomba)
 
     QMetaObject::invokeMethod(roombaStatus_, "setDistance", Q_RETURN_ARG(QVariant, returnedValue),
                               Q_ARG(QVariant, abs(selectedRoomba->getTotalDistance())));
-
 }
 
 void MainWindow::createConnectDock()
@@ -189,6 +186,8 @@ void MainWindow::createConnectDock()
 void MainWindow::createActionDock()
 {
     QVBoxLayout *action_layout = new QVBoxLayout;
+    QPushButton *goDock_pushButton = new QPushButton("GoDock", this);
+    connect(goDock_pushButton,SIGNAL(clicked()),this,SLOT(pushButton_GoDock_clicked()));
     QPushButton *clean_pushButton = new QPushButton("Cl&ean", this);
     connect(clean_pushButton,SIGNAL(clicked()),this,SLOT(pushButton_Clean_clicked()));
     QPushButton *safe_pushButton = new QPushButton("&Safe", this);
@@ -210,6 +209,7 @@ void MainWindow::createActionDock()
     velocity_horizontalSlider_->setMinimum(-500);
     connect(velocity_horizontalSlider_,SIGNAL(valueChanged(int)),this,SLOT(velocity_horizontalSlider_sliderMoved(int)));
 
+    action_layout->addWidget(goDock_pushButton);
     action_layout->addWidget(clean_pushButton);
     action_layout->addWidget(safe_pushButton);
     action_layout->addWidget(full_pushButton);
@@ -344,12 +344,17 @@ void MainWindow::createToolbar()
     connect(poi_action,SIGNAL(toggled(bool)),this,SLOT(action_Poi_toggled(bool)));
     toolbar_->addAction(poi_action);
 
+	QAction* atc_action = new QAction("Add Area to Clean", actionGroup);
+    atc_action->setIcon(QIcon(":/icons/graphics/atc"));
+    atc_action->setCheckable(true);
+    connect(atc_action,SIGNAL(toggled(bool)),this,SLOT(action_ATC_toggled(bool)));
+    toolbar_->addAction(atc_action);
+
     QAction* start_action = new QAction("Add Roomba", actionGroup);
     start_action->setIcon(QIcon(":/icons/roomba_small"));
     start_action->setCheckable(true);
     connect(start_action,SIGNAL(toggled(bool)),this,SLOT(action_Start_toggled(bool)));
     toolbar_->addAction(start_action);
-
     QAction* startVirtual_action = new QAction("Add virtual Roomba", actionGroup);
     startVirtual_action->setIcon(QIcon(":/icons/roomba_virtual_small"));
     startVirtual_action->setCheckable(true);
@@ -387,6 +392,12 @@ void MainWindow::pushButton_Disconnect_clicked()
     (*flog.ts) << "Disconnect Button pressed." << endl;
 }
 
+void MainWindow::pushButton_GoDock_clicked()
+{
+    fleetManager_->goDock();
+    (*flog.ts) << "GoDock Button pressed." << endl;
+
+}
 void MainWindow::pushButton_Clean_clicked()
 {
     fleetManager_->clean();
@@ -552,7 +563,6 @@ void MainWindow::pushButton_stopFleet_clicked()
     fleetManager_->stopFleet();
 }
 
-
 void MainWindow::action_Cursor_toggled(bool toggleStatus)
 {
     if (toggleStatus) {
@@ -569,6 +579,13 @@ void MainWindow::action_Wall_toggled(bool toggleStatus)
     }
 }
 
+void MainWindow::action_ATC_toggled(bool toggleStatus)
+{
+    if (toggleStatus) {
+        map_->setSelectedPaintTool(Util::SelectedPaintTool::ATC);
+        (*flog.ts) << "Action ATC toggled." << endl;
+    }
+}
 void MainWindow::action_Poi_toggled(bool toggleStatus)
 {
     if (toggleStatus) {

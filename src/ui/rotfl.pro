@@ -27,7 +27,8 @@ SOURCES += main.cpp\
     ../croi/iRoomba.cpp \
     fleetManager.cpp \
     flogger.cpp \
-    ../croi/roombaVirtual.cpp
+    ../croi/roombaVirtual.cpp \
+    atcQGraphicsRectItem.cpp
 
 HEADERS  += mainwindow.h \
     threadReader.h \
@@ -45,12 +46,12 @@ HEADERS  += mainwindow.h \
     uiUtils.h \
     fleetManager.h \
     flogger.h \
-    ../croi/roombaVirtual.h
+    ../croi/roombaVirtual.h \
+    atcQGraphicsRectItem.h
 
 FORMS    += mainwindow.ui
 
 RESOURCES += \
     graphics.qrc
-
 OTHER_FILES += \
     qml/gauges.qml

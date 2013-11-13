@@ -82,8 +82,30 @@ void RoombaRoowifi::allMotorsOff()
 
 void RoombaRoowifi::clean()
 {
-    roowifi_->Clean();
+//    roowifi_->Clean();
+    IRoomba::clean();
 }
+
+void RoombaRoowifi::vacuum_On()
+{
+    roowifi_->Vacuum_On();
+}
+
+void RoombaRoowifi::vacuum_Off()
+{
+    roowifi_->Vacuum_Off();
+}
+
+void RoombaRoowifi::goDock()
+{
+    roowifi_->GoDock();
+}
+
+float RoombaRoowifi::getBatteryLevel()
+{
+    roowifi_->GetBatteryLevel();
+}
+
 
 char RoombaRoowifi::getTemperature()
 {

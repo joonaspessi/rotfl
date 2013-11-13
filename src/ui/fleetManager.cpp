@@ -181,7 +181,6 @@ void FleetManager::setMap(MapQGraphicsView* map)
 //                           vertices_.at(a).at(b)->w->pos.x(),vertices_.at(a).at(b)->w->pos.y());
 //    map_->scene()->addLine(vertices_.at(a).at(b)->pos.x(),vertices_.at(a).at(b)->pos.y(),
 //                           vertices_.at(a).at(b)->nw->pos.x(),vertices_.at(a).at(b)->nw->pos.y());
-
 }
 
 void FleetManager::updateTimerTimeout()
@@ -224,9 +223,9 @@ void FleetManager::createRoomba(PoiQGraphicsEllipseItem *startPoint, bool virtua
         roomba = new Croi::RoombaRoowifi(startPoint, map_, this);
     }
     //Croi::RoombaSerial* roomba = new Croi::RoombaSerial(startPoint, map_, this);
-
     roombas_.append(roomba);
     selectedRoombas_.append(roomba);
+    QObject::connect(roomba, SIGNAL(areaCleaned()), this, SLOT(clean()));
 }
 
 void FleetManager::addPoi(PoiQGraphicsEllipseItem* poi)
@@ -234,10 +233,14 @@ void FleetManager::addPoi(PoiQGraphicsEllipseItem* poi)
     pois_.append(poi);
 }
 
+void FleetManager::addAtc(AtcQGraphicsRectItem* atc)
+{
+    atcs_.insert(atc);
+}
+
 void FleetManager::addWall(WallQGraphicsLineItem* wall)
 {
     walls_.insert(wall);
-
     //breaking verticeconnections to vertices where there are
     //walls
     for(unsigned int i = 0; i < vertices_.size(); ++i)
@@ -264,7 +267,7 @@ void FleetManager::addWall(WallQGraphicsLineItem* wall)
                     if(lInit < 0)
                     {
                         lInit = 0;
-                    }
+}
                     if (mInit < 0)
                     {
                         mInit = 0;
@@ -291,8 +294,6 @@ void FleetManager::addWall(WallQGraphicsLineItem* wall)
     }
 }
 
-
-
 std::set<WallQGraphicsLineItem *> FleetManager::getWalls()
 {
     return walls_;
@@ -301,6 +302,11 @@ std::set<WallQGraphicsLineItem *> FleetManager::getWalls()
 QVector<PoiQGraphicsEllipseItem *> FleetManager::getPOIs()
 {
     return pois_;
+}
+
+std::set<AtcQGraphicsRectItem *> FleetManager::getATCs()
+{
+    return atcs_;
 }
 
 void FleetManager::removeRedObjects()
@@ -322,6 +328,35 @@ void FleetManager::removeRedObjects()
             removeWall(*i);
         }
     }
+
+	for (std::set<AtcQGraphicsRectItem*>::iterator i = atcs_.begin();
+         i != atcs_.end(); ++i)
+    {
+        if ((*i)->pen().color() == Qt::GlobalColor::red)
+        {
+            map_->scene()->removeItem(*i);
+            delete *i;
+            atcs_.erase(i);
+        }
+    }
+
+    //THE STARTING POINT CAN'T BE REMOVED NOW (TEMPORARY CHANGE)
+    //all tracking and tracing is taken away if startPoint_ is removed
+    //    if (startPoint_ != NULL && startPoint_->pen().color() == Qt::GlobalColor::red)
+    //    {
+    //        delete startPoint_;
+    //        startPoint_ = NULL;
+    //        removeTraces();
+    //        scene()->removeItem(curPoint_);
+    //        delete curPoint_;
+    //        curPoint_ = NULL;
+    //        scene()->removeItem(curSpeed_);
+    //        delete curSpeed_;
+    //        curSpeed_ = NULL;
+    //        initX_= 0.0;
+    //        initY_= 0.0;
+
+    //    }
 }
 
 void FleetManager::removeAllObjects()
@@ -330,6 +365,13 @@ void FleetManager::removeAllObjects()
          i != pois_.end(); ++i)
     {
         removePoi(*i);
+    }
+    for (std::set<AtcQGraphicsRectItem*>::iterator i = atcs_.begin();
+         i != atcs_.end(); ++i)
+    {
+        map_->scene()->removeItem(*i);
+        delete *i;
+        atcs_.erase(i);
     }
     for (std::set<WallQGraphicsLineItem*>::iterator i = walls_.begin();
          i != walls_.end(); ++i)
@@ -345,7 +387,6 @@ void FleetManager::removePoi(PoiQGraphicsEllipseItem* poi)
     {
         return;
     }
-
     map_->scene()->removeItem(poi);
     pois_.remove(pois_.indexOf(poi));
     delete poi;
@@ -537,7 +578,6 @@ bool FleetManager::go2Poi(PoiQGraphicsEllipseItem *poi)
         }
     }
 
-
     if(!isReadyFound) //if none of selectedRoombas_ is ready
     {
         return false;
@@ -583,7 +623,7 @@ void FleetManager::poiCollected(Croi::IRoomba* collector, PoiQGraphicsEllipseIte
     double bestDistance = std::numeric_limits<double>::max();
     PoiQGraphicsEllipseItem* nearestPoi = NULL;
     for(QVector<PoiQGraphicsEllipseItem*>::iterator i = pois_.begin();
-        i != pois_.end(); ++i)
+         i != pois_.end(); ++i)
     {
         if(!(*i)->getGettingCollected())
         {
@@ -655,6 +695,14 @@ bool FleetManager::removeBlockedPois()
             blockedPoiFound = true;
             removePoi(*i);
         }
+        //TODO: check issue #3 on Github, implementation is missing
+        //bool isTrace = false;
+        //goes through collidingItems and removes POI if it
+        //finds an item that isn't a trace
+        //while (!collidingItems.empty())
+        //{
+        //  collidingItems.pop_front();
+        //}
     }
     return blockedPoiFound;
 }
@@ -695,6 +743,23 @@ void FleetManager::disconnect()
     }
 }
 
+void FleetManager::goDock()
+{
+    if (selectedRoombas_.empty())
+    {
+        QMessageBox::warning
+        (mainWindow_, "", tr("Please select a Roomba!"));
+    }
+    else
+    {
+        for (int i = 0; i < selectedRoombas_.size(); ++i)
+        {
+			// TODO: Add correct dock position here, now using hard coded (50,50)
+            selectedRoombas_.at(i)->go2Point(QPointF(50,50));
+            selectedRoombas_.at(i)->goDock();
+        }
+    }
+}
 void FleetManager::clean()
 {
     if (selectedRoombas_.empty())
@@ -707,6 +772,7 @@ void FleetManager::clean()
         for (int i = 0; i < selectedRoombas_.size(); ++i)
         {
             selectedRoombas_.at(i)->clean();
+			MoveRobotToNearestArea(i);
         }
     }
 }
@@ -857,6 +923,28 @@ void FleetManager::drive( int velocity)
         }
     }
 }
+// TODO: Check to work like go2POIs
+int FleetManager::findNearestPoint(QPointF roombaPos)
+{
+    float shortestdistance = 99999.99f;
+    int val = -1;
+    int i = 0;
+    for (std::set<AtcQGraphicsRectItem*>::iterator ii=atcs_.begin(); ii != atcs_.end();++ii)
+    {
+        AtcQGraphicsRectItem * p = *ii;
+        QPointF point = p->boundingRect().topLeft();
+        float deltaX = point.x()-roombaPos.x();
+        float deltaY = roombaPos.y() - point.y();
+        float distance = sqrt(pow(deltaX,2)+pow(deltaY,2) );
+        if (distance < shortestdistance) { shortestdistance = distance; val =i; }
+        ++i;
+    }
+
+    qDebug() << "val is: " << val;
+
+
+    return val;
+}
 
 void FleetManager::correctLocation(Util::Direction direction)
 {
@@ -899,6 +987,37 @@ void FleetManager::correctAngle(bool clockWise)
         }
     }
 }
+
+// TODO: Check if this is similar to Juhani's logic!
+void FleetManager::MoveRobotToNearestArea(int j) {
+    QPointF roombaPos = selectedRoombas_.at(j)->getLoc();
+    int i = findNearestPoint(roombaPos);
+    if (i==-1) { return; }
+    // go2Point currently works only with selected robot
+
+    //QPointF actPos=ATC2Start_.at(i).atcPos;
+    std::set<AtcQGraphicsRectItem*>::const_iterator ii = atcs_.begin();
+    std::advance(ii,i);
+    //AtcQGraphicsRectItem *ik; ik->boundingRect().height()
+    QPointF actPos = (*ii)->boundingRect().topLeft();
+
+    selectedRoombas_.at(j)->setSquare((*ii)->boundingRect().width(),(*ii)->boundingRect().height());
+
+    qDebug() << "actPos X: " + QString::number(actPos.rx()) + " actPos Y: " +  QString::number(actPos.ry());
+
+    actPos.ry() += (CTRACEWIDTH+3)/2;
+    actPos.rx() += (CTRACEWIDTH+3)/2;
+
+    qDebug() << "Square actual start X: actPos.rx() += CTRACEWIDTH/2" + QString::number(actPos.rx()) + " Y: " +  QString::number(actPos.ry());
+
+    selectedRoombas_.at(j)->go2Point(actPos);
+    //ATC2Start_.remove(i);
+//    map_->scene()->removeItem(*ii);
+//    delete *ii;
+    atcs_.erase(ii);
+
+}
+
 
 FleetManager::~FleetManager()
 {

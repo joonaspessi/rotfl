@@ -35,7 +35,7 @@ public:
     virtual void fullMode();
     virtual void allMotorsOn() = 0;
     virtual void allMotorsOff() = 0;
-    virtual void clean() = 0;
+    virtual void clean();
     //subclass calls this implementation for setting velocity_ and radius_
     virtual void drive( int velocity, int radius );
     //subclass calls this implementation for setting velocity_
@@ -49,13 +49,15 @@ public:
     virtual bool getLeftBumb() = 0;
     virtual bool getRightBumb() = 0;
     virtual QGraphicsPixmapItem* setIcon();
-
+    virtual void  goDock() = 0;
+    virtual float getBatteryLevel()=0;
 
     //all functions below do not need reimplementation by subclasses
     void resetAngle();
     void correctLocation(Util::Direction direction);
     void correctAngle(bool clockWise);
     QPointF getLoc();  //location IN PIXELS is given as a point
+	QPointF calcLoc();  //X and Y coordinates are updated
     double getCurrentAngle();
     int getRadius();
     int getVelocity();
@@ -72,6 +74,7 @@ public:
     //they'recurrently shown
     void ifShowTraces();
     void removeTraces();
+    void drawTrace(double x, double y, Qt::GlobalColor color);
     //is roomba ready to receive drive commands
     bool isReady();
     //calculates the nearest path to point and returns it's distance
@@ -88,21 +91,37 @@ public:
     //Roomba stops moving and everything related to following a path is reset
     void stop();
 
+	void setSquare(int squareWidth, int squareHeight);
+
 signals:
     void stateUpdate();
+	void areaCleaned();
 
 public slots:
     //updateState is now called. Also, if IRoomba is following a path, it
     //gives new go2Point() calls and updates bools as necessary
     void sensorUpdateTimerTimeout();
-
 private slots:
 
     void turnTimerTimeout();
     void driveTimerTimeout();
+    void drawTraceTimerStart();
+    void drawTraceTimerStop();
+    void drawTraceTimerTimeout();
+    void toStopDrawGreen();
+    void squareTurn();
+    void rotateEnded();
+    void squareMoveOneLine();
+    void squareTurn2();
+    void squareMoveLong();
+    void squareTurn3();
+    void squareMoveOneLine2();
+    void squareTurn4();
+    void squareStart2();
+    void angleresetfinished();
+    void rotateEnded2();
 
 private:
-
     //function for comparing vertices
     static bool verticeCompare(Util::Vertice* first, Util::Vertice* second);
     //this is a function for going straight to a point. Used by usePath
@@ -112,14 +131,19 @@ private:
                    std::priority_queue<Util::Vertice *,
                                        std::vector<Util::Vertice*>,
                                        bool (*)(Util::Vertice*, Util::Vertice*)> &priQ);
-
-    PoiQGraphicsEllipseItem *startPoint_;
-    MapQGraphicsView *map_;
+    PoiQGraphicsEllipseItem* startPoint_;
+    MapQGraphicsView* map_;
+    //roombas triangle is stored in this.
+    //TODO: make better icon
+    QGraphicsPolygonItem* polygon_;
     //ICON
-    QGraphicsPixmapItem *icon_;
+    QGraphicsPixmapItem * icon_;
 
+    //roomba's speedvector
+    QGraphicsLineItem* curSpeed_;
     //roombas traces are shown here
     QVector<QGraphicsLineItem*> traces_;
+    QVector<QGraphicsLineItem*> ctraces_;  //cleaned traces
     bool traceShown_;
     //current location's x-component IN PIXELS
     double Xloc_;
@@ -139,6 +163,21 @@ private:
     PoiQGraphicsEllipseItem *destPoi_;
 
     double totalDistance_;
+
+	QTimer* drawTraceTimer;
+    bool cleaning_;
+
+    //for Square size
+    void squareStart();
+    int m_sx; //the length of one line
+    int m_sy;  //long move, ie. the Width of the rectangle.
+    int m_count;
+    int nOfRound; // num of round, Height of rectangel is nOfRound*2*m_sx
+    float ld;   //distance between lines in squares
+
+    double turnTime_;      //delta time from go2point, needed by cleaningATC.
+    int turnDirection_; //directions that go2point used.
+    void calc4square(int h);
 };
 
 

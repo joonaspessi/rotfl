@@ -44,6 +44,8 @@ private slots:
 
     void pushButton_Disconnect_clicked();
 
+    void pushButton_GoDock_clicked();
+
     void pushButton_Clean_clicked();
 
     void pushButton_Safe_clicked();
@@ -84,7 +86,10 @@ private slots:
 
     void action_Wall_toggled(bool toggleStatus);
 
+    void action_ATC_toggled(bool toggleStatus);
+
     void action_Poi_toggled(bool toggleStatus);
+
 
     void action_Start_toggled(bool toggleStatus);
     void action_StartVirtual_toggled(bool toggleStatus);
@@ -118,6 +123,8 @@ private:
     QLabel *mapScaleValue_label_;
     QLabel *temperature_label_;
     QLabel *chargeLevel_label_;
+    QLabel *batteryLevel_label_;
+    QLabel *headingValue_label_;
     QLabel *rmbPosition_label_;
     QSlider *velocity_horizontalSlider_;
     QSlider *mapScale_horizontalSlider_;

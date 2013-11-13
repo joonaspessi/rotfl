@@ -9,7 +9,6 @@ namespace Croi {
 class RoombaRoowifi : public IRoomba
 {
     Q_OBJECT
-
 public:
     RoombaRoowifi(PoiQGraphicsEllipseItem *startPoint, MapQGraphicsView* map,
                   FleetManager *parent = NULL);
@@ -33,8 +32,10 @@ public:
     virtual bool getLeftBumb();
     virtual bool getRightBumb();
 
+    virtual void goDock();
+    virtual float getBatteryLevel();
 public slots:
-
+    void testSlot();
 private:
     RooWifi* roowifi_;
 };

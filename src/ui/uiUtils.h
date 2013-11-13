@@ -13,6 +13,7 @@ const unsigned int WALLLENGTHINDICATOROFFSET = 15;
 typedef enum {
     CURSOR,
     WALL,
+    ATC,
     POI,
     START,
     STARTVIRTUAL

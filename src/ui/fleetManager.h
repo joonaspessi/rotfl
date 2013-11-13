@@ -1,16 +1,17 @@
 #ifndef FLEETMANAGER_H
 #define FLEETMANAGER_H
 
-//#include "mainwindow.h"
 #include <QObject>
 #include <croi/iRoomba.h>
-//#include "mapQGraphicsView.h"
 #include "wallQGraphicsLineItem.h"
+#include "atcQGraphicsRectItem.h"
 #include "poiQGraphicsEllipseItem.h"
 #include <set>
 #include <string>
 #include <QVector>
 #include <QTimer>
+#include "math.h"
+
 #include <limits>
 #include "uiUtils.h"
 
@@ -31,9 +32,11 @@ public:
     //because map is created later (needs this class).
     void setMap(MapQGraphicsView* map);
     void addPoi(PoiQGraphicsEllipseItem* poi);
+    void addAtc(AtcQGraphicsRectItem* atc);
     void addWall(WallQGraphicsLineItem* wall);
     std::set<WallQGraphicsLineItem*> getWalls();
     QVector<PoiQGraphicsEllipseItem *> getPOIs();
+	std::set<AtcQGraphicsRectItem *> getATCs();
     void removePoi(PoiQGraphicsEllipseItem* poi);
     void removeWall(WallQGraphicsLineItem* wall);
     //removes all selected objects except roombas and startPoints
@@ -54,7 +57,7 @@ public:
     bool removeBlockedPois();
     void connect(std::string stdip);
     void disconnect();
-    void clean();
+    void goDock();
     void allMotorsOn();
     void allMotorsOff();
     void safeMode();
@@ -66,6 +69,8 @@ public:
     void drive( int velocity);
     void correctLocation(Util::Direction direction);
     void correctAngle(bool clockWise);
+    int findNearestPoint(QPointF roombaPos);
+    void MoveRobotToNearestArea(int i);
 
     ~FleetManager();
 
@@ -73,19 +78,19 @@ signals:
 
 public slots:
     void updateTimerTimeout();
+    void clean();
 
 private:
-
     //returns false is no roomba is ready to
     //go to a POI
     bool go2Poi(PoiQGraphicsEllipseItem *poi);
-
     MainWindow* mainWindow_;
     QVector<Croi::IRoomba*> selectedRoombas_;
     QVector<Croi::IRoomba*> managedRoombas_;
     QVector<Croi::IRoomba*> roombas_;
     std::set<WallQGraphicsLineItem*> walls_;
     QVector<PoiQGraphicsEllipseItem*> pois_;
+	std::set<AtcQGraphicsRectItem*> atcs_;
     MapQGraphicsView* map_;
     QVector<QVector<Util::Vertice*>> vertices_;
     QTimer* updateTimer_;
