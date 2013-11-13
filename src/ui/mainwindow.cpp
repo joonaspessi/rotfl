@@ -80,9 +80,9 @@ MainWindow::MainWindow(QWidget *parent) :
 
 MainWindow::~MainWindow()
 {
-    fleetManager_->disconnect();
     releaseKeyboard();
     delete ui;
+    delete fleetManager_;
 }
 
 void MainWindow::setRoombaStatusData(Croi::IRoomba* selectedRoomba)
@@ -325,7 +325,6 @@ void MainWindow::pushButton_resetAngle_clicked()
 
 void MainWindow::keyPressEvent(QKeyEvent* event)
 {
-    qDebug() << "KeyPress";
     if(event->key() == Qt::Key_W) {
         if (velocity_horizontalSlider_->value() < 0)
         {
@@ -368,7 +367,7 @@ void MainWindow::keyPressEvent(QKeyEvent* event)
         fleetManager_->drive(velocity_horizontalSlider_->value(), RADTURNCW);
         qDebug() << "Turn clockwise";
     }
-    else {
+    else if(event->key() == Qt::Key_Q) {
         releaseKeyboard();
         fleetManager_->drive(0, RADSTRAIGHT);
         qDebug() << "Stop";

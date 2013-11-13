@@ -2,6 +2,7 @@
 #include "croi/roombaRoowifi.h"
 #include <QDebug>
 #include <QObject>
+#include <QMessageBox>
 
 FleetManager::FleetManager(MainWindow* mainWindow, QObject *parent):
     QObject(parent), mainWindow_(mainWindow), selectedRoomba_(NULL), map_(NULL)
@@ -217,70 +218,125 @@ void FleetManager::checkPoiCollision()
 
 void FleetManager::connect(std::string stdip)
 {
-    //    Disabled until Roowifi AutoCapture is used instead
-    //    updateSensorData_->start(500);
-    selectedRoomba_->rmb_connect(stdip);
+    if (isRoombaSelected())
+    {
+        //    Disabled until Roowifi AutoCapture is used instead
+        //    updateSensorData_->start(500);
+        selectedRoomba_->rmb_connect(stdip);
+    }
 }
 
 void FleetManager::disconnect()
 {
-    //    Disabled until Roowifi AutoCapture is used instead
-    //    updateSensorData_->stop();
-    selectedRoomba_->disconnect();
+    if (isRoombaSelected())
+    {
+        //    Disabled until Roowifi AutoCapture is used instead
+        //    updateSensorData_->stop();
+        selectedRoomba_->disconnect();
+    }
 }
 
 void FleetManager::clean()
 {
-    selectedRoomba_->clean();
+    if (isRoombaSelected())
+    {
+        selectedRoomba_->clean();
+    }
 }
 
 void FleetManager::allMotorsOn()
 {
-    selectedRoomba_->allMotorsOn();
+    if (isRoombaSelected())
+    {
+        selectedRoomba_->allMotorsOn();
+    }
 }
 
 void FleetManager::allMotorsOff()
 {
-    selectedRoomba_->allMotorsOff();
+    if (isRoombaSelected())
+    {
+        selectedRoomba_->allMotorsOff();
+    }
 }
 
 void FleetManager::safeMode()
 {
-    selectedRoomba_->safeMode();
+    if (isRoombaSelected())
+    {
+        selectedRoomba_->safeMode();
+    }
 }
 
 void FleetManager::fullMode()
 {
-    selectedRoomba_->fullMode();
+    if (isRoombaSelected())
+    {
+        selectedRoomba_->fullMode();
+    }
 }
 
 void FleetManager::resetAngle()
 {
-    selectedRoomba_->resetAngle();
+    if (isRoombaSelected())
+    {
+        selectedRoomba_->resetAngle();
+    }
 }
 
 void FleetManager::playSong(unsigned int songNum)
 {
-    selectedRoomba_->playSong(songNum);
+    if (isRoombaSelected())
+    {
+        selectedRoomba_->playSong(songNum);
+    }
 }
 
 void FleetManager::setVelocity(int velocity)
 {
-    if (selectedRoomba_->getVelocity() != 0)
+    if (isRoombaSelected())
     {
-        selectedRoomba_->drive(velocity);
+        if (selectedRoomba_->getVelocity() != 0)
+        {
+            selectedRoomba_->drive(velocity);
+        }
     }
 }
 
 void FleetManager::drive( int velocity, int radius )
 {
-    selectedRoomba_->drive(velocity, radius);
+    if (isRoombaSelected())
+    {
+        selectedRoomba_->drive(velocity, radius);
+    }
 }
 
 void FleetManager::drive( int velocity)
 {
-    selectedRoomba_->drive(velocity);
+    if (isRoombaSelected())
+    {
+        selectedRoomba_->drive(velocity);
+    }
+}
+
+bool FleetManager::isRoombaSelected()
+{
+    if ( selectedRoomba_ == NULL)
+    {
+        MainWindow* mainwindow = qobject_cast<MainWindow*>(parent());
+        QMessageBox::warning(mainwindow, "", tr("Please select a Roomba!"));
+        return false;
+    }
+    else
+    {
+        return true;
+    }
 }
 
 FleetManager::~FleetManager()
-{}
+{
+    for (int i = 0; i < roombas_.size(); ++i)
+    {
+        roombas_[i]->disconnect();
+    }
+}

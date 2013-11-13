@@ -61,6 +61,7 @@ public slots:
     void updateTimerTimeout();
 
 private:
+    bool isRoombaSelected();
 
     MainWindow* mainWindow_;
     Croi::IRoomba* selectedRoomba_;
@@ -69,7 +70,6 @@ private:
     std::set<PoiQGraphicsEllipseItem*> pois_;
     MapQGraphicsView* map_;
     QTimer* updateTimer_;
-
 };
 
 #endif // FLEETMANAGER_H
