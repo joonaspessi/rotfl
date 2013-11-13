@@ -190,29 +190,18 @@ void FleetManager::checkPoiCollision()
          i != pois_.end(); ++i)
     {
         QList<QGraphicsItem*> collidingItems = (*i)->collidingItems();
-        bool isTrace = false;
-
-        //goes through collidingItems and removes POI if it
-        //finds an item that isn't a trace (item's parent isn't roomba's
-        //polygon)
-        while (!collidingItems.empty())
+        if (!collidingItems.empty())
         {
-            for (int j = 0; j < roombas_.size(); ++j)
-            {
-                //TODO: polygon_ to be replaced with an icon
-                if(roombas_.at(j)->getPolygon() ==
-                   collidingItems.front()->parentItem())
-                {
-                    isTrace = true;
-                }
-            }
-            if(!isTrace)
-            {
-                removePoi(*i);
-                break;  //no further searching needed for this POI
-            }
-            collidingItems.pop_front();
+            removePoi(*i);
         }
+        //TODO: check issue #3 on Github, implementation is missing
+        //bool isTrace = false;
+        //goes through collidingItems and removes POI if it
+        //finds an item that isn't a trace
+        //while (!collidingItems.empty())
+        //{
+        //  collidingItems.pop_front();
+        //}
     }
 }
 
