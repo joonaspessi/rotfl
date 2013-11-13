@@ -7,10 +7,14 @@ namespace Croi {
 IRoomba::IRoomba(PoiQGraphicsEllipseItem *startPoint, MapQGraphicsView *map,
                  FleetManager* parent):
     QObject(parent),
-    startPoint_(startPoint), map_(map), polygon_(NULL), curSpeed_(NULL),
-    Xloc_(startPoint->x()), Yloc_(startPoint->y()), angle_(0.0),
+    startPoint_(startPoint), map_(map), polygon_(NULL), icon_(NULL),
+    curSpeed_(NULL), Xloc_(startPoint->x()), Yloc_(startPoint->y()), angle_(0.0),
     radius_(RADSTRAIGHT), velocity_(0), traceShown_(true), isReady_(false)
 {
+    //QPixmap pixmap;
+    //pixmap.load(":/icons/roomba_small");
+    //icon_(pixmap, map);
+
 }
 
 int IRoomba::disconnect()
@@ -113,6 +117,8 @@ void IRoomba::updateState()
         QPen linePen(Qt::GlobalColor::gray);
         linePen.setWidth(TRACEWIDTH);
         traceL->setPen(linePen);
+        //opacity, so we get the idea which parts are cleaned well
+        traceL->setOpacity(0.25);
         traces_.append(traceL);
         if (!traceShown_) //if traces are currently hidden
         {

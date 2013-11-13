@@ -238,7 +238,7 @@ void MainWindow::createToolbar()
     QActionGroup *actionGroup = new QActionGroup(this);
 
     QAction* cursor_action = new QAction("Cursor", actionGroup);
-    cursor_action->setIcon(QIcon(":icons/graphics/wall"));
+    cursor_action->setIcon(QIcon(":/icons/clear_hand"));
     cursor_action->setCheckable(true);
     cursor_action->setChecked(true);
     map_->setSelectedPaintTool(Util::SelectedPaintTool::CURSOR);
@@ -252,13 +252,13 @@ void MainWindow::createToolbar()
     toolbar_->addAction(wall_action);
 
     QAction* poi_action = new QAction("Poi", actionGroup);
-    poi_action->setIcon(QIcon(":icons/graphics/wall"));
+    poi_action->setIcon(QIcon(":/icons/poi"));
     poi_action->setCheckable(true);
     connect(poi_action,SIGNAL(toggled(bool)),this,SLOT(action_Poi_toggled(bool)));
     toolbar_->addAction(poi_action);
 
     QAction* start_action = new QAction("Start", actionGroup);
-    start_action->setIcon(QIcon(":icons/graphics/wall"));
+    start_action->setIcon(QIcon(":/icons/roomba_small"));
     start_action->setCheckable(true);
     connect(start_action,SIGNAL(toggled(bool)),this,SLOT(action_Start_toggled(bool)));
     toolbar_->addAction(start_action);

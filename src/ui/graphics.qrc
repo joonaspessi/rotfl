@@ -1,5 +1,11 @@
 <RCC>
     <qresource prefix="/icons">
         <file>graphics/wall.png</file>
+        <file alias="color_hand">graphics/hand-pointer-icon.png</file>
+        <file alias="poi">graphics/Map-POI-icon.png</file>
+        <file alias="pin">graphics/Pin-icon.png</file>
+        <file alias="clear_hand">graphics/Pointer_hand_icon.png</file>
+        <file alias="roomba_big">graphics/Roomba_round_icon_big.png</file>
+        <file alias="roomba_small">graphics/Roomba_round_icon_small.png</file>
     </qresource>
 </RCC>

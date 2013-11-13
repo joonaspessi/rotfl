@@ -77,6 +77,9 @@ private:
     //roombas triangle is stored in this.
     //TODO: make better icon
     QGraphicsPolygonItem* polygon_;
+    //ICON
+    QGraphicsPixmapItem * icon_;
+
     //roomba's speedvector
     QGraphicsLineItem* curSpeed_;
     //roombas traces are shown here
