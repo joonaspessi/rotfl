@@ -28,23 +28,24 @@
 #include "croi/croiUtil.h"
 #include "mapQGraphicsView.h"
 #include "fleetManager.h"
+#include "flogger.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-//    posixserial = new Croi::PosixSerial();
+    //    posixserial = new Croi::PosixSerial();
 
-//    Disabled until Roowifi AutoCapture is used instead
-//    updateSensorData_ = new QTimer(this);
-//    connect(updateSensorData_,SIGNAL(timeout()),this,SLOT(sensorUpdateTimerTimeout()));
-
+    //    Disabled until Roowifi AutoCapture is used instead
+    //    updateSensorData_ = new QTimer(this);
+    //    connect(updateSensorData_,SIGNAL(timeout()),this,SLOT(sensorUpdateTimerTimeout()));
 
     //threadReader = new ThreadReader(posixserial, this);
     //threadReader->start();
 
     QMenu* fileMenu = menuBar()->addMenu(tr("&File"));
+
     QAction* openAct = new QAction(tr("&Open"),this);
     openAct->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_O));
     connect(openAct, SIGNAL(triggered()),this,SLOT(actionOpen_triggered()));
@@ -67,6 +68,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     // TODO: Magic fixed size for mainwindow
     resize(750,450);
+
     fleetManager_ = new FleetManager(this);
     map_ = new MapQGraphicsView(fleetManager_, this);
     map_->setScene(new QGraphicsScene(QRect(0,0,398,398), this));
@@ -87,7 +89,9 @@ MainWindow::MainWindow(QWidget *parent) :
     tabifyDockWidget(status_dockWidget_,action_dockWidget_);
     tabifyDockWidget(action_dockWidget_,mapTesting_dockWidget_);
     tabifyDockWidget(mapTesting_dockWidget_,connection_dockWidget_);
+
     createToolbar();
+
     setCurrentFile("");
 
     //show the default real world width of map in cm
@@ -95,6 +99,7 @@ MainWindow::MainWindow(QWidget *parent) :
     // TODO: Height in this one?
     //show the default real world width of map in cm
     //    mapWidth_lineEdit_->setText(QString::number(map_->giveMapWidth()));
+
     // TODO: Improve this to NOT trigger on start
     connect(map_,SIGNAL(mapChanged()),this,SLOT(mapModified()));
 }
@@ -179,7 +184,7 @@ void MainWindow::createActionDock()
     action_dockWidget_ = new QDockWidget(tr("Action"), this);
     action_dockWidget_->setWidget(actionWidget);
     addDockWidget(Qt::BottomDockWidgetArea, action_dockWidget_);
-//    action_dockWidget->setFeatures(QDockWidget::NoDockWidgetFeatures);
+    //    action_dockWidget->setFeatures(QDockWidget::NoDockWidgetFeatures);
 }
 
 void MainWindow::createStatusDock()
@@ -247,7 +252,7 @@ void MainWindow::createMapTestingDock()
     mapTesting_dockWidget_ = new QDockWidget(tr("Map testing"), this);
     mapTesting_dockWidget_->setWidget(mapTestingWidget);
     addDockWidget(Qt::RightDockWidgetArea, mapTesting_dockWidget_);
-//    action_dockWidget->setFeatures(QDockWidget::NoDockWidgetFeatures);
+    //    action_dockWidget->setFeatures(QDockWidget::NoDockWidgetFeatures);
 }
 
 void MainWindow::createToolbar()
@@ -291,6 +296,7 @@ void MainWindow::createToolbar()
 void MainWindow::pushButton_removeRedObjects_clicked()
 {
     fleetManager_->removeRedObjects();
+    (*flog.ts) << "Remove red objects Button pressed." << endl;
 }
 
 void MainWindow::pushButton_Connect_clicked()
@@ -299,49 +305,57 @@ void MainWindow::pushButton_Connect_clicked()
             + "." + ipLineEdit_4_->text();
     std::string stdip = ip.toStdString();
     fleetManager_->connect(stdip);
+    (*flog.ts) << "Connect Button pressed." << endl;
 }
 
 void MainWindow::pushButton_Disconnect_clicked()
 {
-//    Disabled until Roowifi AutoCapture is used instead
-//    updateSensorData_->stop();
+    //    Disabled until Roowifi AutoCapture is used instead
+    //    updateSensorData_->stop();
     fleetManager_->disconnect();
     temperature_label_->setText("0");
     chargeLevel_label_->setText("0");
     velocity_horizontalSlider_->setValue(0);
     velocityValue_label_->setText("0");
+    (*flog.ts) << "Disconnect Button pressed." << endl;
 }
 
 void MainWindow::pushButton_Clean_clicked()
 {
     fleetManager_->clean();
+    (*flog.ts) << "Clean Button pressed." << endl;
 }
 
 void MainWindow::pushButton_allMotorsOn_clicked()
 {
     fleetManager_->allMotorsOn();
+    (*flog.ts) << "Motors on Button pressed." << endl;
 }
 
 void MainWindow::pushButton_allMotorsOff_clicked()
 {
     fleetManager_->allMotorsOff();
+    (*flog.ts) << "Motors off Button pressed." << endl;
 }
 
 void MainWindow::pushButton_Safe_clicked()
 {
     grabKeyboard();
     fleetManager_->safeMode();
+    (*flog.ts) << "Safe Button pressed." << endl;
 }
 
 void MainWindow::pushButton_Full_clicked()
 {
     grabKeyboard();
     fleetManager_->fullMode();
+    (*flog.ts) << "Full Button pressed." << endl;
 }
 
 void MainWindow::pushButton_resetAngle_clicked()
 {
     fleetManager_->resetAngle();
+    (*flog.ts) << "ResetAngle Button pressed." << endl;
 }
 
 void MainWindow::keyPressEvent(QKeyEvent* event)
@@ -360,14 +374,17 @@ void MainWindow::keyPressEvent(QKeyEvent* event)
             fleetManager_->drive(velocity_horizontalSlider_->value(), RADSTRAIGHT);
         }
         qDebug() << "UpArrow";
+        (*flog.ts) << "UpArrow" << endl;
     }
     else if(event->key() == Qt::Key_A) {
         fleetManager_->drive(velocity_horizontalSlider_->value(),200);
         qDebug() << "RightArrow";
-     }
+        (*flog.ts) << "RightArrow" << endl;
+    }
     else if(event->key() == Qt::Key_D) {
         fleetManager_->drive(velocity_horizontalSlider_->value(),-200);
         qDebug() << "LeftArrow";
+        (*flog.ts) << "LeftArrow" << endl;
     }
     else if(event->key() == Qt::Key_S) {
         if (velocity_horizontalSlider_->value() > 0)
@@ -383,26 +400,31 @@ void MainWindow::keyPressEvent(QKeyEvent* event)
             fleetManager_->drive(velocity_horizontalSlider_->value(),RADSTRAIGHT);
         }
         qDebug() << "BackArrow";
+        (*flog.ts) << "BackArrow" << endl;
     }
     else if(event->key() == Qt::Key_E) {
         fleetManager_->drive(velocity_horizontalSlider_->value(), RADTURNCW);
         qDebug() << "Turn clockwise";
+        (*flog.ts) << "Turn clockwise" << endl;
     }
     else if(event->key() == Qt::Key_Q) {
         releaseKeyboard();
         fleetManager_->drive(0, RADSTRAIGHT);
         qDebug() << "Stop";
+        (*flog.ts) << "Stop" << endl;
     }
 }
 
 void MainWindow::pushButton_playSong_clicked()
 {
     fleetManager_->playSong(1);
+    (*flog.ts) << "playSong 1" << endl;
 }
 
 void MainWindow::pushButton_unshowTraces_clicked()
 {
     fleetManager_->ifShowTraces();
+    (*flog.ts) << "unshow/show Button pressed" << endl;
 }
 
 void MainWindow::velocity_horizontalSlider_sliderMoved(int position)
@@ -414,17 +436,20 @@ void MainWindow::velocity_horizontalSlider_sliderMoved(int position)
 void MainWindow::pushButton_mapWidth_clicked()
 {
     map_->setMapWidth(mapWidth_lineEdit_->text().toInt());
+    (*flog.ts) << "Map width Button pressed." << endl;
 }
 
 void MainWindow::pushButton_Go2POI_clicked()
 {
     fleetManager_->go2Poi();
+    (*flog.ts) << "Go2POI Button pressed." << endl;
 }
 
 void MainWindow::action_Cursor_toggled(bool toggleStatus)
 {
     if (toggleStatus) {
         map_->setSelectedPaintTool(Util::SelectedPaintTool::CURSOR);
+        (*flog.ts) << "Action cursor toggled." << endl;
     }
 }
 
@@ -432,6 +457,7 @@ void MainWindow::action_Wall_toggled(bool toggleStatus)
 {
     if (toggleStatus) {
         map_->setSelectedPaintTool(Util::SelectedPaintTool::WALL);
+        (*flog.ts) << "Action Wall toggled." << endl;
     }
 }
 
@@ -439,6 +465,7 @@ void MainWindow::action_Poi_toggled(bool toggleStatus)
 {
     if (toggleStatus) {
         map_->setSelectedPaintTool(Util::SelectedPaintTool::POI);
+        (*flog.ts) << "Action POI toggled." << endl;
     }
 }
 
@@ -446,6 +473,7 @@ void MainWindow::action_Start_toggled(bool toggleStatus)
 {
     if (toggleStatus) {
         map_->setSelectedPaintTool(Util::SelectedPaintTool::START);
+        (*flog.ts) << "Action Start toggled." << endl;
     }
 }
 

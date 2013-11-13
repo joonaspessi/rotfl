@@ -26,6 +26,7 @@ SOURCES += main.cpp\
     wallQGraphicsLineItem.cpp \
     ../croi/iRoomba.cpp \
     fleetManager.cpp \
+    flogger.cpp
 
 HEADERS  += mainwindow.h \
     threadReader.h \
@@ -42,6 +43,7 @@ HEADERS  += mainwindow.h \
     wallQGraphicsLineItem.h \
     uiUtils.h \
     fleetManager.h \
+    flogger.h
 
 FORMS    += mainwindow.ui
 
