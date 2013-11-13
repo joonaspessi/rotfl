@@ -24,10 +24,13 @@ public:
     //also returns a pointer to the added roomba
     void createRoomba(PoiQGraphicsEllipseItem *startPoint);
 
+    //set's the MapQGraphicsView for this class. not done in constructor
+    //because map is created later (needs this class).
     void setMap(MapQGraphicsView* map);
     void addPoi(PoiQGraphicsEllipseItem* poi);
     void addWall(WallQGraphicsLineItem* wall);
     void removePoi(PoiQGraphicsEllipseItem* poi);
+    //removes all selected objects except roombas and startPoints
     void removeRedObjects();
     void ifShowTraces();
     void removeTraces();
@@ -35,13 +38,13 @@ public:
     //removes POIs if it colllides with any item
     //TODO: exclude trace
     void checkPoiCollision();
-
+    //these functions work for current selectedRoomba_
     void connect(std::string stdip);
     void disconnect();
     void clean();
     void allMotorsOn();
     void allMotorsOff();
-    void safeMode()   ;
+    void safeMode();
     void fullMode();
     void resetAngle();
     void playSong(unsigned int songNum);

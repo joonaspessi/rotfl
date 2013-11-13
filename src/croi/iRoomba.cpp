@@ -84,6 +84,7 @@ int IRoomba::getVelocity()
 
 void IRoomba::updateState()
 {
+    //subclass handles the retrieval of sensor information
     int distance = getDistance();
     int angle = getAngle();
 
@@ -109,13 +110,14 @@ void IRoomba::updateState()
     double x = Xloc_+cos(angleForDist)*dist;
     double y = Yloc_+sin(angleForDist)*dist;
 
+    //new piece of trace is created (polygon_ set as parent)
     QGraphicsLineItem* traceL = new QGraphicsLineItem
-            (Xloc_, Yloc_, x, y);
+                                    (Xloc_, Yloc_, x, y, polygon_);
     QPen linePen(Qt::GlobalColor::gray);
     linePen.setWidth(TRACEWIDTH);
     traceL->setPen(linePen);
     traces_.append(traceL);
-    if (!traceShown_)
+    if (!traceShown_) //if traces are currently hidden
     {
         traceL->setVisible(false);
     }

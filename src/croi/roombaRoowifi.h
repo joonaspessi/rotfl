@@ -28,8 +28,6 @@ public:
 
     virtual short getDistance();
     virtual short getAngle();
-    //virtual int getRadius();
-    //virtual int getVelocity();
 public slots:
     void testSlot();
 private:
