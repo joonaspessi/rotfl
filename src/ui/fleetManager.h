@@ -9,6 +9,7 @@
 #include "poiQGraphicsEllipseItem.h"
 #include <set>
 #include <string>
+#include <QTimer>
 
 const int RADSTRAIGHT = 32768;
 const int RADTURNCW = 65535;
@@ -57,8 +58,7 @@ public:
 signals:
 
 public slots:
-//    Move to private when Roowifi AutoCapture removed
-    void sensorUpdateTimerTimeout();
+    void updateTimerTimeout();
 
 private:
 
@@ -68,6 +68,7 @@ private:
     std::set<WallQGraphicsLineItem*> walls_;
     std::set<PoiQGraphicsEllipseItem*> pois_;
     MapQGraphicsView* map_;
+    QTimer* updateTimer_;
 
 };
 

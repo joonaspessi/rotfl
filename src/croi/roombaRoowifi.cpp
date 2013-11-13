@@ -10,7 +10,7 @@ RoombaRoowifi::RoombaRoowifi(PoiQGraphicsEllipseItem *startPoint,
 {
     roowifi_ = new RooWifi(this);
     //TODO: implement own timer
-    connect(roowifi_,SIGNAL(AutoCaptureUpdated()), parent, SLOT(sensorUpdateTimerTimeout()));
+    connect(roowifi_,SIGNAL(AutoCaptureUpdated()), this, SLOT(sensorUpdateTimerTimeout()));
 }
 
 RoombaRoowifi::~RoombaRoowifi()

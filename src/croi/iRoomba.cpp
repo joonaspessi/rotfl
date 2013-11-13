@@ -189,6 +189,11 @@ bool IRoomba::isReady()
     return isReady_;
 }
 
+void IRoomba::sensorUpdateTimerTimeout()
+{
+    updateState();
+}
+
 IRoomba::~IRoomba()
 {
 

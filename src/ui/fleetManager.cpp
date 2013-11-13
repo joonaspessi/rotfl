@@ -1,10 +1,15 @@
 #include "fleetManager.h"
 #include "croi/roombaRoowifi.h"
 #include <QDebug>
+#include <QObject>
 
 FleetManager::FleetManager(MainWindow* mainWindow, QObject *parent):
     QObject(parent), mainWindow_(mainWindow), selectedRoomba_(NULL), map_(NULL)
 {
+    updateTimer_ = new QTimer(this);
+    QObject::connect(updateTimer_, SIGNAL(timeout()), this, SLOT(updateTimerTimeout()));
+    updateTimer_->setSingleShot(false);
+    updateTimer_->start(500);
 }
 
 
@@ -15,18 +20,14 @@ void FleetManager::setMap(MapQGraphicsView* map)
     map_ = map;
 }
 
-void FleetManager::sensorUpdateTimerTimeout()
+void FleetManager::updateTimerTimeout()
 {
-    //qDebug() << "sensorUpdateTimerTimeout";
-    if(roombas_.empty()) //in case timer is on and there is no roombas
+    //qDebug() << "updateTimerTimeout";
+    if(roombas_.empty()) //in case timer is on and there is no roomba
     {
         return;
     }
 
-    for(int i = 0; i < roombas_.size(); ++i)
-    {
-        roombas_.at(i)->updateState();
-    }
     map_->updateLoc(&roombas_);
 
     mainWindow_->setRoombaStatusData(selectedRoomba_);

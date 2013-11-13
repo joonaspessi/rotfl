@@ -72,6 +72,9 @@ public:
     //is roomba ready to receive drive commands
     bool isReady();
 
+public slots:
+    void sensorUpdateTimerTimeout();
+
 private:
     PoiQGraphicsEllipseItem* startPoint_;
     MapQGraphicsView* map_;
