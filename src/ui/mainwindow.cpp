@@ -25,6 +25,7 @@
 #include "croi/croiUtil.h"
 #include "mapQGraphicsView.h"
 #include "fleetManager.h"
+#include "Flogger.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -292,6 +293,9 @@ void MainWindow::createToolbar()
 void MainWindow::pushButton_removeRedObjects_clicked()
 {
     fleetManager_->removeRedObjects();
+    //Flogger
+    Flogger flog;
+    (*flog.ts) << "Remove red objects Button pressed." << endl;
 }
 
 void MainWindow::pushButton_Connect_clicked()
@@ -300,6 +304,9 @@ void MainWindow::pushButton_Connect_clicked()
             + "." + ipLineEdit_4_->text();
     std::string stdip = ip.toStdString();
     fleetManager_->connect(stdip);
+    //Flogger
+    Flogger flog;
+    (*flog.ts) << "Connect Button pressed." << endl;
 }
 
 void MainWindow::pushButton_Disconnect_clicked()
@@ -311,33 +318,53 @@ void MainWindow::pushButton_Disconnect_clicked()
     chargeLevel_label_->setText("0");
     velocity_horizontalSlider_->setValue(0);
     velocityValue_label_->setText("0");
+    //Flogger
+    Flogger flog;
+    (*flog.ts) << "Disconnect Button pressed." << endl;
 }
 
 void MainWindow::pushButton_Clean_clicked()
 {
     fleetManager_->clean();
+    //Flogger
+    Flogger flog;
+    (*flog.ts) << "Clean Button pressed." << endl;
 }
 
 void MainWindow::pushButton_allMotorsOn_clicked()
 {
     fleetManager_->allMotorsOn();
+    //Flogger
+    Flogger flog;
+    (*flog.ts) << "Motors on Button pressed." << endl;
 }
 
 void MainWindow::pushButton_allMotorsOff_clicked()
 {
     fleetManager_->allMotorsOff();
+    //Flogger
+    Flogger flog;
+    (*flog.ts) << "Motors off Button pressed." << endl;
 }
 
 void MainWindow::pushButton_Safe_clicked()
 {
     grabKeyboard();
     fleetManager_->safeMode();
+    //Flogger
+    Flogger flog;
+    (*flog.ts) << "Safe Button pressed." << endl;
 }
 
 void MainWindow::pushButton_Full_clicked()
 {
     grabKeyboard();
     fleetManager_->fullMode();
+	
+	//Flogger
+    Flogger flog;
+    (*flog.ts) << "Full Button pressed." << endl;
+	
 }
 
 void MainWindow::pushButton_resetAngle_clicked()
@@ -415,17 +442,30 @@ void MainWindow::velocity_horizontalSlider_sliderMoved(int position)
 void MainWindow::pushButton_mapWidth_clicked()
 {
     map_->setMapWidth(mapWidth_lineEdit_->text().toInt());
+    //Flogger
+    Flogger flog;
+    (*flog.ts) << "Map width Button pressed." << endl;
+	
 }
 
 void MainWindow::pushButton_Go2POI_clicked()
 {
     fleetManager_->go2Poi();
+
+    //Flogger
+    Flogger flog;
+    (*flog.ts) << "Go2POI Button pressed." << endl;
+
 }
 
 void MainWindow::action_Cursor_toggled(bool toggleStatus)
 {
     if (toggleStatus) {
         map_->setSelectedPaintTool(Util::SelectedPaintTool::CURSOR);
+
+    	//Flogger
+    	Flogger flog;
+    	(*flog.ts) << "Action cursor toggled." << endl;
     }
 }
 
@@ -433,6 +473,9 @@ void MainWindow::action_Wall_toggled(bool toggleStatus)
 {
     if (toggleStatus) {
         map_->setSelectedPaintTool(Util::SelectedPaintTool::WALL);
+    	//Flogger
+    	Flogger flog;
+    	(*flog.ts) << "Action Wall toggled." << endl;
     }
 }
 
@@ -440,6 +483,9 @@ void MainWindow::action_Poi_toggled(bool toggleStatus)
 {
     if (toggleStatus) {
         map_->setSelectedPaintTool(Util::SelectedPaintTool::POI);
+		//Flogger
+    	Flogger flog;
+    	(*flog.ts) << "Action POI toggled." << endl;
     }
 }
 
@@ -447,6 +493,9 @@ void MainWindow::action_Start_toggled(bool toggleStatus)
 {
     if (toggleStatus) {
         map_->setSelectedPaintTool(Util::SelectedPaintTool::START);
+		//Flogger
+    	Flogger flog;
+    	(*flog.ts) << "Action Start toggled." << endl;
     }
 }
 
