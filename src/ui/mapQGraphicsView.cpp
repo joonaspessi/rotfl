@@ -38,10 +38,11 @@ void mapQGraphicsView::mouseDoubleClickEvent(QMouseEvent* event)
             QPixmap pixmap;
             pixmap.load("./pics/Roomba_round_icon_small.png");
             QGraphicsPixmapItem * item = scene()->addPixmap(pixmap);
-            item->setPos(initX_-16, initY_-16);
+            //item->setPos(p);
+            item->setPos(initX_ - pixmap.width()/2, initY_ - pixmap.height()/2);
             qDebug() << item->rotation();
-            item->setRotation(90);
-            qDebug() << item->rotation();
+            //item->setRotation(90);
+            //qDebug() << item->rotation();
 
             //QGraphicsPixmapItem item(QPixmap("Roomba_round_icon_small.png"));
             //scene()->addItem(&item);
