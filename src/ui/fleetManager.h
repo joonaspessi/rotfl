@@ -1,7 +1,7 @@
 #ifndef FLEETMANAGER_H
 #define FLEETMANAGER_H
 
-#include "mainwindow.h"
+//#include "mainwindow.h"
 #include <QObject>
 #include <croi/iRoomba.h>
 #include "mapQGraphicsView.h"
@@ -14,6 +14,8 @@
 const int RADSTRAIGHT = 32768;
 const int RADTURNCW = 65535;
 const int RADTURNCCW = 1;
+
+class MainWindow;
 
 class FleetManager : public QObject
 {

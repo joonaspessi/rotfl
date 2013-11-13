@@ -7,12 +7,14 @@
 #include <QGraphicsPolygonItem>
 #include <QPointF>
 #include "poiQGraphicsEllipseItem.h"
+//#include "fleetManager.h"
 
 const double PI = 3.14159265;
 const double ANGLECORRECTION = 3.05;
 const double DISTANCECORRECTION = 6.1;
 
 class MapQGraphicsView;
+class FleetManager;
 
 namespace Croi {
 
@@ -23,7 +25,7 @@ class IRoomba: public QObject
 public:
 
     explicit IRoomba(PoiQGraphicsEllipseItem *startPoint,
-                     MapQGraphicsView* map, QObject* parent = NULL);
+                     MapQGraphicsView* map, FleetManager *parent = NULL);
     virtual ~IRoomba();
 
     virtual int rmb_connect(std::string ip) = 0;
@@ -47,12 +49,11 @@ public:
     virtual short getAngle() = 0;
 
     //all functions below do not need reimplementation by subclasses
-    int getRadius();
-    int getVelocity();
-    //virtual bool isConnected = 0;
     void resetAngle();
     QPointF getLoc();  //Xloc_ and Yloc_ is given as a point
     double getCurrentAngle();
+    int getRadius();
+    int getVelocity();
     //this function updates the class variables to represent actual roomba.
     //It's called in regular intervals in timer timeouts.
     void updateState();
@@ -60,11 +61,6 @@ public:
     void setStartPoint(PoiQGraphicsEllipseItem* startPoint);
     //TODO: changed when implementing new roomba icon
     QGraphicsPolygonItem* getPolygon();
-    //TODO: changed when implementing new roomba icon
-    void setPolygon(QGraphicsPolygonItem*);
-    QGraphicsLineItem* getCurSpeed();
-    void setCurSpeed(QGraphicsLineItem* curSpeed);
-    QVector<QGraphicsLineItem*>* getTraces();
     //calling this will show/unshow traces depending on whether
     //they'recurrently shown
     void ifShowTraces();
@@ -72,7 +68,7 @@ public:
     //is roomba ready to receive drive commands
     bool isReady();
 
-public slots:
+private slots:
     void sensorUpdateTimerTimeout();
 
 private:

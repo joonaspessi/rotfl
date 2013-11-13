@@ -10,7 +10,7 @@ class RoombaRoowifi : public IRoomba
 {
 public:
     RoombaRoowifi(PoiQGraphicsEllipseItem *startPoint, MapQGraphicsView* map,
-                  QObject *parent = NULL);
+                  FleetManager *parent = NULL);
     virtual ~RoombaRoowifi();
 
     virtual int rmb_connect(std::string ip);

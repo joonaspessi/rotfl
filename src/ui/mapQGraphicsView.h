@@ -20,8 +20,6 @@ class MapQGraphicsView : public QGraphicsView
     Q_OBJECT
 public:
     explicit MapQGraphicsView(FleetManager* fleetManager, QWidget* parent = NULL);
-    //updates roomba's location and heading in map. Keeps a trace
-    void updateLoc(QVector<Croi::IRoomba *>* roombas);
     //gives map's width in cm
     int giveMapWidth();
     //give new width in cm

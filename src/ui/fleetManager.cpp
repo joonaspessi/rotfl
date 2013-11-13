@@ -1,3 +1,4 @@
+#include "mainwindow.h"
 #include "fleetManager.h"
 #include "croi/roombaRoowifi.h"
 #include <QDebug>
@@ -29,8 +30,6 @@ void FleetManager::updateTimerTimeout()
         return;
     }
 
-    map_->updateLoc(&roombas_);
-
     mainWindow_->setRoombaStatusData(selectedRoomba_);
 
     //rest of the function is selection logic upon cursor select.
@@ -38,7 +37,6 @@ void FleetManager::updateTimerTimeout()
     //if either one is selected by cursor but does nothing if nothing is
     //selected. changes selectedRoomba_ if it isn't selected and another roomba
     //is selected (either start point or roomba).
-    //no NULL-pointer check needed if updateLoc already called
     if(selectedRoomba_->getPolygon()->isSelected())
     {
        selectedRoomba_->getStartPoint()->setSelected(true);

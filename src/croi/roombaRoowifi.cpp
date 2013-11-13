@@ -5,12 +5,13 @@
 namespace Croi {
 
 RoombaRoowifi::RoombaRoowifi(PoiQGraphicsEllipseItem *startPoint,
-                             MapQGraphicsView* map, QObject *parent):
+                             MapQGraphicsView* map, FleetManager *parent):
     IRoomba(startPoint, map, parent)
 {
     roowifi_ = new RooWifi(this);
     //TODO: implement own timer
     connect(roowifi_,SIGNAL(AutoCaptureUpdated()), this, SLOT(sensorUpdateTimerTimeout()));
+    IRoomba::updateState(); //call needed to have no null pointer in polygon_
 }
 
 RoombaRoowifi::~RoombaRoowifi()

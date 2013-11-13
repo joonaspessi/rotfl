@@ -4,13 +4,13 @@
 
 namespace Croi {
 
-IRoomba::IRoomba(PoiQGraphicsEllipseItem *startPoint, MapQGraphicsView *map, QObject *parent):
+IRoomba::IRoomba(PoiQGraphicsEllipseItem *startPoint, MapQGraphicsView *map,
+                 FleetManager* parent):
     QObject(parent),
     startPoint_(startPoint), map_(map), polygon_(NULL), curSpeed_(NULL),
     Xloc_(startPoint->x()), Yloc_(startPoint->y()), angle_(0.0),
     radius_(RADSTRAIGHT), velocity_(0), traceShown_(true), isReady_(false)
 {
-
 }
 
 int IRoomba::disconnect()
@@ -67,11 +67,6 @@ double IRoomba::getCurrentAngle()
     return angle_;
 }
 
-QVector<QGraphicsLineItem*>* IRoomba::getTraces()
-{
-    return &traces_;
-}
-
 int IRoomba::getRadius()
 {
     return radius_;
@@ -125,30 +120,68 @@ void IRoomba::updateState()
         }
         map_->scene()->addItem(traceL);
     }
+
     Xloc_ = x;
     Yloc_ = y;
+
+    //normalized speed
+    double speed = static_cast<double>(velocity_)/500.0;
+
+    if(speed < 0)
+    {
+        speed *= -1;
+    }
+    //making the correctly angled roombaTriangle
+    //THIS WILL BE REPLACED WITH ROOMBA ICON
+    QVector<QPointF> points;
+    QPointF first(Xloc_+cos(angle_)*ARROWWIDTH, Yloc_+sin(angle_)*ARROWWIDTH);
+    points.append(first);
+    double tempAngle = angle_+40.0*PI/180.0;
+    points.append(QPointF(Xloc_-cos(tempAngle)*ARROWWIDTH,
+                          Yloc_-sin(tempAngle)*ARROWWIDTH));
+    tempAngle -= 80.0*PI/180.0;
+    points.append(QPointF(Xloc_-cos(tempAngle)*ARROWWIDTH,
+                          Yloc_-sin(tempAngle)*ARROWWIDTH));
+    points.append(first);
+    QPolygonF triangle(points);
+    //calculate the point at the back of the triangle
+    double triangleX = (points.at(1).x()+points.at(2).x())/2.0;
+    double triangleY = (points.at(1).y()+points.at(2).y())/2.0;
+
+    //ROOMBA'S ICON WILL REPLACE THIS IMPLEMENTATION
+    if (polygon_ == NULL)  //first update
+    {
+        polygon_ = map_->scene()->addPolygon(triangle);
+        //color of the roombaTriangle is blue
+        QBrush triangleBrush(Qt::GlobalColor::blue);
+        polygon_->setBrush(triangleBrush);
+        polygon_->setFlag(QGraphicsItem::ItemIsSelectable, true);
+        polygon_->setFlag(QGraphicsItem::ItemIsMovable,false);
+        QPen curSpeedPen(Qt::GlobalColor::blue);
+        curSpeedPen.setWidth(TRACEWIDTH/4.0);
+        //don't you dare say that this here piece of code is not beautiful!
+        curSpeed_ = map_->scene()->addLine(triangleX, triangleY,
+                                     triangleX-cos(angle_)*ARROWWIDTH*2.0*speed,
+                                     triangleY-sin(angle_)*ARROWWIDTH*2.0*speed,
+                                     curSpeedPen);
+        curSpeed_->setFlag(QGraphicsItem::ItemIsMovable,false);
+    }
+    else
+    {
+        polygon_->setPolygon(triangle);
+        curSpeed_->setLine(triangleX, triangleY,
+                          triangleX-cos(angle)*ARROWWIDTH*2.0*speed,
+                          triangleY-sin(angle)*ARROWWIDTH*2.0*speed);
+    }
+    curSpeed_->setZValue(1);
+    polygon_->setZValue(1);
+
+   qobject_cast<FleetManager*>(parent())->checkPoiCollision();
 }
 
 QGraphicsPolygonItem* IRoomba::getPolygon()
 {
     return polygon_;
-}
-
-void IRoomba::setPolygon(QGraphicsPolygonItem* polygon)
-{
-    polygon_ = polygon;
-    polygon_->setFlag(QGraphicsItem::ItemIsSelectable, true);
-    polygon_->setFlag(QGraphicsItem::ItemIsMovable,false);
-}
-
-QGraphicsLineItem* IRoomba::getCurSpeed()
-{
-    return curSpeed_;
-}
-
-void IRoomba::setCurSpeed(QGraphicsLineItem* curSpeed)
-{
-    curSpeed_ = curSpeed;
 }
 
 void IRoomba::ifShowTraces()

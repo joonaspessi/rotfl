@@ -11,10 +11,11 @@
 namespace Croi {
 
 RoombaSerial::RoombaSerial(PoiQGraphicsEllipseItem *startPoint,
-                           MapQGraphicsView* map, QObject *parent) :
+                           MapQGraphicsView* map, FleetManager *parent) :
     IRoomba(startPoint, map, parent)
 {
     posixSerial_ = new PosixSerial();
+    IRoomba::updateState(); //call needed to have no null pointer in polygon_
 }
 
 RoombaSerial::~RoombaSerial()
