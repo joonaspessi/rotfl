@@ -66,10 +66,8 @@ public slots:
     void updateTimerTimeout();
 
 private:
-    bool isRoombaSelected();
-
     MainWindow* mainWindow_;
-    Croi::IRoomba* selectedRoomba_;
+    QVector<Croi::IRoomba*> selectedRoombas_;
     QVector<Croi::IRoomba*> roombas_;
     std::set<WallQGraphicsLineItem*> walls_;
     std::set<PoiQGraphicsEllipseItem*> pois_;
