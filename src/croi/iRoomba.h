@@ -89,7 +89,8 @@ private:
     double Xloc_;
     //current location's y-component
     double Yloc_;
-    //current angle.
+    //current angle. Value range unlimited!
+    //TODO: limit value range to 0..2*PI
     double angle_;
     int radius_;
     int velocity_;
