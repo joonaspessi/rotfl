@@ -182,59 +182,101 @@ void FleetManager::go2Poi()
 
     float calculatedAngle = 0;
 
-    if (deltaX == 0 && deltaY > 0)
+    if (deltaX == 0 && deltaY == 0)
     {
-        calculatedAngle = -0.5*PI;
+        qDebug() << "Roomba is at POI";
+        return;
     }
-    /*
     else
-    {
-        calculatedAngle = atan2(deltaY, deltaX);
-        qDebug() << "Calculated angle in degrees: " << calculatedAngle*(180/PI);
-    }
-    */
-    else if ( deltaX>0 && deltaY <=0 )
     {
         calculatedAngle = -atan2(deltaY, deltaX);
-//        calculatedAngle = atan2(deltaY, deltaX);
-        qDebug() << "Calculated angle in degrees: " << calculatedAngle*(180/PI);
-    }
-    else if ( deltaX<=0 && deltaY <0 )
-    {
-        calculatedAngle = PI/2+atan2(deltaX, deltaY);
-//        calculatedAngle = atan2(deltaY, deltaX);
-        qDebug() << "Calculated angle in degrees: " << calculatedAngle*(180/PI);
-    }
-    else if ( deltaX<0 && deltaY >=0 )
-    {
-        calculatedAngle = PI-atan2(deltaY,deltaX);
-//        calculatedAngle = atan2(deltaY, deltaX);
-        qDebug() << "Calculated angle in degrees: " << calculatedAngle*(180/PI);
-    }
-    else if ( deltaX>0 && deltaY >0 )
-    {
-        calculatedAngle = 2*PI-atan2(deltaY, deltaX);
-//        calculatedAngle = atan2(deltaY, deltaX);
-        qDebug() << "Calculated angle in degrees: " << calculatedAngle*(180/PI);
-    }
-    else
-    {
-        qDebug() << "Calculating the turning angle failed";
     }
 
+    qDebug() << "Calculated angle in degrees: " << calculatedAngle*(180/PI);
+
     float turningAngle = 0.0;
-    if (selectedRoomba_->getCurrentAngle() > 0)
+    float roombasAngle = selectedRoomba_->getCurrentAngle(); //0 - 2PI
+
+    if (roombasAngle > PI)
     {
-        turningAngle = selectedRoomba_->getCurrentAngle() - calculatedAngle;
+        roombasAngle -= 2*PI;
     }
-    else
+    qDebug() << "Roombas angle in degrees: " << roombasAngle*(180/PI);
+
+    //both roombasAngle and calculatedAngle are between -PI and PI
+    if (roombasAngle >= 0)
     {
-        turningAngle = selectedRoomba_->getCurrentAngle() + calculatedAngle;
+        if (calculatedAngle >= 0)
+        {
+            if (calculatedAngle > roombasAngle)
+            {
+                turningAngle = calculatedAngle - roombasAngle;
+            }
+            else
+            {
+                turningAngle = calculatedAngle - roombasAngle;
+            }
+
+        }
+        else //calculatedAngle < 0
+        {
+            if (calculatedAngle -roombasAngle < (-1*PI) )
+            {
+                turningAngle = calculatedAngle - roombasAngle + 2*PI;
+            }
+            else
+            {
+                turningAngle = calculatedAngle - roombasAngle;
+            }
+        }
     }
+    else //roombasAngle < 0
+    {
+        if (calculatedAngle >= 0)
+        {
+            if ( calculatedAngle - roombasAngle > PI )
+            {
+                turningAngle = calculatedAngle - roombasAngle - 2*PI;
+            }
+            else
+            {
+                turningAngle = calculatedAngle - roombasAngle;
+            }
+
+        }
+        else //calculatedAngle <0
+        {
+            if ( calculatedAngle > roombasAngle )
+            {
+                turningAngle = calculatedAngle - roombasAngle;
+            }
+            else
+            {
+                turningAngle = calculatedAngle - roombasAngle;
+            }
+
+        }
+    }
+
     int turningSpeed = 50;
     float turningTime = 0;
 
+
     qDebug() << "Turning angle in degrees: " << turningAngle*(180/PI);
+
+    if (turningAngle < 0) //Turn counter-clockwise
+    {
+        turningTime = -(((PI*TRACEWIDTH*10)/turningSpeed)/(2*PI))*turningAngle;
+    }
+    else //Turn clockwise
+    {
+        turningTime = (((PI*TRACEWIDTH*10)/turningSpeed)/(2*PI))*turningAngle;
+    }
+
+
+
+/*    qDebug() << "Turning time: " << turningTime;
+
 
 
 //    selectedRoomba_->drive(-100,65535);
@@ -244,7 +286,7 @@ void FleetManager::go2Poi()
     short dRoombaAngle = 0;
 
     QTime dieTime = QTime::currentTime().addSecs(5);
-//    while( true/*QTime::currentTime() < dieTime */) {
+//    while( true/*QTime::currentTime() < dieTime ) {
 
 //        short ang = iRoomba_->getAngle();
 //        if (ang != 0)
@@ -256,16 +298,17 @@ void FleetManager::go2Poi()
 //        if(dRoombaAngle > (-3.05)*turningAngle*(180/PI)) break;
 
 //        QCoreApplication::processEvents(QEventLoop::AllEvents, 1);
-//    }
+//    }*/
+
 
 
     if (turningAngle > 0)
     {
-        selectedRoomba_->drive(100,65535);
+        selectedRoomba_->drive(100,RADTURNCW);
     }
     else
     {
-        selectedRoomba_->drive(-100,65535);
+        selectedRoomba_->drive(100,RADTURNCCW);
     }
 
     QCoreApplication::processEvents(QEventLoop::AllEvents, 1);
@@ -280,18 +323,6 @@ void FleetManager::go2Poi()
 //    moving_ = false;
 
 
-    if (turningAngle < 0) //Turn counter-clockwise
-    {
-        turningTime = -(((PI*TRACEWIDTH*10)/turningSpeed)/(2*PI))*turningAngle;
-    }
-    else //Turn clockwise
-    {
-        turningTime = (((PI*TRACEWIDTH*10)/turningSpeed)/(2*PI))*turningAngle;
-    }
-
-
-
-    qDebug() << "Turning time: " << turningTime;
 
 }
 

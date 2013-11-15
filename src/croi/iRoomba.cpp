@@ -1,6 +1,7 @@
 #include "iRoomba.h"
 #include "mapQGraphicsView.h"
 #include "fleetManager.h"
+#include "QDebug"
 
 namespace Croi {
 
@@ -100,6 +101,13 @@ void IRoomba::updateState()
     }
     //real angle (always used for roomba's angle)
     angle_ -= static_cast<double>(angle)*PI*ANGLECORRECTION/180.0;
+    //qDebug() << "Roomba's angle in degrees: " << angle_*(180/PI);
+    angle_ = fmod(angle_, 2*PI);
+    if (angle_ < 0)
+    {
+        angle_ = 2*PI+angle_;
+    }
+    //qDebug() << "Roomba's angle in degrees after correction: " << angle_*(180/PI);
 
     //coordinates are updated
     double x = Xloc_+cos(angleForDist)*dist;
