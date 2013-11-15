@@ -168,16 +168,11 @@ void FleetManager::removeTraces()
 void FleetManager::go2Poi()
 {
     QPointF poiCoordinate = (*pois_.begin())->pos();
-    QPointF roombaCoordinate = selectedRoomba_->getLoc();
-    qDebug() << "POI coordinate x: " << poiCoordinate.x()
-             << " , y: " << poiCoordinate.y();
-    qDebug() << "Roomba coordinate x: " << roombaCoordinate.x()
-             << " , y: " << roombaCoordinate.y();
-
-    //stop
-//    selectedRoomba_->drive(0,32767);
-//    radius_ = 32767;
-//    moving_ = false;
+    QPointF roombaCoordinate = selectedRoombas_.at(0)->getLoc();
+//    qDebug() << "POI coordinate x: " << poiCoordinate.x()
+//             << " , y: " << poiCoordinate.y();
+//    qDebug() << "Roomba coordinate x: " << roombaCoordinate.x()
+//             << " , y: " << roombaCoordinate.y();
 
     //calculate the angle
 
@@ -186,108 +181,88 @@ void FleetManager::go2Poi()
     //float angleRadian = atan2(deltaY, deltaX);
     //float anglePi = angleRadian*180 / PI;
 
-    qDebug() << "Delta X: " << deltaX;
-    qDebug() << "Delta Y: " << deltaY;
+//    qDebug() << "Delta X: " << deltaX;
+//    qDebug() << "Delta Y: " << deltaY;
 
     float calculatedAngle = 0;
 
-    if (deltaX == 0 && deltaY > 0)
+    if (deltaX == 0 && deltaY == 0)
     {
-        calculatedAngle = -0.5*PI;
+//        qDebug() << "Roomba is at POI";
+        return;
     }
-    /*
     else
-    {
-        calculatedAngle = atan2(deltaY, deltaX);
-        qDebug() << "Calculated angle in degrees: " << calculatedAngle*(180/PI);
-    }
-    */
-    else if ( deltaX>0 && deltaY <=0 )
     {
         calculatedAngle = -atan2(deltaY, deltaX);
-//        calculatedAngle = atan2(deltaY, deltaX);
-        qDebug() << "Calculated angle in degrees: " << calculatedAngle*(180/PI);
-    }
-    else if ( deltaX<=0 && deltaY <0 )
-    {
-        calculatedAngle = PI/2+atan2(deltaX, deltaY);
-//        calculatedAngle = atan2(deltaY, deltaX);
-        qDebug() << "Calculated angle in degrees: " << calculatedAngle*(180/PI);
-    }
-    else if ( deltaX<0 && deltaY >=0 )
-    {
-        calculatedAngle = PI-atan2(deltaY,deltaX);
-//        calculatedAngle = atan2(deltaY, deltaX);
-        qDebug() << "Calculated angle in degrees: " << calculatedAngle*(180/PI);
-    }
-    else if ( deltaX>0 && deltaY >0 )
-    {
-        calculatedAngle = 2*PI-atan2(deltaY, deltaX);
-//        calculatedAngle = atan2(deltaY, deltaX);
-        qDebug() << "Calculated angle in degrees: " << calculatedAngle*(180/PI);
-    }
-    else
-    {
-        qDebug() << "Calculating the turning angle failed";
     }
 
+//    qDebug() << "Calculated angle in degrees: " << calculatedAngle*(180/PI);
+
     float turningAngle = 0.0;
-    if (selectedRoomba_->getCurrentAngle() > 0)
+    float roombasAngle = selectedRoombas_.at(0)->getCurrentAngle(); //0 - 2PI
+
+    if (roombasAngle > PI)
     {
-        turningAngle = selectedRoomba_->getCurrentAngle() - calculatedAngle;
+        roombasAngle -= 2*PI;
     }
-    else
+//    qDebug() << "Roombas angle in degrees: " << roombasAngle*(180/PI);
+
+    //both roombasAngle and calculatedAngle are between -PI and PI
+    if (roombasAngle >= 0)
     {
-        turningAngle = selectedRoomba_->getCurrentAngle() + calculatedAngle;
+        if (calculatedAngle >= 0)
+        {
+            if (calculatedAngle > roombasAngle)
+            {
+                turningAngle = calculatedAngle - roombasAngle;
+            }
+            else
+            {
+                turningAngle = calculatedAngle - roombasAngle;
+            }
+        }
+        else //calculatedAngle < 0
+        {
+            if (calculatedAngle -roombasAngle < (-1*PI) )
+            {
+                turningAngle = calculatedAngle - roombasAngle + 2*PI;
+            }
+            else
+            {
+                turningAngle = calculatedAngle - roombasAngle;
+            }
+        }
     }
+    else //roombasAngle < 0
+    {
+        if (calculatedAngle >= 0)
+        {
+            if ( calculatedAngle - roombasAngle > PI )
+            {
+                turningAngle = calculatedAngle - roombasAngle - 2*PI;
+            }
+            else
+            {
+                turningAngle = calculatedAngle - roombasAngle;
+            }
+        }
+        else //calculatedAngle <0
+        {
+            if ( calculatedAngle > roombasAngle )
+            {
+                turningAngle = calculatedAngle - roombasAngle;
+            }
+            else
+            {
+                turningAngle = calculatedAngle - roombasAngle;
+            }
+        }
+    }
+
     int turningSpeed = 50;
     float turningTime = 0;
 
-    qDebug() << "Turning angle in degrees: " << turningAngle*(180/PI);
-
-
-//    selectedRoomba_->drive(-100,65535);
-//    radius_ = 65535;
-//    moving_ = true;
-
-    short dRoombaAngle = 0;
-
-    QTime dieTime = QTime::currentTime().addSecs(5);
-//    while( true/*QTime::currentTime() < dieTime */) {
-
-//        short ang = iRoomba_->getAngle();
-//        if (ang != 0)
-//            qDebug() << "angle: " << ang << "Rimpsu: " << (-3.05)*turningAngle*(180/PI) <<"\n";
-//        dRoombaAngle += ang;
-
-//        qDebug() << "Roomba sensor read angle " << dRoombaAngle << "Rimpsu: " << (-3.05)*turningAngle*(180/PI) <<"\n";
-
-//        if(dRoombaAngle > (-3.05)*turningAngle*(180/PI)) break;
-
-//        QCoreApplication::processEvents(QEventLoop::AllEvents, 1);
-//    }
-
-
-    if (turningAngle > 0)
-    {
-        selectedRoomba_->drive(100,65535);
-    }
-    else
-    {
-        selectedRoomba_->drive(-100,65535);
-    }
-
-    QCoreApplication::processEvents(QEventLoop::AllEvents, 1);
-    float tabs = abs(turningAngle*(180/PI));
-    useconds_t ttime = tabs * 18055;
-    // Roomba turns 1 degree in 18055 microseconds, when speed is 100
-    qDebug() << "turningAngle: " << turningAngle << "tabs: " << tabs << "ttime: " << ttime  << "\ns";
-    usleep(ttime);
-    selectedRoomba_->drive(0,32767);
-//    selectedRoomba_->Drive(0,32767);
-//    radius_ = 32767;
-//    moving_ = false;
-
+//    qDebug() << "Turning angle in degrees: " << turningAngle*(180/PI);
 
     if (turningAngle < 0) //Turn counter-clockwise
     {
@@ -298,10 +273,22 @@ void FleetManager::go2Poi()
         turningTime = (((PI*TRACEWIDTH*10)/turningSpeed)/(2*PI))*turningAngle;
     }
 
+    if (turningAngle > 0)
+    {
+        selectedRoombas_.at(0)->drive(100,RADTURNCW);
+    }
+    else
+    {
+        selectedRoombas_.at(0)->drive(100,RADTURNCCW);
+    }
 
-
-    qDebug() << "Turning time: " << turningTime;
-
+    QCoreApplication::processEvents(QEventLoop::AllEvents, 1);
+    float tabs = abs(turningAngle*(180/PI));
+    useconds_t ttime = tabs * 18055;
+    // Roomba turns 1 degree in 18055 microseconds, when speed is 100
+//    qDebug() << "turningAngle: " << turningAngle << "tabs: " << tabs << "ttime: " << ttime  << "\ns";
+    usleep(ttime);
+    selectedRoombas_.at(0)->drive(0,32767);
 }
 
 void FleetManager::checkPoiCollision()
