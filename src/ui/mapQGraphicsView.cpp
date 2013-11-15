@@ -42,7 +42,7 @@ void MapQGraphicsView::mousePressEvent(QMouseEvent *event)
                 (0.0-POIWIDTH/2.0, 0.0-POIWIDTH/2.0, POIWIDTH, POIWIDTH);
         poi->setPos(p);
         poi->setFlag(QGraphicsItem::ItemIsSelectable,true);
-        poi->setFlag(QGraphicsItem::ItemIsMovable,true);
+        poi->setFlag(QGraphicsItem::ItemIsMovable,false); // Disabled so that the mapChanged signal works as expected
         scene()->addItem(poi);
         fleetManager_->addPoi(poi);
         qDebug() << "Adding POI with x: " << poi->scenePos().x()
@@ -91,7 +91,7 @@ void MapQGraphicsView::mouseReleaseEvent(QMouseEvent *event)
     if (selectedPaintTool_ == Util::SelectedPaintTool::WALL)
     {
         wallToBeAdded_->setFlag(QGraphicsItem::ItemIsSelectable,true);
-        wallToBeAdded_->setFlag(QGraphicsItem::ItemIsMovable,true);
+        wallToBeAdded_->setFlag(QGraphicsItem::ItemIsMovable,false); // Disabled so that the mapChanged signal works as expected
         fleetManager_->addWall(wallToBeAdded_);
         delete wallToBeAddedStartPoint_;
         wallToBeAddedStartPoint_ = NULL;

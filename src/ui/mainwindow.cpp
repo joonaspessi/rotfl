@@ -582,7 +582,7 @@ void MainWindow::openFile(const QString &fileName)
                                                                 (roomba_map.value(*it)).toLineF().x2(),
                                                                 (roomba_map.value(*it)).toLineF().y2());
         wall->setFlag(QGraphicsItem::ItemIsSelectable,true);
-        wall->setFlag(QGraphicsItem::ItemIsMovable,true);
+        wall->setFlag(QGraphicsItem::ItemIsMovable,false); // Disabled so that the mapChanged signal works as expected
         map_->scene()->addItem(wall);
         fleetManager_->addWall(wall);
     }
@@ -597,7 +597,7 @@ void MainWindow::openFile(const QString &fileName)
                 (0.0-POIWIDTH/2.0, 0.0-POIWIDTH/2.0, POIWIDTH, POIWIDTH);
         poi->setPos((roomba_map.value(*it)).toPointF());
         poi->setFlag(QGraphicsItem::ItemIsSelectable,true);
-        poi->setFlag(QGraphicsItem::ItemIsMovable,true);
+        poi->setFlag(QGraphicsItem::ItemIsMovable,false);  // Disabled so that the mapChanged signal works as expected
         map_->scene()->addItem(poi);
         fleetManager_->addPoi(poi);
     }
