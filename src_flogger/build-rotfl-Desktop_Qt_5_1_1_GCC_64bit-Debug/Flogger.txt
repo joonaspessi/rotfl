@@ -1,0 +1,22 @@
+Connect Button pressed.
+Disconnect Button pressed.
+Remove red objects Button pressed.
+(un)show Button pressed.
+Simulate movement Button pressed.
+Reset angle Button pressed.
+Clean Button pressed.
+Safe Button pressed.
+Full Button pressed.
+Motors on Button pressed.
+Motors off Button pressed.
+Play song Button pressed.
+Clean Button pressed.
+x: 215 y: 98
+x: 201 y: 141
+x: 157 y: 183
+x: 286 y: 205
+x: 241 y: 242
+Define maps's width(cm) area clicked.
+Define maps's width(cm) area clicked.
+x: 117 y: 323
+x: 132 y: 277
