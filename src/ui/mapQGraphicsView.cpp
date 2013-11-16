@@ -40,7 +40,7 @@ void MapQGraphicsView::mousePressEvent(QMouseEvent *event)
         wallToBeAddedStartPoint_ = new QPointF(p.x(), p.y());
         scene()->addItem(wallToBeAdded_);
         qDebug() << "Pos: " << p.x() << "y: "<< p.y();
-		txt=QString("x: %1 y: %2").arg(p.x()).arg(p.y());
+        txt=QString("Start a wall @ x: %1 y: %2").arg(p.x()).arg(p.y());
 		(*flog.ts) << txt << endl;
 		
     }
