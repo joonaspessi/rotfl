@@ -3,7 +3,7 @@
  ** · Flogger.cpp
  **
  ** Version    Author          Date
- ** 0.1        Longchuan       13 / 06 / 2013
+ ** 0.1        Longchuan       13 / 11 / 2013
  **
  ** Sprint 3,
  ** Task no 18. Add logging of robots
