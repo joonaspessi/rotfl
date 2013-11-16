@@ -18,7 +18,7 @@ private:
 
 };
 
-
+extern Flogger flog;
 
 
 #endif // FLOGGER_H
