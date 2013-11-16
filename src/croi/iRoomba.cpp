@@ -1,6 +1,7 @@
 #include "iRoomba.h"
 #include "mapQGraphicsView.h"
 #include "fleetManager.h"
+#include "math.h"
 
 namespace Croi {
 
@@ -104,6 +105,7 @@ void IRoomba::updateState()
     }
     //real angle (always used for roomba's angle)
     angle_ -= static_cast<double>(angle)*PI*ANGLECORRECTION/180.0;
+    angle_ = fmod(angle_,2.0*PI);  //full circles are taken out -> range 0..2*PI
 
     //coordinates are updated
     double x = Xloc_+cos(angleForDist)*dist;

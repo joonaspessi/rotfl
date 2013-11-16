@@ -10,7 +10,7 @@
 //#include "fleetManager.h"
 
 const double PI = 3.14159265;
-const double ANGLECORRECTION = 3.05;
+const double ANGLECORRECTION = 3.057;
 const double DISTANCECORRECTION = 6.1;
 
 class MapQGraphicsView;
@@ -89,8 +89,7 @@ private:
     double Xloc_;
     //current location's y-component
     double Yloc_;
-    //current angle. Value range unlimited!
-    //TODO: limit value range to 0..2*PI
+    //current angle. Value range 0..2*PI
     double angle_;
     int radius_;
     int velocity_;

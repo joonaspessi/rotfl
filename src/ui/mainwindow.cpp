@@ -409,7 +409,7 @@ void MainWindow::pushButton_unshowTraces_clicked()
 void MainWindow::velocity_horizontalSlider_sliderMoved(int position)
 {
     velocityValue_label_->setText(QString::number(position));
-    fleetManager_->drive(position);
+    fleetManager_->setVelocity(position);
 }
 
 void MainWindow::pushButton_mapWidth_clicked()
