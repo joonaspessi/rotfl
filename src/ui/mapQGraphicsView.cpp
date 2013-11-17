@@ -19,14 +19,11 @@ MapQGraphicsView::MapQGraphicsView(FleetManager* fleetManager, QWidget* parent) 
 
 void MapQGraphicsView::mousePressEvent(QMouseEvent *event)
 {
-	QString txt;
-	
     QPointF p = mapToScene(event->pos());
     if (selectedPaintTool_ == Util::SelectedPaintTool::CURSOR)
     {
         setDragMode(QGraphicsView::RubberBandDrag);
         qDebug() << "Draw a cursor!"; 
-
         (*flog.ts) << "Draw a cursor!" << endl;
     }
     else if (selectedPaintTool_ == Util::SelectedPaintTool::WALL)
@@ -38,10 +35,7 @@ void MapQGraphicsView::mousePressEvent(QMouseEvent *event)
         wallToBeAddedStartPoint_ = new QPointF(p.x(), p.y());
         scene()->addItem(wallToBeAdded_);
         qDebug() << "Pos: " << p.x() << "y: "<< p.y();
-
-        txt=QString("Start a wall @ x: %1 y: %2").arg(p.x()).arg(p.y());
-		(*flog.ts) << txt << endl;
-		
+        (*flog.ts)<< QString("Start a wall @ x: %1 y: %2").arg(p.x()).arg(p.y()) <<endl;
     }
     else if (selectedPaintTool_ == Util::SelectedPaintTool::POI)
     {
@@ -56,14 +50,12 @@ void MapQGraphicsView::mousePressEvent(QMouseEvent *event)
         fleetManager_->addPoi(poi);
         qDebug() << "Adding POI with x: " << poi->scenePos().x()
                  << " , y: " << poi->scenePos().y();
-		
-		txt=QString("Adding POI with x: %1 y: %2").arg(p.x()).arg(p.y());
-		(*flog.ts) << txt << endl;
-				 
+        (*flog.ts)<< QString("Draw a POI, Adding POI with x: %1 y: %2").arg(p.x()).arg(p.y()) <<endl;
     }
     else if (selectedPaintTool_ == Util::SelectedPaintTool::START)
     {
         qDebug() << "Draw a start!";
+        (*flog.ts) << "Draw a start" << endl;
         setDragMode(QGraphicsView::NoDrag);
         PoiQGraphicsEllipseItem *startPoint = new PoiQGraphicsEllipseItem
                 (0.0-POIWIDTH*2.0/3.0, 0.0-POIWIDTH*2.0/3.0,
