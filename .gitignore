@@ -15,3 +15,19 @@
 # Backup files
 *~
 *.pro.user
+
+
+the following project files
+src/build-rotfl-Desktop_Qt_5_1_1_GCC_64bit-Debug/
+src/ui/mainwindow.cpp.BACKUP.4275.cpp
+src/ui/mainwindow.cpp.BACKUP.4427.cpp
+src/ui/mainwindow.cpp.BASE.4275.cpp
+src/ui/mainwindow.cpp.BASE.4427.cpp
+src/ui/mainwindow.cpp.LOCAL.4275.cpp
+src/ui/mainwindow.cpp.LOCAL.4427.cpp
+src/ui/mainwindow.cpp.REMOTE.4275.cpp
+src/ui/mainwindow.cpp.REMOTE.4427.cpp
+src/ui/mainwindow.cpp.orig
+src/ui/mainwindow_f.cpp
+src/ui/mapQGraphicsView.cpp.orig
+
