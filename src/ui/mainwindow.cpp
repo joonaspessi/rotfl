@@ -14,6 +14,8 @@
 #include <QButtonGroup>
 #include <QFileDialog>
 #include <QMessageBox>
+#include <QQuickView>
+
 #include <cmath>
 #include <unistd.h>
 
@@ -86,9 +88,25 @@ MainWindow::MainWindow(QWidget *parent) :
     createActionDock();
     createStatusDock();
     createMapTestingDock();
+
+    //QML
+    QQuickView * qmlview = new QQuickView();
+    QWidget *container = QWidget::createWindowContainer(qmlview,this);
+
+    container->setMinimumSize(400,380);
+    container->setMaximumSize(400,380);
+    container->setFocusPolicy(Qt::TabFocus);
+    qmlview->setSource(QUrl("/home/joonaspessi/Development/rotfl/src/ui/roombaMonitor.qml"));
+
+    QDockWidget *widgetti = new QDockWidget(tr("qmlTest"), this);
+    widgetti->setWidget(container);
+    addDockWidget(Qt::RightDockWidgetArea,widgetti);
+    //End of qml
+
     tabifyDockWidget(status_dockWidget_,action_dockWidget_);
     tabifyDockWidget(action_dockWidget_,mapTesting_dockWidget_);
     tabifyDockWidget(mapTesting_dockWidget_,connection_dockWidget_);
+    tabifyDockWidget(connection_dockWidget_, widgetti);
 
     createToolbar();
 
