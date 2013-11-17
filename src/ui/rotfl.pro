@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui network
+QT       += core gui network quick
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -49,3 +49,6 @@ FORMS    += mainwindow.ui
 
 RESOURCES += \
     graphics.qrc
+
+OTHER_FILES += \
+    roombaMonitor.qml

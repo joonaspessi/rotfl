@@ -14,6 +14,10 @@
 #include <QButtonGroup>
 #include <QFileDialog>
 #include <QMessageBox>
+#include <QQuickView>
+#include <QtQml>
+#include <QtQuick>
+
 #include <cmath>
 #include <unistd.h>
 
@@ -86,9 +90,30 @@ MainWindow::MainWindow(QWidget *parent) :
     createActionDock();
     createStatusDock();
     createMapTestingDock();
+
+    //QML
+    QQuickView * qmlview = new QQuickView();
+    QWidget *container = QWidget::createWindowContainer(qmlview,this);
+
+    container->setMinimumSize(400,380);
+    container->setMaximumSize(400,380);
+    container->setFocusPolicy(Qt::TabFocus);
+    qmlview->setSource(QUrl("/home/joonaspessi/Development/rotfl/src/ui/roombaMonitor.qml"));
+
+
+    QDockWidget *widgetti = new QDockWidget(tr("qmlTest"), this);
+    widgetti->setWidget(container);
+    addDockWidget(Qt::RightDockWidgetArea,widgetti);
+
+     roombaStatus_ = qmlview->rootObject();
+
+
+    //End of qml
+
     tabifyDockWidget(status_dockWidget_,action_dockWidget_);
     tabifyDockWidget(action_dockWidget_,mapTesting_dockWidget_);
     tabifyDockWidget(mapTesting_dockWidget_,connection_dockWidget_);
+    tabifyDockWidget(connection_dockWidget_, widgetti);
 
     createToolbar();
 
@@ -120,6 +145,13 @@ void MainWindow::setRoombaStatusData(Croi::IRoomba* selectedRoomba)
     chargeLevel_label_->setText( QString::number( (unsigned short)( selectedRoomba->getChargeLevel() ) ) );
     QPointF rmbPosition = selectedRoomba->getLoc();
     rmbPosition_label_->setText( "(" + QString::number(rmbPosition.x()) + " , " + QString::number(rmbPosition.y()) + ")" );
+
+    //QML
+    QVariant returnedValue;
+    QMetaObject::invokeMethod(roombaStatus_, "setBatteryLevelmAh", Q_RETURN_ARG(QVariant, returnedValue),
+                              Q_ARG(QVariant, selectedRoomba->getChargeLevel()/3000),
+                              Q_ARG(QVariant, selectedRoomba->getChargeLevel()) );
+
 }
 
 void MainWindow::createConnectDock()
