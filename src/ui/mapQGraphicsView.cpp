@@ -51,6 +51,7 @@ void MapQGraphicsView::mousePressEvent(QMouseEvent *event)
         qDebug() << "Adding POI with x: " << poi->scenePos().x()
                  << " , y: " << poi->scenePos().y();
         (*flog.ts)<< QString("Draw a POI, Adding POI with x: %1 y: %2").arg(p.x()).arg(p.y()) <<endl;
+		emit mapChanged();
     }
     else if (selectedPaintTool_ == Util::SelectedPaintTool::START)
     {
