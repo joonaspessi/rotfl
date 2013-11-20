@@ -3,6 +3,7 @@
 #include "fleetManager.h"
 #include "math.h"
 #include "QDebug"
+#include <QObject>
 
 namespace Croi {
 
@@ -11,7 +12,7 @@ IRoomba::IRoomba(PoiQGraphicsEllipseItem *startPoint, MapQGraphicsView *map,
     QObject(parent),
     startPoint_(startPoint), map_(map), polygon_(NULL), icon_(NULL),
     curSpeed_(NULL), Xloc_(startPoint->x()), Yloc_(startPoint->y()), angle_(0.0),
-    radius_(RADSTRAIGHT), velocity_(0), traceShown_(true), isReady_(false)
+    radius_(RADSTRAIGHT), velocity_(0), traceShown_(true), isReady_(false), driveTime_(0)
 {
     //QPixmap pixmap;
     //pixmap.load(":/icons/roomba_small");
@@ -239,9 +240,143 @@ bool IRoomba::isReady()
     return isReady_;
 }
 
+void IRoomba::go2Point(QPointF point)
+{
+
+//    qDebug() << "POI coordinate x: " << poiCoordinate.x()
+//             << " , y: " << poiCoordinate.y();
+//    qDebug() << "Roomba coordinate x: " << roombaCoordinate.x()
+//             << " , y: " << roombaCoordinate.y();
+
+    //calculate the angle
+
+    float deltaX = point.x()-Xloc_;
+    float deltaY = Yloc_ - point.y();
+    //float angleRadian = atan2(deltaY, deltaX);
+    //float anglePi = angleRadian*180 / PI;
+
+//    qDebug() << "Delta X: " << deltaX;
+//    qDebug() << "Delta Y: " << deltaY;
+
+    float calculatedAngle = 0;
+
+    if (deltaX == 0 && deltaY == 0)
+    {
+//        qDebug() << "Roomba is at POI";
+        return;
+    }
+    else
+    {
+        calculatedAngle = -atan2(deltaY, deltaX);
+    }
+
+//    qDebug() << "Calculated angle in degrees: " << calculatedAngle*(180/PI);
+
+    float turningAngle = 0.0;
+    float roombasAngle = angle_; //0 - 2PI
+
+    if (roombasAngle > PI)
+    {
+        roombasAngle -= 2*PI;
+    }
+//    qDebug() << "Roombas angle in degrees: " << roombasAngle*(180/PI);
+
+    //both roombasAngle and calculatedAngle are between -PI and PI
+    if (roombasAngle >= 0)
+    {
+        if (calculatedAngle >= 0)
+        {
+            if (calculatedAngle > roombasAngle)
+            {
+                turningAngle = calculatedAngle - roombasAngle;
+            }
+            else
+            {
+                turningAngle = calculatedAngle - roombasAngle;
+            }
+        }
+        else //calculatedAngle < 0
+        {
+            if (calculatedAngle -roombasAngle < (-1*PI) )
+            {
+                turningAngle = calculatedAngle - roombasAngle + 2*PI;
+            }
+            else
+            {
+                turningAngle = calculatedAngle - roombasAngle;
+            }
+        }
+    }
+    else //roombasAngle < 0
+    {
+        if (calculatedAngle >= 0)
+        {
+            if ( calculatedAngle - roombasAngle > PI )
+            {
+                turningAngle = calculatedAngle - roombasAngle - 2*PI;
+            }
+            else
+            {
+                turningAngle = calculatedAngle - roombasAngle;
+            }
+        }
+        else //calculatedAngle <0
+        {
+            if ( calculatedAngle > roombasAngle )
+            {
+                turningAngle = calculatedAngle - roombasAngle;
+            }
+            else
+            {
+                turningAngle = calculatedAngle - roombasAngle;
+            }
+        }
+    }
+
+    // Roomba turns 1 degree in 18055 microseconds, when speed is 100
+    float tabs = abs(turningAngle*(180/PI));
+    float distance = sqrt(pow(deltaX,2)+pow(deltaY,2) );
+    int turnTime = tabs * 18055 / 1000;
+    driveTime_= distance*100;
+
+    qDebug() << "turningAngle: " << tabs << "ttime: " << turnTime;
+    qDebug() << "distance: " << distance << "dtime: " << driveTime_;
+    //QCoreApplication::processEvents(QEventLoop::AllEvents, 1);
+
+
+//    qDebug() << "Turning angle in degrees: " << turningAngle*(180/PI);
+
+    if (turningAngle > 0) //Turn clockwise
+    {
+        this->drive(100,RADTURNCW);
+
+    }
+    else
+    {
+        this->drive(100,RADTURNCCW);
+    }
+    QTimer::singleShot(turnTime, this, SLOT(turnTimerTimeout()));
+
+
+}
+
 void IRoomba::sensorUpdateTimerTimeout()
 {
     updateState();
+}
+
+void IRoomba::turnTimerTimeout()
+{
+    this->drive(0,32767);
+    this->drive(100, RADSTRAIGHT);
+    QTimer::singleShot(driveTime_, this, SLOT(driveTimerTimeout()));
+
+}
+
+void IRoomba::driveTimerTimeout()
+{
+    this->drive(0,32767);
+
 }
 
 IRoomba::~IRoomba()

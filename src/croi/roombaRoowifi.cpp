@@ -122,11 +122,5 @@ void RoombaRoowifi::playSong(int songNumber)
     roowifi_->PlaySong(songNumber);
 }
 
-void RoombaRoowifi::testSlot()
-{
-    qDebug() << "autocapture";
-    qDebug() << "temperature" << QString::number((char) roowifi_->Sensors.Temperature );
-    qDebug() << "dirt right" << QString::number(roowifi_->Sensors.DirtDetectorRight );
-}
 
 } //namespace Croi
