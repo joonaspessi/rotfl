@@ -12,6 +12,9 @@ typedef enum {
     POI,
     START
 }SelectedPaintTool;
+
+const unsigned int VERTICEWIDTH = 40;
+const unsigned int MAPWIDTH = 400;
 }
 
 #endif // UIUTILS_H

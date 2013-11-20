@@ -75,13 +75,13 @@ MainWindow::MainWindow(QWidget *parent) :
 
     fleetManager_ = new FleetManager(this);
     map_ = new MapQGraphicsView(fleetManager_, this);
-    map_->setScene(new QGraphicsScene(QRect(0,0,398,398), this));
+    map_->setScene(new QGraphicsScene(QRect(0,0,Util::MAPWIDTH,Util::MAPWIDTH), this));
     map_->centerOn(0,0);
-    map_->setMapWidth(398);
+    map_->setMapWidth(Util::MAPWIDTH);
     fleetManager_->setMap(map_);
     setCentralWidget(map_);
-    centralWidget()->setFixedWidth(400);
-    centralWidget()->setFixedHeight(400);
+    centralWidget()->setFixedWidth(Util::MAPWIDTH+2);
+    centralWidget()->setFixedHeight(Util::MAPWIDTH+2);
 
     //qDebug() << "children width: " << map_->childrenRect().width();
     //qDebug() << "children height: " << map_->childrenRect().height();

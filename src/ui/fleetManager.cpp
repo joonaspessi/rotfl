@@ -4,6 +4,7 @@
 #include <QDebug>
 #include <QObject>
 #include <QMessageBox>
+#include "uiUtils.h"
 
 FleetManager::FleetManager(MainWindow* mainWindow, QObject *parent):
     QObject(parent), mainWindow_(mainWindow), map_(NULL)
@@ -12,6 +13,122 @@ FleetManager::FleetManager(MainWindow* mainWindow, QObject *parent):
     QObject::connect(updateTimer_, SIGNAL(timeout()), this, SLOT(updateTimerTimeout()));
     updateTimer_->setSingleShot(false);
     updateTimer_->start(100);
+
+    //map's width in vertices
+    unsigned int mapW = map_->getMapWidth()/Util::VERTICEWIDTH;
+
+    //creating vertices (with all values set to zero)
+    for(unsigned int i = 0; i < mapW; ++i)
+    {
+        verticeRow.append(new Vertice());
+    }
+
+    for(unsigned int i = 0; i < mapW; ++i)
+    {
+        vertices_.append(verticeRow);
+    }
+
+    //setting corner vertices. note: .at(x).at(y)
+    //setting vertice at 0,0
+    vertices_.at(0).at(0)->bottomRightX = Util::VERTICEWIDTH-1;
+    vertices_.at(0).at(0)_>bottomRightY = Util::VERTICEWIDTH-1;
+    vertices_.at(0).at(0)->e = vertices_.at(1).at(0);
+    vertices_.at(0).at(0)->se = vertices_.at(1).at(1);
+    vertices_.at(0).at(0)->s = vertices_.at(0).at(1);
+    //setting vertice at last,0
+    vertices_.at(mapW-1).at(0)->topLeftX = Util::VERTICEWIDTH*(mapW-1);
+    vertices_.at(mapW-1).at(0)_>bottomRightX = Util::VERTICEWIDTH*mapW-1;
+    vertices_.at(mapW-1).at(0)->bottomRightY = Util::VERTICEWIDTH-1;
+    vertices_.at(mapW-1).at(0)->s = vertices_.at(mapW-1).at(1);
+    vertices_.at(mapW-1).at(0)->sw = vertices_.at(mapW-2).at(1);
+    vertices_.at(mapW-1).at(0)->w = vertices_.at(mapW-2).at(0);
+    //setting vertice at 0,last
+    vertices_.at(0).at(mapW-1)->topLeftY = Util::VERTICEWIDTH*(mapW-1);
+    vertices_.at(0).at(mapW-1)_>bottomRightX = Util::VERTICEWIDTH-1;
+    vertices_.at(0).at(mapW-1)->bottomRightY = Util::VERTICEWIDTH*mapW-1;
+    vertices_.at(0).at(mapW-1)->n = vertices_.at(mapW-2).at(0);
+    vertices_.at(0).at(mapW-1)->ne = vertices_.at(mapW-2).at(1);
+    vertices_.at(0).at(mapW-1)->e = vertices_.at(mapW-1).at(1);
+    //setting vertice at last,last
+    vertices_.at(mapW-1).at(mapW-1)->topLeftX = Util::VERTICEWIDTH*(mapW-1);
+    vertices_.at(mapW-1).at(mapW-1)->topLeftY = Util::VERTICEWIDTH*(mapW-1);
+    vertices_.at(mapW-1).at(mapW-1)_>bottomRightX = Util::VERTICEWIDTH*mapW-1;
+    vertices_.at(mapW-1).at(mapW-1)->bottomRightY = Util::VERTICEWIDTH*mapW-1;
+    vertices_.at(mapW-1).at(mapW-1)->w = vertices_.at(mapW-2).at(mapW-1);
+    vertices_.at(mapW-1).at(mapW-1)->nw = vertices_.at(mapW-2).at(mapW-2);
+    vertices_.at(mapW-1).at(mapW-1)->n = vertices_.at(mapW-1).at(mapW-2);
+    //setting vertices from 1,0 to last-1,0
+    for(unsigned int i = 1; i < mapW-1; ++i)
+    {
+        vertices_.at(i).at(0)->topLeftX = Util::VERTICEWIDTH*i;
+        vertices_.at(i).at(0)->bottomRightX = Util::VERTICEWIDTH*(i+1)-1;
+        vertices_.at(i).at(0)_>bottomRightY = Util::VERTICEWIDTH-1;
+        vertices_.at(i).at(0)->e = vertices_.at(i+1).at(0);
+        vertices_.at(i).at(0)->se = vertices_.at(i+1).at(1);
+        vertices_.at(i).at(0)->s = vertices_.at(i).at(1);
+        vertices_.at(i).at(0)->sw = vertices_.at(i-1).at(1);
+        vertices_.at(i).at(0)->w = vertices_.at(i-1).at(0);
+    }
+    //setting vertices from 1,last to last-1,last
+    for(unsigned int i = 1; i < mapW-1; ++i)
+    {
+        vertices_.at(i).at(mapW-1)->topLeftX = Util::VERTICEWIDTH*i;
+        vertices_.at(i).at(mapW-1)->topLeftY = Util::VERTICEWIDTH*(mapW-1);
+        vertices_.at(i).at(mapW-1)->bottomRightX = Util::VERTICEWIDTH*(i+1)-1;
+        vertices_.at(i).at(mapW-1)_>bottomRightY = Util::VERTICEWIDTH*mapW-1;
+        vertices_.at(i).at(mapW-1)->w = vertices_.at(i-1).at(mapW-1);
+        vertices_.at(i).at(mapW-1)->nw = vertices_.at(i-1).at(mapW-2);
+        vertices_.at(i).at(mapW-1)->n = vertices_.at(i).at(mapW-2);
+        vertices_.at(i).at(mapW-1)->ne = vertices_.at(i+1).at(mapW-2);
+        vertices_.at(i).at(mapW-1)->e = vertices_.at(i+1).at(mapW-1);
+    }
+    //setting vertices from 0,1 to 0,last-1
+    for(unsigned int i = 1; i < mapW-1; ++i)
+    {
+        vertices_.at(0).at(i)->topLeftY = Util::VERTICEWIDTH*i;
+        vertices_.at(0).at(i)->bottomRightX = Util::VERTICEWIDTH-1;
+        vertices_.at(0).at(i)_>bottomRightY = Util::VERTICEWIDTH*(i+1)-1;
+        vertices_.at(0).at(i)->n = vertices_.at(0).at(i-1);
+        vertices_.at(0).at(i)->ne = vertices_.at(1).at(i-1);
+        vertices_.at(0).at(i)->e = vertices_.at(1).at(i);
+        vertices_.at(0).at(i)->se = vertices_.at(1).at(i+1);
+        vertices_.at(0).at(i)->s = vertices_.at(0).at(i+1);
+    }
+    //setting vertices from last,1 to last,last-1
+    for(unsigned int i = 1; i < mapW-1; ++i)
+    {
+        vertices_.at(mapW-1).at(i)->topLeftX = Util::VERTICEWIDTH*(mapW-1);
+        vertices_.at(mapW-1).at(i)->topLeftY = Util::VERTICEWIDTH*i;
+        vertices_.at(mapW-1).at(i)->bottomRightX = Util::VERTICEWIDTH*mapW-1;
+        vertices_.at(mapW-1).at(i)_>bottomRightY = Util::VERTICEWIDTH*(i+1)-1;
+        vertices_.at(mapW-1).at(i)->s = vertices_.at(mapW-1).at(i+1);
+        vertices_.at(mapW-1).at(i)->sw = vertices_.at(mapW-2).at(i+1);
+        vertices_.at(mapW-1).at(i)->w = vertices_.at(mapW-2).at(i);
+        vertices_.at(mapW-1).at(i)->nw = vertices_.at(mapW-2).at(i-1);
+        vertices_.at(mapW-1).at(i)->n = vertices_.at(mapW-1).at(i-1);
+    }
+
+    //setting the rest of vertices.
+    //they are the non-border ones from 1,1 to last-1,last-1.
+    for(unsigned int i = 1; i < mapW-1; ++i)
+    {
+        QVector<Vertice*> verticeRow;
+        for(unsigned int j = 1; j < mapW-1; ++j)
+        {
+            vertices_.at(i).at(j)->topLeftX = Util::VERTICEWIDTH*i;
+            vertices_.at(i).at(j)->topLeftY = Util::VERTICEWIDTH*j;
+            vertices_.at(i).at(j)->bottomRightX = Util::VERTICEWIDTH*(i+1)-1;
+            vertices_.at(i).at(j)_>bottomRightY = Util::VERTICEWIDTH*(j+1)-1;
+            vertices_.at(i).at(j)->n = vertices_.at(i).at(i-1);
+            vertices_.at(i).at(j)->ne = vertices_.at(i+1).at(i-1);
+            vertices_.at(i).at(j)->e = vertices_.at(i+1).at(i);
+            vertices_.at(i).at(j)->se = vertices_.at(i+1).at(i+1);
+            vertices_.at(i).at(j)->s = vertices_.at(i).at(i+1);
+            vertices_.at(i).at(j)->sw = vertices_.at(i-1).at(i-1);
+            vertices_.at(i).at(j)->w = vertices_.at(i-1).at(i);
+            vertices_.at(i).at(j)->nw = vertices_.at(i-1).at(i-1);
+        }
+    }
 }
 
 

@@ -21,7 +21,7 @@ class MapQGraphicsView : public QGraphicsView
 public:
     explicit MapQGraphicsView(FleetManager* fleetManager, QWidget* parent = NULL);
     //gives map's width in cm
-    int giveMapWidth();
+    unsigned int getMapWidth();
     //give new width in cm
     void setMapWidth(int width);
     void setSelectedPaintTool(Util::SelectedPaintTool tool);
@@ -42,6 +42,7 @@ private:
     QGraphicsSimpleTextItem* wallToBeAddedStartPointText_;
     QGraphicsSimpleTextItem* wallToBeAddedEndPointText_;
     int mapWidth_;
+    unsigned int mapWidth_;
     bool traceShown_;
     Util::SelectedPaintTool selectedPaintTool_;
     FleetManager* fleetManager_;

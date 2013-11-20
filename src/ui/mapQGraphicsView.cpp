@@ -14,6 +14,7 @@ MapQGraphicsView::MapQGraphicsView(FleetManager* fleetManager, QWidget* parent) 
     QGraphicsView(parent), wallToBeAddedStartPoint_(NULL),
     mapWidth_(398), traceShown_(true), fleetManager_(fleetManager),
     wallToBeAddedStartPointText_(NULL), wallToBeAddedEndPointText_(NULL)
+    mapWidth_(Util::MAPWIDTH), traceShown_(true), fleetManager_(fleetManager)
 {
     setRenderHints(QPainter::Antialiasing);
 }
@@ -150,7 +151,7 @@ void MapQGraphicsView::setSelectedPaintTool(Util::SelectedPaintTool tool)
 }
 
 //gives map's width in mm
-int MapQGraphicsView::giveMapWidth()
+unsigned int MapQGraphicsView::getMapWidth()
 {
     return mapWidth_;
 }
@@ -161,7 +162,8 @@ void MapQGraphicsView::setMapWidth(int width)
     mapWidth_ = width;
     resetTransform();
     //MAP'S WIDTH IN PIXELS IS FIXED ATM
-    scale(398.0/mapWidth_, 398.0/mapWidth_);
+    scale(static_cast<double>(Util::MAPWIDTH)/mapWidth_,
+          static_cast<double>(Util::MAPWIDTH)/mapWidth_);
 }
 
 MapQGraphicsView::~MapQGraphicsView()
