@@ -4,6 +4,13 @@ Item {
     width: 400
     height: 380
 
+    function setBatteryLevelmAh(percentage, mah) {
+        batteryLevel.setbatterylevel(percentage, mah);
+        return true;
+
+    }
+
+
 
     Rectangle {
         id: background
@@ -49,35 +56,28 @@ Item {
 
         PropertyAnimation { id: animation; target: batteryLevel; property: "width"; to: 100; duration: 500 }
 
-        MouseArea { anchors.fill: parent; onClicked: {
-            batteryLevel.width -= battery.width*0.1;
-            batteryLeveltext.percentage -= 10;
-            batteryLabel.mAh -= 2600*0.1;
+        function setbatterylevel(percentage, mah) {
+            batteryLevel.width = battery.width*percentage/100;
+            batteryLeveltext.percentage = percentage;
+            batteryLabel.mAh = mah
 
+            batteryLevel.color = "#55ff55"
 
-                if(batteryLevel.width <= battery.width*0.8) {
-                    batteryLevel.color = "#55ff55"
-                }
-                if(batteryLevel.width < battery.width*0.5) {
-                    batteryLevel.color = "yellow"
-                }
-                if(batteryLevel.width <= battery.width*0.2) {
-                    batteryLevel.color = "red"
-                }
-
-            }}
-        focus: true;
-        Keys.onPressed: {
-            if(event.key == Qt.Key_A) {
-                batteryLevel.width = battery.width;
-                batteryLeveltext.percentage = 100
-                batteryLevel.color = "#55ff55"
+            if(percentage <= 50) {
+                batteryLevel.color = "yellow"
             }
+            if(percentage <= 20) {
+                batteryLevel.color = "red"
+            }
+
         }
 
-
+        MouseArea { anchors.fill: parent; onClicked: {
+                //setBatteryLevelmAh(45);
+            }}
 
     }
+
     Text {
         id: batteryLeveltext
         property int percentage: 100

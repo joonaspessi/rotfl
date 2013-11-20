@@ -111,6 +111,7 @@ private:
     QDockWidget *mapTesting_dockWidget_;
     QToolBar *toolbar_;
     QString currentFile_;
+    QObject *roombaStatus_;
     bool saveUnsavedChanges();
 };
 
