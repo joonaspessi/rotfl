@@ -48,6 +48,7 @@ public:
     virtual short getDistance() = 0;
     virtual short getAngle() = 0;
 
+
     //all functions below do not need reimplementation by subclasses
     void resetAngle();
     QPointF getLoc();  //Xloc_ and Yloc_ is given as a point
@@ -67,9 +68,12 @@ public:
     void removeTraces();
     //is roomba ready to receive drive commands
     bool isReady();
+    void go2Point(QPointF point);
 
 private slots:
     void sensorUpdateTimerTimeout();
+    void turnTimerTimeout();
+    void driveTimerTimeout();
 
 private:
     PoiQGraphicsEllipseItem* startPoint_;
@@ -94,6 +98,7 @@ private:
     int radius_;
     int velocity_;
     bool isReady_;
+    int driveTime_;
 };
 
 

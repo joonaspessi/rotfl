@@ -29,7 +29,7 @@ public:
     virtual short getDistance();
     virtual short getAngle();
 public slots:
-    void testSlot();
+
 private:
     RooWifi* roowifi_;
 };
