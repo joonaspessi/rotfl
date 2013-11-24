@@ -33,6 +33,7 @@ public:
 
     void setCurrentFile(const QString &fileName);
     void closeEvent(QCloseEvent *event);
+    bool eventFilter(QObject *object, QEvent *event);
 public slots:
 
     void mapModified();

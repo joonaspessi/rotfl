@@ -102,6 +102,9 @@ MainWindow::MainWindow(QWidget *parent) :
 
     // TODO: Improve this to NOT trigger on start
     connect(map_,SIGNAL(mapChanged()),this,SLOT(mapModified()));
+
+    // This event filter is implemented in eventFilter function, keeps mouse coordinates in status bar
+    qApp->installEventFilter(this);
 }
 
 MainWindow::~MainWindow()
@@ -642,5 +645,23 @@ void MainWindow::closeEvent(QCloseEvent *event)
     else
     {
         event->ignore();
+    }
+}
+
+bool MainWindow::eventFilter(QObject *object, QEvent *event)
+{
+    if (map_->viewport()->underMouse())
+    {
+        if (event->type() == QEvent::MouseMove || event->type() == QEvent::DragMove)
+        {
+            QPoint positionToShow = map_->viewport()->mapFromGlobal(QCursor::pos());
+            statusBar()->showMessage("X: " + QString::number(positionToShow.x()) + " Y: "+ QString::number(positionToShow.y()));
+        }
+        return false;
+    }
+    else
+    {
+        statusBar()->clearMessage();
+        return QObject::eventFilter(object, event);
     }
 }
