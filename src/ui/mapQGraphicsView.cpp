@@ -12,7 +12,8 @@
 
 MapQGraphicsView::MapQGraphicsView(FleetManager* fleetManager, QWidget* parent) :
     QGraphicsView(parent), wallToBeAddedStartPoint_(NULL),
-    mapWidth_(398), traceShown_(true), fleetManager_(fleetManager)
+    mapWidth_(398), traceShown_(true), fleetManager_(fleetManager),
+    wallToBeAddedStartPointText_(NULL), wallToBeAddedEndPointText_(NULL)
 {
     setRenderHints(QPainter::Antialiasing);
 }
@@ -34,6 +35,15 @@ void MapQGraphicsView::mousePressEvent(QMouseEvent *event)
                 (p.x(), p.y(), p.x(), p.y());
         wallToBeAddedStartPoint_ = new QPointF(p.x(), p.y());
         scene()->addItem(wallToBeAdded_);
+
+        // Add textual coordinates to the beginning of the wall line
+        wallToBeAddedStartPointText_ = new QGraphicsSimpleTextItem("X: " + QString::number(p.x()) + " Y: " +  QString::number(p.y()));
+        wallToBeAddedStartPointText_->setPos(p);
+        wallToBeAddedStartPointText_->setZValue(5);
+        QBrush wallToBeAddedStartPointBrush(Qt::GlobalColor::blue);
+        wallToBeAddedStartPointText_->setBrush(wallToBeAddedStartPointBrush);
+        scene()->addItem(wallToBeAddedStartPointText_);
+
         qDebug() << "Pos: " << p.x() << "y: "<< p.y();
         (*flog.ts)<< QString("Start a wall @ x: %1 y: %2").arg(p.x()).arg(p.y()) <<endl;
     }
@@ -85,6 +95,28 @@ void MapQGraphicsView::mouseMoveEvent(QMouseEvent *event)
             wallToBeAdded_->setLine(wallToBeAddedStartPoint_->x(), wallToBeAddedStartPoint_->y(),
                                     p.x(), p.y());
         }
+        // Add textual coordinates to the end of the wall line
+        if (wallToBeAddedEndPointText_ == NULL)
+        {
+            wallToBeAddedEndPointText_ = new QGraphicsSimpleTextItem("X: " + QString::number(p.x()) + " Y: " +  QString::number(p.y()));
+            wallToBeAddedEndPointText_->setPos(p);
+            QBrush wallToBeAddedEndPointTextBrush(Qt::GlobalColor::blue);
+            wallToBeAddedEndPointText_->setBrush(wallToBeAddedEndPointTextBrush);
+            scene()->addItem(wallToBeAddedEndPointText_);
+            wallToBeAddedEndPointText_->setZValue(5);
+        }
+        // Update textual coordinates in the end of the wall line
+        else
+        {
+            // Calculate the current wall length
+            float deltaX = wallToBeAdded_->line().x2() - wallToBeAdded_->line().x1();
+            float deltaY = wallToBeAdded_->line().y1() - wallToBeAdded_->line().y2();
+            // TODO: Add pythagoras from here and iRoomba to some utility function
+            float distance = sqrt(pow(deltaX,2)+pow(deltaY,2) );
+            wallToBeAddedEndPointText_->setPos(p);
+            wallToBeAddedEndPointText_->setText("X: " + QString::number(p.x()) + " Y: " +  QString::number(p.y())
+                                                + " Length: " + QString::number(distance) + "cm");
+        }
     }
     // Call the base class implementation to deliver the event for QGraphicsScene
     QGraphicsView::mouseMoveEvent(event);
@@ -100,6 +132,10 @@ void MapQGraphicsView::mouseReleaseEvent(QMouseEvent *event)
         fleetManager_->addWall(wallToBeAdded_);
         delete wallToBeAddedStartPoint_;
         wallToBeAddedStartPoint_ = NULL;
+        delete wallToBeAddedStartPointText_;
+        wallToBeAddedStartPointText_ = NULL;
+        delete wallToBeAddedEndPointText_;
+        wallToBeAddedEndPointText_ = NULL;
         emit mapChanged();
     }
     // Call the base class implementation to deliver the event for QGraphicsScene

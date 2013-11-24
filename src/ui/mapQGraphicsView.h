@@ -39,6 +39,8 @@ public slots:
 private:
     WallQGraphicsLineItem* wallToBeAdded_;
     QPointF* wallToBeAddedStartPoint_;
+    QGraphicsSimpleTextItem* wallToBeAddedStartPointText_;
+    QGraphicsSimpleTextItem* wallToBeAddedEndPointText_;
     int mapWidth_;
     bool traceShown_;
     Util::SelectedPaintTool selectedPaintTool_;
