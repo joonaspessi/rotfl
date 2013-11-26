@@ -3,26 +3,37 @@
 #include "croi/roombaRoowifi.h"
 #include <QDebug>
 #include <QObject>
+#include <QList>
 #include <QMessageBox>
 #include "uiUtils.h"
 
 FleetManager::FleetManager(MainWindow* mainWindow, QObject *parent):
     QObject(parent), mainWindow_(mainWindow), map_(NULL)
 {
+
     updateTimer_ = new QTimer(this);
     QObject::connect(updateTimer_, SIGNAL(timeout()), this, SLOT(updateTimerTimeout()));
     updateTimer_->setSingleShot(false);
     updateTimer_->start(100);
+}
 
+
+//map_ cannot be set in constructor because map_ is constructed after
+//FleetManager. vertices are also set.
+//TODO: possibly own function for setting vertices and change construction
+//order of the map_ and FleetManager
+void FleetManager::setMap(MapQGraphicsView* map)
+{
+    map_ = map;
     //map's width in vertices
     unsigned int mapW = map_->getMapWidth()/Util::VERTICEWIDTH;
 
     //creating vertices (with all values set to zero)
+    QVector<Vertice*> verticeRow;
     for(unsigned int i = 0; i < mapW; ++i)
     {
         verticeRow.append(new Vertice());
     }
-
     for(unsigned int i = 0; i < mapW; ++i)
     {
         vertices_.append(verticeRow);
@@ -31,20 +42,20 @@ FleetManager::FleetManager(MainWindow* mainWindow, QObject *parent):
     //setting corner vertices. note: .at(x).at(y)
     //setting vertice at 0,0
     vertices_.at(0).at(0)->bottomRightX = Util::VERTICEWIDTH-1;
-    vertices_.at(0).at(0)_>bottomRightY = Util::VERTICEWIDTH-1;
+    vertices_.at(0).at(0)->bottomRightY = Util::VERTICEWIDTH-1;
     vertices_.at(0).at(0)->e = vertices_.at(1).at(0);
     vertices_.at(0).at(0)->se = vertices_.at(1).at(1);
     vertices_.at(0).at(0)->s = vertices_.at(0).at(1);
     //setting vertice at last,0
     vertices_.at(mapW-1).at(0)->topLeftX = Util::VERTICEWIDTH*(mapW-1);
-    vertices_.at(mapW-1).at(0)_>bottomRightX = Util::VERTICEWIDTH*mapW-1;
+    vertices_.at(mapW-1).at(0)->bottomRightX = Util::VERTICEWIDTH*mapW-1;
     vertices_.at(mapW-1).at(0)->bottomRightY = Util::VERTICEWIDTH-1;
     vertices_.at(mapW-1).at(0)->s = vertices_.at(mapW-1).at(1);
     vertices_.at(mapW-1).at(0)->sw = vertices_.at(mapW-2).at(1);
     vertices_.at(mapW-1).at(0)->w = vertices_.at(mapW-2).at(0);
     //setting vertice at 0,last
     vertices_.at(0).at(mapW-1)->topLeftY = Util::VERTICEWIDTH*(mapW-1);
-    vertices_.at(0).at(mapW-1)_>bottomRightX = Util::VERTICEWIDTH-1;
+    vertices_.at(0).at(mapW-1)->bottomRightX = Util::VERTICEWIDTH-1;
     vertices_.at(0).at(mapW-1)->bottomRightY = Util::VERTICEWIDTH*mapW-1;
     vertices_.at(0).at(mapW-1)->n = vertices_.at(mapW-2).at(0);
     vertices_.at(0).at(mapW-1)->ne = vertices_.at(mapW-2).at(1);
@@ -52,7 +63,7 @@ FleetManager::FleetManager(MainWindow* mainWindow, QObject *parent):
     //setting vertice at last,last
     vertices_.at(mapW-1).at(mapW-1)->topLeftX = Util::VERTICEWIDTH*(mapW-1);
     vertices_.at(mapW-1).at(mapW-1)->topLeftY = Util::VERTICEWIDTH*(mapW-1);
-    vertices_.at(mapW-1).at(mapW-1)_>bottomRightX = Util::VERTICEWIDTH*mapW-1;
+    vertices_.at(mapW-1).at(mapW-1)->bottomRightX = Util::VERTICEWIDTH*mapW-1;
     vertices_.at(mapW-1).at(mapW-1)->bottomRightY = Util::VERTICEWIDTH*mapW-1;
     vertices_.at(mapW-1).at(mapW-1)->w = vertices_.at(mapW-2).at(mapW-1);
     vertices_.at(mapW-1).at(mapW-1)->nw = vertices_.at(mapW-2).at(mapW-2);
@@ -62,7 +73,7 @@ FleetManager::FleetManager(MainWindow* mainWindow, QObject *parent):
     {
         vertices_.at(i).at(0)->topLeftX = Util::VERTICEWIDTH*i;
         vertices_.at(i).at(0)->bottomRightX = Util::VERTICEWIDTH*(i+1)-1;
-        vertices_.at(i).at(0)_>bottomRightY = Util::VERTICEWIDTH-1;
+        vertices_.at(i).at(0)->bottomRightY = Util::VERTICEWIDTH-1;
         vertices_.at(i).at(0)->e = vertices_.at(i+1).at(0);
         vertices_.at(i).at(0)->se = vertices_.at(i+1).at(1);
         vertices_.at(i).at(0)->s = vertices_.at(i).at(1);
@@ -75,7 +86,7 @@ FleetManager::FleetManager(MainWindow* mainWindow, QObject *parent):
         vertices_.at(i).at(mapW-1)->topLeftX = Util::VERTICEWIDTH*i;
         vertices_.at(i).at(mapW-1)->topLeftY = Util::VERTICEWIDTH*(mapW-1);
         vertices_.at(i).at(mapW-1)->bottomRightX = Util::VERTICEWIDTH*(i+1)-1;
-        vertices_.at(i).at(mapW-1)_>bottomRightY = Util::VERTICEWIDTH*mapW-1;
+        vertices_.at(i).at(mapW-1)->bottomRightY = Util::VERTICEWIDTH*mapW-1;
         vertices_.at(i).at(mapW-1)->w = vertices_.at(i-1).at(mapW-1);
         vertices_.at(i).at(mapW-1)->nw = vertices_.at(i-1).at(mapW-2);
         vertices_.at(i).at(mapW-1)->n = vertices_.at(i).at(mapW-2);
@@ -87,7 +98,7 @@ FleetManager::FleetManager(MainWindow* mainWindow, QObject *parent):
     {
         vertices_.at(0).at(i)->topLeftY = Util::VERTICEWIDTH*i;
         vertices_.at(0).at(i)->bottomRightX = Util::VERTICEWIDTH-1;
-        vertices_.at(0).at(i)_>bottomRightY = Util::VERTICEWIDTH*(i+1)-1;
+        vertices_.at(0).at(i)->bottomRightY = Util::VERTICEWIDTH*(i+1)-1;
         vertices_.at(0).at(i)->n = vertices_.at(0).at(i-1);
         vertices_.at(0).at(i)->ne = vertices_.at(1).at(i-1);
         vertices_.at(0).at(i)->e = vertices_.at(1).at(i);
@@ -100,7 +111,7 @@ FleetManager::FleetManager(MainWindow* mainWindow, QObject *parent):
         vertices_.at(mapW-1).at(i)->topLeftX = Util::VERTICEWIDTH*(mapW-1);
         vertices_.at(mapW-1).at(i)->topLeftY = Util::VERTICEWIDTH*i;
         vertices_.at(mapW-1).at(i)->bottomRightX = Util::VERTICEWIDTH*mapW-1;
-        vertices_.at(mapW-1).at(i)_>bottomRightY = Util::VERTICEWIDTH*(i+1)-1;
+        vertices_.at(mapW-1).at(i)->bottomRightY = Util::VERTICEWIDTH*(i+1)-1;
         vertices_.at(mapW-1).at(i)->s = vertices_.at(mapW-1).at(i+1);
         vertices_.at(mapW-1).at(i)->sw = vertices_.at(mapW-2).at(i+1);
         vertices_.at(mapW-1).at(i)->w = vertices_.at(mapW-2).at(i);
@@ -118,7 +129,7 @@ FleetManager::FleetManager(MainWindow* mainWindow, QObject *parent):
             vertices_.at(i).at(j)->topLeftX = Util::VERTICEWIDTH*i;
             vertices_.at(i).at(j)->topLeftY = Util::VERTICEWIDTH*j;
             vertices_.at(i).at(j)->bottomRightX = Util::VERTICEWIDTH*(i+1)-1;
-            vertices_.at(i).at(j)_>bottomRightY = Util::VERTICEWIDTH*(j+1)-1;
+            vertices_.at(i).at(j)->bottomRightY = Util::VERTICEWIDTH*(j+1)-1;
             vertices_.at(i).at(j)->n = vertices_.at(i).at(i-1);
             vertices_.at(i).at(j)->ne = vertices_.at(i+1).at(i-1);
             vertices_.at(i).at(j)->e = vertices_.at(i+1).at(i);
@@ -129,14 +140,6 @@ FleetManager::FleetManager(MainWindow* mainWindow, QObject *parent):
             vertices_.at(i).at(j)->nw = vertices_.at(i-1).at(i-1);
         }
     }
-}
-
-
-//map_ cannot be set in constructor because map_ is constructed after
-//FleetManager
-void FleetManager::setMap(MapQGraphicsView* map)
-{
-    map_ = map;
 }
 
 void FleetManager::updateTimerTimeout()
@@ -185,7 +188,39 @@ void FleetManager::addPoi(PoiQGraphicsEllipseItem* poi)
 void FleetManager::addWall(WallQGraphicsLineItem* wall)
 {
     walls_.insert(wall);
+
+    unsigned int mapW = map_->getMapWidth()/Util::VERTICEWIDTH;
+
+    //breaking verticeconnections
+    for(unsigned int i = 1; i < mapW; ++i)
+    {
+        for(unsigned int j = 1; j < mapW; ++j)
+        {
+            QList<QGraphicsItem*> items =
+                map_->items(vertices_.at(i).at(j)->topLeftX,
+                            vertices_.at(i).at(j)->topLeftY,
+                            Util::VERTICEWIDTH, Util::VERTICEWIDTH);
+            for(QList<QGraphicsItem*>::Iterator k = items.begin();
+                k != items.end(); ++k)
+            {
+                if(*k == wall)
+                {
+                    vertices_.at(i).at(j)->n->s = NULL;
+                    vertices_.at(i).at(j)->ne->sw = NULL;
+                    vertices_.at(i).at(j)->e->w = NULL;
+                    vertices_.at(i).at(j)->se->nw = NULL;
+                    vertices_.at(i).at(j)->s->n = NULL;
+                    vertices_.at(i).at(j)->sw->ne = NULL;
+                    vertices_.at(i).at(j)->w->e = NULL;
+                    vertices_.at(i).at(j)->nw->se = NULL;
+                    break; //no need to go further through items
+                }
+            }
+        }
+    }
 }
+
+
 
 std::set<WallQGraphicsLineItem *> FleetManager::getWalls()
 {
@@ -204,9 +239,7 @@ void FleetManager::removeRedObjects()
     {
         if ((*i)->pen().color() == Qt::GlobalColor::red)
         {
-            map_->scene()->removeItem(*i);
-            delete *i;
-            pois_.erase(i);
+            removePoi(*i);
         }
     }
     for (std::set<WallQGraphicsLineItem*>::iterator i = walls_.begin();
@@ -214,9 +247,7 @@ void FleetManager::removeRedObjects()
     {
         if ((*i)->pen().color() == Qt::GlobalColor::red)
         {
-            map_->scene()->removeItem(*i);
-            delete *i;
-            walls_.erase(i);
+            removeWall(*i);
         }
     }
 
@@ -244,16 +275,12 @@ void FleetManager::removeAllObjects()
     for (std::set<PoiQGraphicsEllipseItem*>::iterator i = pois_.begin();
          i != pois_.end(); ++i)
     {
-        map_->scene()->removeItem(*i);
-        delete *i;
-        pois_.erase(i);
+        removePoi(*i);
     }
     for (std::set<WallQGraphicsLineItem*>::iterator i = walls_.begin();
          i != walls_.end(); ++i)
     {
-        map_->scene()->removeItem(*i);
-        delete *i;
-        walls_.erase(i);
+        removeWall(*i);
     }
 }
 
@@ -262,6 +289,43 @@ void FleetManager::removePoi(PoiQGraphicsEllipseItem* poi)
     map_->scene()->removeItem(poi);
     pois_.erase(poi);
     delete poi;
+}
+
+void FleetManager::removeWall(WallQGraphicsLineItem* wall)
+{
+    unsigned int mapW = map_->getMapWidth()/Util::VERTICEWIDTH;
+
+    //renewing verticeconnections
+    for(unsigned int i = 1; i < mapW; ++i)
+    {
+        for(unsigned int j = 1; j < mapW; ++j)
+        {
+            QList<QGraphicsItem*> items =
+                map_->items(vertices_.at(i).at(j)->topLeftX,
+                            vertices_.at(i).at(j)->topLeftY,
+                            Util::VERTICEWIDTH, Util::VERTICEWIDTH);
+            for(QList<QGraphicsItem*>::Iterator k = items.begin();
+                k != items.end(); ++k)
+            {
+                if(*k == wall)
+                {
+                    vertices_.at(i).at(j)->n->s = vertices_.at(i).at(j);
+                    vertices_.at(i).at(j)->ne->sw = vertices_.at(i).at(j);
+                    vertices_.at(i).at(j)->e->w = vertices_.at(i).at(j);
+                    vertices_.at(i).at(j)->se->nw = vertices_.at(i).at(j);
+                    vertices_.at(i).at(j)->s->n = vertices_.at(i).at(j);
+                    vertices_.at(i).at(j)->sw->ne = vertices_.at(i).at(j);
+                    vertices_.at(i).at(j)->w->e = vertices_.at(i).at(j);
+                    vertices_.at(i).at(j)->nw->se = vertices_.at(i).at(j);
+                    break; //no need to go further through items
+                }
+            }
+        }
+    }
+
+    map_->scene()->removeItem(wall);
+    delete wall;
+    walls_.erase(wall);
 }
 
 //shows or hides all traces

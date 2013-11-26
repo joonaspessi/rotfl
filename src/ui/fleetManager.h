@@ -99,6 +99,9 @@ public slots:
     void updateTimerTimeout();
 
 private:
+
+    void removeWall(WallQGraphicsLineItem* wall);
+
     MainWindow* mainWindow_;
     QVector<Croi::IRoomba*> selectedRoombas_;
     QVector<Croi::IRoomba*> roombas_;

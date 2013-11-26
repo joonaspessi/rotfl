@@ -120,7 +120,7 @@ MainWindow::MainWindow(QWidget *parent) :
     setCurrentFile("");
 
     //show the default real world width of map in cm
-    mapWidth_lineEdit_->setText(QString::number(map_->giveMapWidth()));
+    mapWidth_lineEdit_->setText(QString::number(map_->getMapWidth()));
     // TODO: Height in this one?
     //show the default real world width of map in cm
     //    mapWidth_lineEdit_->setText(QString::number(map_->giveMapWidth()));
