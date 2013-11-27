@@ -28,12 +28,12 @@ void FleetManager::updateTimerTimeout()
     {
         int index = selectedRoombas_.indexOf(roombas_.at(i));
         //roomba is selected
-        if(roombas_.at(i)->getPolygon()->isSelected() ||
+        if(roombas_.at(i)->getIcon()->isSelected() ||
                 roombas_.at(i)->getStartPoint()->isSelected())
         {
             mainWindow_->setRoombaStatusData(roombas_.at(i));
             //both the roomba and it's startPoint are selected for clarity
-            roombas_.at(i)->getPolygon()->setSelected(true);
+            roombas_.at(i)->getIcon()->setSelected(true);
             roombas_.at(i)->getStartPoint()->setSelected(true);
             if (index == -1)  //selected roomba isn't yet in selectedRoombas_
             {
