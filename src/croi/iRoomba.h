@@ -6,7 +6,10 @@
 #include <QObject>
 #include <QGraphicsPolygonItem>
 #include <QPointF>
+#include <QStack>
 #include "poiQGraphicsEllipseItem.h"
+#include "uiUtils.h"
+#include <queue>
 //#include "fleetManager.h"
 
 const double PI = 3.14159265;
@@ -71,6 +74,8 @@ public:
     //is roomba ready to receive drive commands
     bool isReady();
     void go2Point(QPointF point);
+    //calculates the nearest path to point and returns it's distance
+    double calcPath(QVector<QVector<Util::Vertice*>> vertices, QPointF point);
 
 private slots:
     void sensorUpdateTimerTimeout();
@@ -78,6 +83,16 @@ private slots:
     void driveTimerTimeout();
 
 private:
+
+    //function for comparing vertices
+    static bool verticeCompare(Util::Vertice* first, Util::Vertice* second);
+    //function for dealing with vertice's neighbour in Dijkstra's algorithm
+    double compNeigh(Util::Vertice* curV, Util::Direction direction,
+                     std::priority_queue<Util::Vertice*,
+                                         std::vector<Util::Vertice*>,
+                                         bool (*)(Util::Vertice*, Util::Vertice*)>
+                                         priQ);
+
     PoiQGraphicsEllipseItem* startPoint_;
     MapQGraphicsView* map_;
     //roombas triangle is stored in this.
@@ -90,6 +105,7 @@ private:
     QGraphicsLineItem* curSpeed_;
     //roombas traces are shown here
     QVector<QGraphicsLineItem*> traces_;
+    QStack<QPointF> path;
     bool traceShown_;
     //current location's x-component
     double Xloc_;
@@ -101,6 +117,7 @@ private:
     int velocity_;
     bool isReady_;
     int driveTime_;
+    QStack<QPointF>* path_;
 };
 
 

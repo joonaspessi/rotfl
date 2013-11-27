@@ -6,6 +6,7 @@
 #include "uiUtils.h"
 #include <QMouseEvent>
 #include "croi/iRoomba.h"
+//#include "fleetManager.h"
 
 //SOME OF THESE CONSTANTS ARE TO BE MOVED
 //AND SOME CHANGED TO VARIABLES

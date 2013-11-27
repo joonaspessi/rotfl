@@ -29,10 +29,10 @@ void FleetManager::setMap(MapQGraphicsView* map)
     unsigned int mapW = map_->getMapWidth()/Util::VERTICEWIDTH;
 
     //creating vertices (with all values set to zero)
-    QVector<Vertice*> verticeRow;
+    QVector<Util::Vertice*> verticeRow;
     for(unsigned int i = 0; i < mapW; ++i)
     {
-        verticeRow.append(new Vertice());
+        verticeRow.append(new Util::Vertice());
     }
     for(unsigned int i = 0; i < mapW; ++i)
     {
@@ -41,39 +41,29 @@ void FleetManager::setMap(MapQGraphicsView* map)
 
     //setting corner vertices. note: .at(x).at(y)
     //setting vertice at 0,0
-    vertices_.at(0).at(0)->bottomRightX = Util::VERTICEWIDTH-1;
-    vertices_.at(0).at(0)->bottomRightY = Util::VERTICEWIDTH-1;
     vertices_.at(0).at(0)->e = vertices_.at(1).at(0);
     vertices_.at(0).at(0)->se = vertices_.at(1).at(1);
     vertices_.at(0).at(0)->s = vertices_.at(0).at(1);
     //setting vertice at last,0
-    vertices_.at(mapW-1).at(0)->topLeftX = Util::VERTICEWIDTH*(mapW-1);
-    vertices_.at(mapW-1).at(0)->bottomRightX = Util::VERTICEWIDTH*mapW-1;
-    vertices_.at(mapW-1).at(0)->bottomRightY = Util::VERTICEWIDTH-1;
-    vertices_.at(mapW-1).at(0)->s = vertices_.at(mapW-1).at(1);
-    vertices_.at(mapW-1).at(0)->sw = vertices_.at(mapW-2).at(1);
-    vertices_.at(mapW-1).at(0)->w = vertices_.at(mapW-2).at(0);
+    vertices_.at(vertices_.size()-1).at(0)->topLeftX = Util::VERTICEWIDTH*(vertices_.size()-1);
+    vertices_.at(vertices_.size()-1).at(0)->s = vertices_.at(vertices_.size()-1).at(1);
+    vertices_.at(vertices_.size()-1).at(0)->sw = vertices_.at(vertices_.size()-2).at(1);
+    vertices_.at(vertices_.size()-1).at(0)->w = vertices_.at(vertices_.size()-2).at(0);
     //setting vertice at 0,last
-    vertices_.at(0).at(mapW-1)->topLeftY = Util::VERTICEWIDTH*(mapW-1);
-    vertices_.at(0).at(mapW-1)->bottomRightX = Util::VERTICEWIDTH-1;
-    vertices_.at(0).at(mapW-1)->bottomRightY = Util::VERTICEWIDTH*mapW-1;
-    vertices_.at(0).at(mapW-1)->n = vertices_.at(mapW-2).at(0);
-    vertices_.at(0).at(mapW-1)->ne = vertices_.at(mapW-2).at(1);
-    vertices_.at(0).at(mapW-1)->e = vertices_.at(mapW-1).at(1);
+    vertices_.at(0).at(vertices_.size()-1)->topLeftY = Util::VERTICEWIDTH*(vertices_.size()-1);
+    vertices_.at(0).at(vertices_.size()-1)->n = vertices_.at(vertices_.size()-2).at(0);
+    vertices_.at(0).at(vertices_.size()-1)->ne = vertices_.at(vertices_.size()-2).at(1);
+    vertices_.at(0).at(vertices_.size()-1)->e = vertices_.at(vertices_.size()-1).at(1);
     //setting vertice at last,last
-    vertices_.at(mapW-1).at(mapW-1)->topLeftX = Util::VERTICEWIDTH*(mapW-1);
-    vertices_.at(mapW-1).at(mapW-1)->topLeftY = Util::VERTICEWIDTH*(mapW-1);
-    vertices_.at(mapW-1).at(mapW-1)->bottomRightX = Util::VERTICEWIDTH*mapW-1;
-    vertices_.at(mapW-1).at(mapW-1)->bottomRightY = Util::VERTICEWIDTH*mapW-1;
-    vertices_.at(mapW-1).at(mapW-1)->w = vertices_.at(mapW-2).at(mapW-1);
-    vertices_.at(mapW-1).at(mapW-1)->nw = vertices_.at(mapW-2).at(mapW-2);
-    vertices_.at(mapW-1).at(mapW-1)->n = vertices_.at(mapW-1).at(mapW-2);
+    vertices_.at(vertices_.size()-1).at(vertices_.size()-1)->topLeftX = Util::VERTICEWIDTH*(vertices_.size()-1);
+    vertices_.at(vertices_.size()-1).at(vertices_.size()-1)->topLeftY = Util::VERTICEWIDTH*(vertices_.size()-1);
+    vertices_.at(vertices_.size()-1).at(vertices_.size()-1)->w = vertices_.at(vertices_.size()-2).at(vertices_.size()-1);
+    vertices_.at(vertices_.size()-1).at(vertices_.size()-1)->nw = vertices_.at(vertices_.size()-2).at(vertices_.size()-2);
+    vertices_.at(vertices_.size()-1).at(vertices_.size()-1)->n = vertices_.at(vertices_.size()-1).at(vertices_.size()-2);
     //setting vertices from 1,0 to last-1,0
-    for(unsigned int i = 1; i < mapW-1; ++i)
+    for(unsigned int i = 1; i < vertices_.size()-1; ++i)
     {
         vertices_.at(i).at(0)->topLeftX = Util::VERTICEWIDTH*i;
-        vertices_.at(i).at(0)->bottomRightX = Util::VERTICEWIDTH*(i+1)-1;
-        vertices_.at(i).at(0)->bottomRightY = Util::VERTICEWIDTH-1;
         vertices_.at(i).at(0)->e = vertices_.at(i+1).at(0);
         vertices_.at(i).at(0)->se = vertices_.at(i+1).at(1);
         vertices_.at(i).at(0)->s = vertices_.at(i).at(1);
@@ -81,24 +71,20 @@ void FleetManager::setMap(MapQGraphicsView* map)
         vertices_.at(i).at(0)->w = vertices_.at(i-1).at(0);
     }
     //setting vertices from 1,last to last-1,last
-    for(unsigned int i = 1; i < mapW-1; ++i)
+    for(unsigned int i = 1; i < vertices_.size()-1; ++i)
     {
-        vertices_.at(i).at(mapW-1)->topLeftX = Util::VERTICEWIDTH*i;
-        vertices_.at(i).at(mapW-1)->topLeftY = Util::VERTICEWIDTH*(mapW-1);
-        vertices_.at(i).at(mapW-1)->bottomRightX = Util::VERTICEWIDTH*(i+1)-1;
-        vertices_.at(i).at(mapW-1)->bottomRightY = Util::VERTICEWIDTH*mapW-1;
-        vertices_.at(i).at(mapW-1)->w = vertices_.at(i-1).at(mapW-1);
-        vertices_.at(i).at(mapW-1)->nw = vertices_.at(i-1).at(mapW-2);
-        vertices_.at(i).at(mapW-1)->n = vertices_.at(i).at(mapW-2);
-        vertices_.at(i).at(mapW-1)->ne = vertices_.at(i+1).at(mapW-2);
-        vertices_.at(i).at(mapW-1)->e = vertices_.at(i+1).at(mapW-1);
+        vertices_.at(i).at(vertices_.size()-1)->topLeftX = Util::VERTICEWIDTH*i;
+        vertices_.at(i).at(vertices_.size()-1)->topLeftY = Util::VERTICEWIDTH*(vertices_.size()-1);
+        vertices_.at(i).at(vertices_.size()-1)->w = vertices_.at(i-1).at(vertices_.size()-1);
+        vertices_.at(i).at(vertices_.size()-1)->nw = vertices_.at(i-1).at(vertices_.size()-2);
+        vertices_.at(i).at(vertices_.size()-1)->n = vertices_.at(i).at(vertices_.size()-2);
+        vertices_.at(i).at(vertices_.size()-1)->ne = vertices_.at(i+1).at(vertices_.size()-2);
+        vertices_.at(i).at(vertices_.size()-1)->e = vertices_.at(i+1).at(vertices_.size()-1);
     }
     //setting vertices from 0,1 to 0,last-1
-    for(unsigned int i = 1; i < mapW-1; ++i)
+    for(unsigned int i = 1; i < vertices_.size()-1; ++i)
     {
         vertices_.at(0).at(i)->topLeftY = Util::VERTICEWIDTH*i;
-        vertices_.at(0).at(i)->bottomRightX = Util::VERTICEWIDTH-1;
-        vertices_.at(0).at(i)->bottomRightY = Util::VERTICEWIDTH*(i+1)-1;
         vertices_.at(0).at(i)->n = vertices_.at(0).at(i-1);
         vertices_.at(0).at(i)->ne = vertices_.at(1).at(i-1);
         vertices_.at(0).at(i)->e = vertices_.at(1).at(i);
@@ -106,30 +92,26 @@ void FleetManager::setMap(MapQGraphicsView* map)
         vertices_.at(0).at(i)->s = vertices_.at(0).at(i+1);
     }
     //setting vertices from last,1 to last,last-1
-    for(unsigned int i = 1; i < mapW-1; ++i)
+    for(unsigned int i = 1; i < vertices_.size()-1; ++i)
     {
-        vertices_.at(mapW-1).at(i)->topLeftX = Util::VERTICEWIDTH*(mapW-1);
-        vertices_.at(mapW-1).at(i)->topLeftY = Util::VERTICEWIDTH*i;
-        vertices_.at(mapW-1).at(i)->bottomRightX = Util::VERTICEWIDTH*mapW-1;
-        vertices_.at(mapW-1).at(i)->bottomRightY = Util::VERTICEWIDTH*(i+1)-1;
-        vertices_.at(mapW-1).at(i)->s = vertices_.at(mapW-1).at(i+1);
-        vertices_.at(mapW-1).at(i)->sw = vertices_.at(mapW-2).at(i+1);
-        vertices_.at(mapW-1).at(i)->w = vertices_.at(mapW-2).at(i);
-        vertices_.at(mapW-1).at(i)->nw = vertices_.at(mapW-2).at(i-1);
-        vertices_.at(mapW-1).at(i)->n = vertices_.at(mapW-1).at(i-1);
+        vertices_.at(vertices_.size()-1).at(i)->topLeftX = Util::VERTICEWIDTH*(vertices_.size()-1);
+        vertices_.at(vertices_.size()-1).at(i)->topLeftY = Util::VERTICEWIDTH*i;
+        vertices_.at(vertices_.size()-1).at(i)->s = vertices_.at(vertices_.size()-1).at(i+1);
+        vertices_.at(vertices_.size()-1).at(i)->sw = vertices_.at(vertices_.size()-2).at(i+1);
+        vertices_.at(vertices_.size()-1).at(i)->w = vertices_.at(vertices_.size()-2).at(i);
+        vertices_.at(vertices_.size()-1).at(i)->nw = vertices_.at(vertices_.size()-2).at(i-1);
+        vertices_.at(vertices_.size()-1).at(i)->n = vertices_.at(vertices_.size()-1).at(i-1);
     }
 
     //setting the rest of vertices.
     //they are the non-border ones from 1,1 to last-1,last-1.
-    for(unsigned int i = 1; i < mapW-1; ++i)
+    for(unsigned int i = 1; i < vertices_.size()-1; ++i)
     {
-        QVector<Vertice*> verticeRow;
-        for(unsigned int j = 1; j < mapW-1; ++j)
+        QVector<Util::Vertice*> verticeRow;
+        for(unsigned int j = 1; j < vertices_.size()-1; ++j)
         {
             vertices_.at(i).at(j)->topLeftX = Util::VERTICEWIDTH*i;
             vertices_.at(i).at(j)->topLeftY = Util::VERTICEWIDTH*j;
-            vertices_.at(i).at(j)->bottomRightX = Util::VERTICEWIDTH*(i+1)-1;
-            vertices_.at(i).at(j)->bottomRightY = Util::VERTICEWIDTH*(j+1)-1;
             vertices_.at(i).at(j)->n = vertices_.at(i).at(i-1);
             vertices_.at(i).at(j)->ne = vertices_.at(i+1).at(i-1);
             vertices_.at(i).at(j)->e = vertices_.at(i+1).at(i);
@@ -172,8 +154,7 @@ void FleetManager::updateTimerTimeout()
 
 void FleetManager::createRoomba(PoiQGraphicsEllipseItem *startPoint)
 {
-    Croi::RoombaRoowifi* roomba = new
-        Croi::RoombaRoowifi(startPoint, map_, this);
+    Croi::RoombaRoowifi* roomba = new Croi::RoombaRoowifi(startPoint, map_, this);
     //Croi::RoombaRoowifi roomba = new Croi::RoombaSerial();
     //TODO: Croi::RoombaRoowifi roomba = new Croi::RoombaVirtual();
     roombas_.append(roomba);
@@ -189,12 +170,10 @@ void FleetManager::addWall(WallQGraphicsLineItem* wall)
 {
     walls_.insert(wall);
 
-    unsigned int mapW = map_->getMapWidth()/Util::VERTICEWIDTH;
-
     //breaking verticeconnections
-    for(unsigned int i = 1; i < mapW; ++i)
+    for(unsigned int i = 1; i < vertices_.size(); ++i)
     {
-        for(unsigned int j = 1; j < mapW; ++j)
+        for(unsigned int j = 1; j < vertices_.size(); ++j)
         {
             QList<QGraphicsItem*> items =
                 map_->items(vertices_.at(i).at(j)->topLeftX,
@@ -293,12 +272,10 @@ void FleetManager::removePoi(PoiQGraphicsEllipseItem* poi)
 
 void FleetManager::removeWall(WallQGraphicsLineItem* wall)
 {
-    unsigned int mapW = map_->getMapWidth()/Util::VERTICEWIDTH;
-
     //renewing verticeconnections
-    for(unsigned int i = 1; i < mapW; ++i)
+    for(unsigned int i = 1; i < vertices_.size(); ++i)
     {
-        for(unsigned int j = 1; j < mapW; ++j)
+        for(unsigned int j = 1; j < vertices_.size(); ++j)
         {
             QList<QGraphicsItem*> items =
                 map_->items(vertices_.at(i).at(j)->topLeftX,

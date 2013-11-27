@@ -4,6 +4,10 @@
 #include "math.h"
 #include "QDebug"
 #include <QObject>
+#include <queue>
+#include <vector>
+#include <cmath>
+#include <limits>
 
 namespace Croi {
 
@@ -356,6 +360,126 @@ void IRoomba::driveTimerTimeout()
 {
     this->drive(0,32767);
 
+}
+
+double IRoomba::calcPath(QVector<QVector<Util::Vertice*>> vertices, QPointF point)
+{
+    //find the start vertice
+    Util::Vertice* curV = NULL;
+    Util::Vertice* goalV = NULL;
+    for(unsigned int i = 1; i < vertices.size(); ++i)
+    {
+        for(unsigned int j = 1; j < vertices.size(); ++j)
+        {
+            if(Xloc_ >= vertices.at(i).at(j)->topLeftX &&
+               Xloc_ <= vertices.at(i).at(j)->topLeftX+Util::VERTICEWIDTH-1 &&
+               Yloc_ >= vertices.at(i).at(j)->topLeftY &&
+               Yloc_ <= vertices.at(i).at(j)->topLeftY+Util::VERTICEWIDTH-1)
+            {
+                curV = vertices.at(i).at(j);
+            }
+            if(point.x() >= vertices.at(i).at(j)->topLeftX &&
+               point.x() <= vertices.at(i).at(j)->topLeftX+Util::VERTICEWIDTH-1 &&
+               point.y() >= vertices.at(i).at(j)->topLeftY &&
+               point.y() <= vertices.at(i).at(j)->topLeftY+Util::VERTICEWIDTH-1)
+            {
+                goalV = vertices.at(i).at(j);
+            }
+        }
+        if(startV != NULL && goalV != NULL) //just a bit of speed optimizing
+        {
+            break;
+        }
+    }
+
+    std::priority_queue<Util::Vertice*, std::vector<Util::Vertice*>,
+                        bool (*)(Util::Vertice*, Util::Vertice*)>
+            priQ(&IRoomba::verticeCompare);
+
+    //Dijkstra's algorithm
+    curV->dist = 0.0;
+    priQ.push(curV);
+    while(!priQ.empty())
+    {
+        curV = priQ.top();
+        priQ.pop();
+        if(curV == goalV)
+        {
+            break;  //we got what we came for
+        }
+        compNeigh(curV, Util::N, &priQ);
+        compNeigh(curV, Util::NE, &priQ);
+        compNeigh(curV, Util::E, &priQ);
+        compNeigh(curV, Util::SE, &priQ);
+        compNeigh(curV, Util::S, &priQ);
+        compNeigh(curV, Util::SW, &priQ);
+        compNeigh(curV, Util::W, &priQ);
+        compNeigh(curV, Util::NW, &priQ);
+    }
+}
+
+double IRoomba::compNeigh(Util::Vertice* curV, Util::Direction direction,
+                          std::priority_queue<Util::Vertice*,
+                                              std::vector<Util::Vertice*>,
+                                              bool (*)(Util::Vertice*, Util::Vertice*)>
+                                              priQ)
+{
+    double dist = 0.0;
+    Util::Vertice* neighV = NULL;
+
+    switch(direction)
+    {
+    case Util::N:
+        dist = 1.0;
+        neighV = curV->n;
+        break;
+    case Util::NE:
+        dist = sqrt(2.0);
+        neighV = curV->ne;
+        break;
+    case Util::E:
+        dist = 1.0;
+        neighV = curV->e;
+        break;
+    case Util::SE:
+        dist = sqrt(2.0);
+        neighV = curV->se;
+        break;
+    case Util::S:
+        dist = 1.0;
+        neighV = curV->s;
+        break;
+    case Util::SW:
+        dist = sqrt(2.0);
+        neighV = curV->sw;
+        break;
+    case Util::W:
+        dist = 1.0;
+        neighV = curV->w;
+        break;
+    case Util::NW:
+        dist = sqrt(2.0);
+        neighV = curV->nw;
+        break;
+    }
+
+    if(neighV == NULL) //no link to neighbour -> nothing is done
+    {
+        return;
+    }
+
+    if(neighV->dist == std::numeric_limits<double>::max())
+    {
+        priQ.push(neighV);
+    }
+
+    //relax
+}
+
+//function for comparing vertices
+bool IRoomba::verticeCompare(Util::Vertice* first, Util::Vertice* second)
+{
+    return first->dist < second->dist;
 }
 
 IRoomba::~IRoomba()

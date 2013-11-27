@@ -4,51 +4,21 @@
 //#include "mainwindow.h"
 #include <QObject>
 #include <croi/iRoomba.h>
-#include "mapQGraphicsView.h"
+//#include "mapQGraphicsView.h"
 #include "wallQGraphicsLineItem.h"
 #include "poiQGraphicsEllipseItem.h"
 #include <set>
 #include <string>
 #include <QTimer>
+#include <limits>
+#include "uiUtils.h"
 
 const int RADSTRAIGHT = 32768;
 const int RADTURNCW = 65535;
 const int RADTURNCCW = 1;
 
 class MainWindow;
-
-struct Vertice
-{
-    Vertice():
-        topLeftX(0), topLeftY(0), bottomRightX(0),
-        bottomRightY(0), n(NULL), ne(NULL), e(NULL), se(NULL), s(NULL),
-        sw(NULL), w(NULL), nw(NULL)
-    {}
-
-    Vertice(int pTopLeftX, int pTopLeftY, int pBottomRightX, int pBottomRightY,
-            Vertice* pn, Vertice* pne, Vertice* pe, Vertice* pse, Vertice* ps,
-            Vertice* psw, Vertice* pw, Vertice* pnw):
-        topLeftX(pTopLeftX), topLeftY(pTopLeftY), bottomRightX(pBottomRightX),
-        bottomRightY(pBottomRightY), n(pn), ne(pne), e(pe), se(pse), s(ps),
-        sw(psw), w(pw), nw(pnw)
-    {}
-
-
-    int topLeftX;
-    int topLeftY;
-    int bottomRightX;
-    int bottomRightY;
-
-    //neighbouring vertices. Will be NULL when contact is severed by a wall.
-    Vertice* n;
-    Vertice* ne;
-    Vertice* e;
-    Vertice* se;
-    Vertice* s;
-    Vertice* sw;
-    Vertice* w;
-    Vertice* nw;
-};
+class MapQGraphicsView;
 
 class FleetManager : public QObject
 {
@@ -108,7 +78,7 @@ private:
     std::set<WallQGraphicsLineItem*> walls_;
     std::set<PoiQGraphicsEllipseItem*> pois_;
     MapQGraphicsView* map_;
-    QVector<QVector<Vertice*>> vertices_;
+    QVector<QVector<Util::Vertice*>> vertices_;
     QTimer* updateTimer_;
 };
 
