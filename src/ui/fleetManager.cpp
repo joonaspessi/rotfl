@@ -178,18 +178,19 @@ void FleetManager::checkPoiCollision()
          i != pois_.end(); ++i)
     {
         QList<QGraphicsItem*> collidingItems = (*i)->collidingItems();
-        if (!collidingItems.empty())
+        for (int j = 0; j < collidingItems.size(); ++j)
         {
-            removePoi(*i);
+            //Traceline is QgraphicsLineItem
+            QGraphicsLineItem *traceL = qgraphicsitem_cast<QGraphicsLineItem *>(collidingItems.at(j));
+
+            //Remove poi, if it's on top of some other object than traceLine
+            if (traceL == NULL)
+            {
+                removePoi(*i);
+            }
+
         }
-        //TODO: check issue #3 on Github, implementation is missing
-        //bool isTrace = false;
-        //goes through collidingItems and removes POI if it
-        //finds an item that isn't a trace
-        //while (!collidingItems.empty())
-        //{
-        //  collidingItems.pop_front();
-        //}
+
     }
 }
 

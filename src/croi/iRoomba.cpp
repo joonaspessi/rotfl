@@ -208,7 +208,8 @@ void IRoomba::updateState()
     //curSpeed_->setZValue(1);
     //polygon_->setZValue(1);
 
-    //qobject_cast<FleetManager*>(parent())->checkPoiCollision();
+    qobject_cast<FleetManager*>(parent())->checkPoiCollision();
+
     //add new wall if bumb has happened
     if (leftBump || rightBump)
     {
