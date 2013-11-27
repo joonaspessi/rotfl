@@ -28,6 +28,9 @@ public:
 
     virtual short getDistance();
     virtual short getAngle();
+    virtual bool getLeftBumb();
+    virtual bool getRightBumb();
+
 public slots:
 
 private:

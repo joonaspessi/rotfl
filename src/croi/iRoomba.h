@@ -47,6 +47,8 @@ public:
     virtual unsigned short getChargeLevel() = 0;
     virtual short getDistance() = 0;
     virtual short getAngle() = 0;
+    virtual bool getLeftBumb() = 0;
+    virtual bool getRightBumb() = 0;
 
 
     //all functions below do not need reimplementation by subclasses
@@ -61,7 +63,7 @@ public:
     PoiQGraphicsEllipseItem* getStartPoint();
     void setStartPoint(PoiQGraphicsEllipseItem* startPoint);
     //TODO: changed when implementing new roomba icon
-    QGraphicsPolygonItem* getPolygon();
+    QGraphicsPixmapItem * getIcon();
     //calling this will show/unshow traces depending on whether
     //they'recurrently shown
     void ifShowTraces();

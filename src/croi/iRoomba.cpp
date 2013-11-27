@@ -14,9 +14,6 @@ IRoomba::IRoomba(PoiQGraphicsEllipseItem *startPoint, MapQGraphicsView *map,
     curSpeed_(NULL), Xloc_(startPoint->x()), Yloc_(startPoint->y()), angle_(0.0),
     radius_(RADSTRAIGHT), velocity_(0), traceShown_(true), isReady_(false), driveTime_(0)
 {
-    //QPixmap pixmap;
-    //pixmap.load(":/icons/roomba_small");
-    //icon_(pixmap, map);
 
 }
 
@@ -89,6 +86,8 @@ void IRoomba::updateState()
     //subclass handles the retrieval of sensor information
     int distance = getDistance();
     int angle = getAngle();
+    bool leftBump = getLeftBumb();
+    bool rightBump = getRightBumb();
 
     //angle for distance calculation
     double angleForDist = angle_-static_cast<double>(angle)*PI*ANGLECORRECTION/180.0;
@@ -149,7 +148,7 @@ void IRoomba::updateState()
     }
     //making the correctly angled roombaTriangle
     //THIS WILL BE REPLACED WITH ROOMBA ICON
-    QVector<QPointF> points;
+    /*QVector<QPointF> points;
     QPointF first(Xloc_+cos(angle_)*ARROWWIDTH, Yloc_+sin(angle_)*ARROWWIDTH);
     points.append(first);
     double tempAngle = angle_+40.0*PI/180.0;
@@ -163,13 +162,23 @@ void IRoomba::updateState()
     //calculate the point at the back of the triangle
     double triangleX = (points.at(1).x()+points.at(2).x())/2.0;
     double triangleY = (points.at(1).y()+points.at(2).y())/2.0;
+    */
 
     //ROOMBA'S ICON WILL REPLACE THIS IMPLEMENTATION
-    if (polygon_ == NULL)  //first update
+    if (icon_ == NULL)  //first update
     {
-        polygon_ = map_->scene()->addPolygon(triangle);
+        QPixmap pixmap(":/icons/roomba_small");
+        //pixmap.load(":/icons/roomba_small");
+        //QSize size(34,34);
+        //pixmap.scaled(size);
+        icon_ = map_->scene()->addPixmap(pixmap);
+        icon_->setOffset(-17, -17);
+        icon_->setPos(Xloc_, Yloc_);
+        icon_->setRotation(90);
+        icon_->setFlag(QGraphicsItem::ItemIsSelectable, true);
+        icon_->setFlag(QGraphicsItem::ItemIsMovable,false);
         //color of the roombaTriangle is blue
-        QBrush triangleBrush(Qt::GlobalColor::blue);
+        /*QBrush triangleBrush(Qt::GlobalColor::blue);
         polygon_->setBrush(triangleBrush);
         polygon_->setFlag(QGraphicsItem::ItemIsSelectable, true);
         polygon_->setFlag(QGraphicsItem::ItemIsMovable,false);
@@ -180,24 +189,44 @@ void IRoomba::updateState()
                                      triangleX-cos(angle_)*ARROWWIDTH*2.0*speed,
                                      triangleY-sin(angle_)*ARROWWIDTH*2.0*speed,
                                      curSpeedPen);
-        curSpeed_->setFlag(QGraphicsItem::ItemIsMovable,false);
+        curSpeed_->setFlag(QGraphicsItem::ItemIsMovable,false);*/
     }
     else
     {
+        /*
         polygon_->setPolygon(triangle);
         curSpeed_->setLine(triangleX, triangleY,
                           triangleX-cos(angle)*ARROWWIDTH*2.0*speed,
                           triangleY-sin(angle)*ARROWWIDTH*2.0*speed);
-    }
-    curSpeed_->setZValue(1);
-    polygon_->setZValue(1);
+        */
+        icon_->setPos(Xloc_, Yloc_);
+        icon_->resetTransform();
+        icon_->setRotation(angle_*(180/PI));
 
-   qobject_cast<FleetManager*>(parent())->checkPoiCollision();
+    }
+    icon_->setZValue(1);
+    //curSpeed_->setZValue(1);
+    //polygon_->setZValue(1);
+
+    //qobject_cast<FleetManager*>(parent())->checkPoiCollision();
+    //add new wall if bumb has happened
+    if (leftBump || rightBump)
+    {
+        qDebug() << "Roomba has collided with unknown object!";
+        double tempAngle = angle_-40.0*PI/180.0;
+        QPointF l (Xloc_+cos(tempAngle)*17, Yloc_+sin(tempAngle)*17);
+        tempAngle = angle_+40.0*PI/180.0;
+        QPointF r (Xloc_+cos(tempAngle)*17, Yloc_+sin(tempAngle)*17);
+        WallQGraphicsLineItem* bumbed = new WallQGraphicsLineItem
+                                            (l.x(), l.y(), r.x(), r.y());
+        map_->scene()->addItem(bumbed);
+    }
+
 }
 
-QGraphicsPolygonItem* IRoomba::getPolygon()
+QGraphicsPixmapItem *IRoomba::getIcon()
 {
-    return polygon_;
+    return icon_;
 }
 
 void IRoomba::ifShowTraces()

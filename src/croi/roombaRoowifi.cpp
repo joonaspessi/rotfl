@@ -102,7 +102,30 @@ short RoombaRoowifi::getDistance()
 
 short RoombaRoowifi::getAngle()
 {
+
     return roowifi_->Sensors.Angle;
+}
+
+bool RoombaRoowifi::getLeftBumb()
+{
+    unsigned char bumps = roowifi_->Sensors.BumpsWheeldrops;
+    if (bumps & 0x02)
+    {
+        return true;
+    }
+    return false;
+
+}
+
+bool RoombaRoowifi::getRightBumb()
+{
+    unsigned char bumps = roowifi_->Sensors.BumpsWheeldrops;
+    if (bumps & 0x01)
+    {
+        return true;
+    }
+    return false;
+
 }
 
 void RoombaRoowifi::drive(int velocity, int radius)
