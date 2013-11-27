@@ -9,5 +9,6 @@
         <file alias="roomba_small">graphics/Roomba_round_icon_small.png</file>
         <file alias="wall1">graphics/brick-wall-icon.png</file>
         <file alias="wall2">graphics/wall_red.png</file>
+        <file alias="DEBUG_roomba_small">graphics/DEBUG_Roomba_round_icon_small.png</file>
     </qresource>
 </RCC>

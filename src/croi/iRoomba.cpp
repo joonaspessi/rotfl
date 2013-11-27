@@ -141,7 +141,8 @@ void IRoomba::updateState()
 
     if (icon_ == NULL)  //first update
     {
-        QPixmap pixmap(":/icons/roomba_small");
+         // TODO: Improve icon graphics before deploying
+        QPixmap pixmap(":/icons/DEBUG_roomba_small");
         icon_ = map_->scene()->addPixmap(pixmap);
         icon_->setOffset(-17, -17);
         icon_->setPos(Xloc_, Yloc_);
