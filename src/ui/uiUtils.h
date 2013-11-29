@@ -24,7 +24,7 @@ struct Vertice
 {
     Vertice():
         topLeftX(0), topLeftY(0), n(NULL), ne(NULL), e(NULL), se(NULL),
-        s(NULL), sw(NULL), w(NULL), nw(NULL)
+        s(NULL), sw(NULL), w(NULL), nw(NULL), from(NULL)
     {
         pos.setX(static_cast<double>(topLeftX)+Util::VERTICEWIDTH/2.0);
         pos.setY(static_cast<double>(topLeftY)+Util::VERTICEWIDTH/2.0);
@@ -35,7 +35,7 @@ struct Vertice
             Vertice* pn, Vertice* pne, Vertice* pe, Vertice* pse, Vertice* ps,
             Vertice* psw, Vertice* pw, Vertice* pnw):
         topLeftX(pTopLeftX), topLeftY(pTopLeftY), n(pn), ne(pne), e(pe),
-        se(pse), s(ps), sw(psw), w(pw), nw(pnw)
+        se(pse), s(ps), sw(psw), w(pw), nw(pnw), from(NULL)
 
     {
         pos.setX(static_cast<double>(topLeftX)+Util::VERTICEWIDTH/2.0);

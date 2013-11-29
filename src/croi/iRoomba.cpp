@@ -16,7 +16,8 @@ IRoomba::IRoomba(PoiQGraphicsEllipseItem *startPoint, MapQGraphicsView *map,
     QObject(parent),
     startPoint_(startPoint), map_(map), polygon_(NULL), icon_(NULL),
     curSpeed_(NULL), Xloc_(startPoint->x()), Yloc_(startPoint->y()), angle_(0.0),
-    radius_(RADSTRAIGHT), velocity_(0), traceShown_(true), isReady_(false), driveTime_(0)
+    radius_(RADSTRAIGHT), velocity_(0), traceShown_(true), isReady_(false), driveTime_(0),
+    path_(NULL)
 {
 
 }
@@ -365,6 +366,7 @@ void IRoomba::driveTimerTimeout()
 double IRoomba::calcPath(QVector<QVector<Util::Vertice*>> vertices, QPointF point)
 {
     //find the start vertice
+    Util::Vertice* startV = NULL;
     Util::Vertice* curV = NULL;
     Util::Vertice* goalV = NULL;
     for(unsigned int i = 1; i < vertices.size(); ++i)
@@ -376,7 +378,7 @@ double IRoomba::calcPath(QVector<QVector<Util::Vertice*>> vertices, QPointF poin
                Yloc_ >= vertices.at(i).at(j)->topLeftY &&
                Yloc_ <= vertices.at(i).at(j)->topLeftY+Util::VERTICEWIDTH-1)
             {
-                curV = vertices.at(i).at(j);
+                startV = vertices.at(i).at(j);
             }
             if(point.x() >= vertices.at(i).at(j)->topLeftX &&
                point.x() <= vertices.at(i).at(j)->topLeftX+Util::VERTICEWIDTH-1 &&
@@ -397,8 +399,8 @@ double IRoomba::calcPath(QVector<QVector<Util::Vertice*>> vertices, QPointF poin
             priQ(&IRoomba::verticeCompare);
 
     //Dijkstra's algorithm
-    curV->dist = 0.0;
-    priQ.push(curV);
+    startV->dist = 0.0;
+    priQ.push(startV);
     while(!priQ.empty())
     {
         curV = priQ.top();
@@ -416,15 +418,35 @@ double IRoomba::calcPath(QVector<QVector<Util::Vertice*>> vertices, QPointF poin
         compNeigh(curV, Util::W, &priQ);
         compNeigh(curV, Util::NW, &priQ);
     }
+
+    path_ = new QStack<QPointF>;
+    while(curV != startV)
+    {
+        path_->push(curV->pos);
+        curV = curV->from;
+    }
+
+    double dist = goalV->dist;
+
+    //resetting vertice info
+    for(unsigned int i = 1; i < vertices.size(); ++i)
+    {
+        for(unsigned int j = 1; j < vertices.size(); ++j)
+        {
+            vertices.at(i).at(j)->dist = std::numeric_limits<double>::max();
+            vertices.at(i).at(j)->from = NULL;
+        }
+    }
+
+    return dist;
 }
 
-double IRoomba::compNeigh(Util::Vertice* curV, Util::Direction direction,
-                          std::priority_queue<Util::Vertice*,
-                                              std::vector<Util::Vertice*>,
-                                              bool (*)(Util::Vertice*, Util::Vertice*)>
-                                              priQ)
+void IRoomba::compNeigh(Util::Vertice* curV, Util::Direction direction,
+                        std::priority_queue<Util::Vertice *,
+                                            std::vector<Util::Vertice*>,
+                                            bool (*)(Util::Vertice*, Util::Vertice*)>* priQ)
 {
-    double dist = 0.0;
+    double dist = 0.0;  //distance between curV and neighV
     Util::Vertice* neighV = NULL;
 
     switch(direction)
@@ -470,10 +492,15 @@ double IRoomba::compNeigh(Util::Vertice* curV, Util::Direction direction,
 
     if(neighV->dist == std::numeric_limits<double>::max())
     {
-        priQ.push(neighV);
+        priQ->push(neighV);
     }
 
     //relax
+    if(neighV->dist > curV->dist+dist)
+    {
+        neighV->dist = curV->dist+dist;
+        neighV->from = curV;
+    }
 }
 
 //function for comparing vertices

@@ -87,11 +87,10 @@ private:
     //function for comparing vertices
     static bool verticeCompare(Util::Vertice* first, Util::Vertice* second);
     //function for dealing with vertice's neighbour in Dijkstra's algorithm
-    double compNeigh(Util::Vertice* curV, Util::Direction direction,
-                     std::priority_queue<Util::Vertice*,
-                                         std::vector<Util::Vertice*>,
-                                         bool (*)(Util::Vertice*, Util::Vertice*)>
-                                         priQ);
+    void compNeigh(Util::Vertice* curV, Util::Direction direction,
+                   std::priority_queue<Util::Vertice *,
+                                       std::vector<Util::Vertice*>,
+                                       bool (*)(Util::Vertice*, Util::Vertice*)>* priQ);
 
     PoiQGraphicsEllipseItem* startPoint_;
     MapQGraphicsView* map_;

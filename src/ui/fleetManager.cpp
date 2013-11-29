@@ -184,14 +184,38 @@ void FleetManager::addWall(WallQGraphicsLineItem* wall)
             {
                 if(*k == wall)
                 {
-                    vertices_.at(i).at(j)->n->s = NULL;
-                    vertices_.at(i).at(j)->ne->sw = NULL;
-                    vertices_.at(i).at(j)->e->w = NULL;
-                    vertices_.at(i).at(j)->se->nw = NULL;
-                    vertices_.at(i).at(j)->s->n = NULL;
-                    vertices_.at(i).at(j)->sw->ne = NULL;
-                    vertices_.at(i).at(j)->w->e = NULL;
-                    vertices_.at(i).at(j)->nw->se = NULL;
+                    if(vertices_.at(i).at(j)->n != NULL)
+                    {
+                        vertices_.at(i).at(j)->n->s = NULL;
+                    }
+                    if(vertices_.at(i).at(j)->ne != NULL)
+                    {
+                        vertices_.at(i).at(j)->ne->sw = NULL;
+                    }
+                    if(vertices_.at(i).at(j)->e != NULL)
+                    {
+                        vertices_.at(i).at(j)->e->w = NULL;
+                    }
+                    if(vertices_.at(i).at(j)->se != NULL)
+                    {
+                        vertices_.at(i).at(j)->se->nw = NULL;
+                    }
+                    if(vertices_.at(i).at(j)->s != NULL)
+                    {
+                        vertices_.at(i).at(j)->s->n = NULL;
+                    }
+                    if(vertices_.at(i).at(j)->sw != NULL)
+                    {
+                        vertices_.at(i).at(j)->sw->ne = NULL;
+                    }
+                    if(vertices_.at(i).at(j)->w != NULL)
+                    {
+                        vertices_.at(i).at(j)->w->e = NULL;
+                    }
+                    if(vertices_.at(i).at(j)->nw != NULL)
+                    {
+                        vertices_.at(i).at(j)->nw->se = NULL;
+                    }
                     break; //no need to go further through items
                 }
             }
@@ -286,14 +310,39 @@ void FleetManager::removeWall(WallQGraphicsLineItem* wall)
             {
                 if(*k == wall)
                 {
-                    vertices_.at(i).at(j)->n->s = vertices_.at(i).at(j);
-                    vertices_.at(i).at(j)->ne->sw = vertices_.at(i).at(j);
-                    vertices_.at(i).at(j)->e->w = vertices_.at(i).at(j);
-                    vertices_.at(i).at(j)->se->nw = vertices_.at(i).at(j);
-                    vertices_.at(i).at(j)->s->n = vertices_.at(i).at(j);
-                    vertices_.at(i).at(j)->sw->ne = vertices_.at(i).at(j);
-                    vertices_.at(i).at(j)->w->e = vertices_.at(i).at(j);
-                    vertices_.at(i).at(j)->nw->se = vertices_.at(i).at(j);
+                    if(vertices_.at(i).at(j)->n != NULL)
+                    {
+                        vertices_.at(i).at(j)->n->s = vertices_.at(i).at(j);
+                    }
+                    if(vertices_.at(i).at(j)->ne != NULL)
+                    {
+                        vertices_.at(i).at(j)->ne->sw = vertices_.at(i).at(j);
+                    }
+                    if(vertices_.at(i).at(j)->e != NULL)
+                    {
+                        vertices_.at(i).at(j)->e->w = vertices_.at(i).at(j);
+                    }
+                    if(vertices_.at(i).at(j)->se != NULL)
+                    {
+                        vertices_.at(i).at(j)->se->nw = vertices_.at(i).at(j);
+                    }
+                    if(vertices_.at(i).at(j)->s != NULL)
+                    {
+                        vertices_.at(i).at(j)->s->n = vertices_.at(i).at(j);
+                    }
+                    if(vertices_.at(i).at(j)->sw != NULL)
+                    {
+                        vertices_.at(i).at(j)->sw->ne = vertices_.at(i).at(j);
+                    }
+                    if(vertices_.at(i).at(j)->w != NULL)
+                    {
+                        vertices_.at(i).at(j)->w->e = vertices_.at(i).at(j);
+                    }
+                    if(vertices_.at(i).at(j)->nw != NULL)
+                    {
+                        vertices_.at(i).at(j)->nw->se = vertices_.at(i).at(j);
+                    }
+
                     break; //no need to go further through items
                 }
             }
