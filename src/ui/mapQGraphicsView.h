@@ -42,7 +42,6 @@ private:
     QPointF* wallToBeAddedStartPoint_;
     QGraphicsSimpleTextItem* wallToBeAddedStartPointText_;
     QGraphicsSimpleTextItem* wallToBeAddedEndPointText_;
-    int mapWidth_;
     unsigned int mapWidth_;
     bool traceShown_;
     Util::SelectedPaintTool selectedPaintTool_;

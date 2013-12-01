@@ -2,6 +2,7 @@
 #include "mapQGraphicsView.h"
 #include <QDebug>
 #include <QStyleOption>
+#include <uiUtils.h>
 
 PoiQGraphicsEllipseItem::PoiQGraphicsEllipseItem
 (qreal x, qreal y, qreal w, qreal h, QGraphicsItem* parent):
@@ -21,6 +22,11 @@ void PoiQGraphicsEllipseItem::paint(QPainter *painter, const QStyleOptionGraphic
     }
     this->setPen(pen);
     QGraphicsEllipseItem::paint(painter, &myoption, widget);
+}
+
+int PoiQGraphicsEllipseItem::type() const
+{
+    return Util::POITYPE;
 }
 
 PoiQGraphicsEllipseItem::~PoiQGraphicsEllipseItem()

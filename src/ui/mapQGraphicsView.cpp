@@ -12,9 +12,8 @@
 
 MapQGraphicsView::MapQGraphicsView(FleetManager* fleetManager, QWidget* parent) :
     QGraphicsView(parent), wallToBeAddedStartPoint_(NULL),
-    mapWidth_(398), traceShown_(true), fleetManager_(fleetManager),
+    mapWidth_(Util::MAPWIDTH), traceShown_(true), fleetManager_(fleetManager),
     wallToBeAddedStartPointText_(NULL), wallToBeAddedEndPointText_(NULL)
-    mapWidth_(Util::MAPWIDTH), traceShown_(true), fleetManager_(fleetManager)
 {
     setRenderHints(QPainter::Antialiasing);
 }

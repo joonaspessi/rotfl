@@ -1,6 +1,7 @@
 #include "wallQGraphicsLineItem.h"
 #include "mapQGraphicsView.h"
 #include <QStyleOption>
+#include <uiUtils.h>
 
 WallQGraphicsLineItem::WallQGraphicsLineItem
 (qreal x1, qreal y1, qreal x2, qreal y2, QGraphicsItem *parent):
@@ -20,6 +21,12 @@ void WallQGraphicsLineItem::paint(QPainter *painter, const QStyleOptionGraphicsI
     }
     this->setPen(pen);
     QGraphicsLineItem::paint(painter, &myoption, widget);
+}
+
+
+int WallQGraphicsLineItem::type() const
+{
+    return Util::WALLTYPE;
 }
 
 WallQGraphicsLineItem::~WallQGraphicsLineItem()

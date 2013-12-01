@@ -305,45 +305,58 @@ void FleetManager::removeWall(WallQGraphicsLineItem* wall)
                 map_->items(vertices_.at(i).at(j)->topLeftX,
                             vertices_.at(i).at(j)->topLeftY,
                             Util::VERTICEWIDTH, Util::VERTICEWIDTH);
+
+            //to renew verticeconnections vertice must have the wall
+            //we're removing but no other wall inside its area
+            bool wallFound = false;
+            bool anotherWallFound = false;
             for(QList<QGraphicsItem*>::Iterator k = items.begin();
                 k != items.end(); ++k)
-            {
+            { 
                 if(*k == wall)
                 {
-                    if(vertices_.at(i).at(j)->n != NULL)
-                    {
-                        vertices_.at(i).at(j)->n->s = vertices_.at(i).at(j);
-                    }
-                    if(vertices_.at(i).at(j)->ne != NULL)
-                    {
-                        vertices_.at(i).at(j)->ne->sw = vertices_.at(i).at(j);
-                    }
-                    if(vertices_.at(i).at(j)->e != NULL)
-                    {
-                        vertices_.at(i).at(j)->e->w = vertices_.at(i).at(j);
-                    }
-                    if(vertices_.at(i).at(j)->se != NULL)
-                    {
-                        vertices_.at(i).at(j)->se->nw = vertices_.at(i).at(j);
-                    }
-                    if(vertices_.at(i).at(j)->s != NULL)
-                    {
-                        vertices_.at(i).at(j)->s->n = vertices_.at(i).at(j);
-                    }
-                    if(vertices_.at(i).at(j)->sw != NULL)
-                    {
-                        vertices_.at(i).at(j)->sw->ne = vertices_.at(i).at(j);
-                    }
-                    if(vertices_.at(i).at(j)->w != NULL)
-                    {
-                        vertices_.at(i).at(j)->w->e = vertices_.at(i).at(j);
-                    }
-                    if(vertices_.at(i).at(j)->nw != NULL)
-                    {
-                        vertices_.at(i).at(j)->nw->se = vertices_.at(i).at(j);
-                    }
+                    wallFound = true;
+                }
+                else if((*k)->type() == Util::WALLTYPE)
+                {
+                    anotherWallFound = true;
+                    break;
+                }
+            }
 
-                    break; //no need to go further through items
+            if(wallFound && !anotherWallFound)
+            {
+                if(vertices_.at(i).at(j)->n != NULL)
+                {
+                    vertices_.at(i).at(j)->n->s = vertices_.at(i).at(j);
+                }
+                if(vertices_.at(i).at(j)->ne != NULL)
+                {
+                    vertices_.at(i).at(j)->ne->sw = vertices_.at(i).at(j);
+                }
+                if(vertices_.at(i).at(j)->e != NULL)
+                {
+                    vertices_.at(i).at(j)->e->w = vertices_.at(i).at(j);
+                }
+                if(vertices_.at(i).at(j)->se != NULL)
+                {
+                    vertices_.at(i).at(j)->se->nw = vertices_.at(i).at(j);
+                }
+                if(vertices_.at(i).at(j)->s != NULL)
+                {
+                    vertices_.at(i).at(j)->s->n = vertices_.at(i).at(j);
+                }
+                if(vertices_.at(i).at(j)->sw != NULL)
+                {
+                    vertices_.at(i).at(j)->sw->ne = vertices_.at(i).at(j);
+                }
+                if(vertices_.at(i).at(j)->w != NULL)
+                {
+                    vertices_.at(i).at(j)->w->e = vertices_.at(i).at(j);
+                }
+                if(vertices_.at(i).at(j)->nw != NULL)
+                {
+                    vertices_.at(i).at(j)->nw->se = vertices_.at(i).at(j);
                 }
             }
         }

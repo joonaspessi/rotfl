@@ -2,6 +2,7 @@
 #define UIUTILS_H
 
 #include <limits>
+#include <QGraphicsItem>
 
 namespace Util {
 
@@ -19,6 +20,8 @@ enum Direction {N, NE, E, SE, S, SW, W, NW};
 
 const unsigned int VERTICEWIDTH = 40;
 const unsigned int MAPWIDTH = 400;
+const int POITYPE = QGraphicsItem::UserType;
+const int WALLTYPE = QGraphicsItem::UserType+1;
 
 struct Vertice
 {
