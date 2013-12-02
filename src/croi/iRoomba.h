@@ -74,7 +74,7 @@ public:
     //is roomba ready to receive drive commands
     bool isReady();
     //calculates the nearest path to point and returns it's distance
-    double calcPath(QVector<QVector<Util::Vertice*>> vertices, QPointF* point);
+    double calcPath(QVector<QVector<Util::Vertice *> >& vertices, QPointF& point);
     //this makes the IRoomba to follow the path_ calculated by calcPath. This
     //must be called once and only once after calcPath if ignorePath isn't
     //called
@@ -101,10 +101,10 @@ private:
     //this is a function for going straight to a point. Used by usePath
     void go2Point(QPointF point);
     //function for dealing with vertice's neighbour in Dijkstra's algorithm
-    void compNeigh(Util::Vertice* curV, Util::Direction direction,
+    void compNeigh(Util::Vertice *curV, Util::Direction direction,
                    std::priority_queue<Util::Vertice *,
                                        std::vector<Util::Vertice*>,
-                                       bool (*)(Util::Vertice*, Util::Vertice*)>* priQ);
+                                       bool (*)(Util::Vertice*, Util::Vertice*)> &priQ);
 
     PoiQGraphicsEllipseItem* startPoint_;
     MapQGraphicsView* map_;

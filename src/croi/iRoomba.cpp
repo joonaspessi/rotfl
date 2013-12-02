@@ -175,6 +175,7 @@ void IRoomba::updateState()
         WallQGraphicsLineItem* bumbed = new WallQGraphicsLineItem
                                             (l.x(), l.y(), r.x(), r.y());
         map_->scene()->addItem(bumbed);
+        //qobject_cast<FleetManager*>(parent())->addWall(bumbed);
     }
 }
 
@@ -381,16 +382,22 @@ void IRoomba::driveTimerTimeout()
     prevPReached_ = true;
 }
 
-double IRoomba::calcPath(QVector<QVector<Util::Vertice*>> vertices, QPointF* point)
+double IRoomba::calcPath(QVector<QVector<Util::Vertice *> > &vertices, QPointF& point)
 {
+//commented lines skip the shortest path to perform simple go2point
+//    path_ = new QStack<QPointF>;
+//    path_->push(point);
+//    return 1;
     //find the start vertice
     Util::Vertice* startV = NULL;
     Util::Vertice* curV = NULL;
     Util::Vertice* goalV = NULL;
-    for(unsigned int i = 1; i < vertices.size(); ++i)
+    for(unsigned int i = 0; i < vertices.size(); ++i)
     {
-        for(unsigned int j = 1; j < vertices.size(); ++j)
+        for(unsigned int j = 0; j < vertices.at(i).size(); ++j)
         {
+//            qDebug() << "verticeX: " << vertices.at(i).at(j)->topLeftX << " "
+//                     << "verticeY: " << vertices.at(i).at(j)->topLeftY;
             if(Xloc_ >= vertices.at(i).at(j)->topLeftX &&
                Xloc_ <= vertices.at(i).at(j)->topLeftX+Util::VERTICEWIDTH-1 &&
                Yloc_ >= vertices.at(i).at(j)->topLeftY &&
@@ -398,10 +405,10 @@ double IRoomba::calcPath(QVector<QVector<Util::Vertice*>> vertices, QPointF* poi
             {
                 startV = vertices.at(i).at(j);
             }
-            if(point->x() >= vertices.at(i).at(j)->topLeftX &&
-               point->x() <= vertices.at(i).at(j)->topLeftX+Util::VERTICEWIDTH-1 &&
-               point->y() >= vertices.at(i).at(j)->topLeftY &&
-               point->y() <= vertices.at(i).at(j)->topLeftY+Util::VERTICEWIDTH-1)
+            if(point.x() >= vertices.at(i).at(j)->topLeftX &&
+               point.x() <= vertices.at(i).at(j)->topLeftX+Util::VERTICEWIDTH-1 &&
+               point.y() >= vertices.at(i).at(j)->topLeftY &&
+               point.y() <= vertices.at(i).at(j)->topLeftY+Util::VERTICEWIDTH-1)
             {
                 goalV = vertices.at(i).at(j);
             }
@@ -427,32 +434,34 @@ double IRoomba::calcPath(QVector<QVector<Util::Vertice*>> vertices, QPointF* poi
         {
             break;  //we got what we came for
         }
-        compNeigh(curV, Util::N, &priQ);
-        compNeigh(curV, Util::NE, &priQ);
-        compNeigh(curV, Util::E, &priQ);
-        compNeigh(curV, Util::SE, &priQ);
-        compNeigh(curV, Util::S, &priQ);
-        compNeigh(curV, Util::SW, &priQ);
-        compNeigh(curV, Util::W, &priQ);
-        compNeigh(curV, Util::NW, &priQ);
+        compNeigh(curV, Util::N, priQ);
+        compNeigh(curV, Util::NE, priQ);
+        compNeigh(curV, Util::E, priQ);
+        compNeigh(curV, Util::SE, priQ);
+        compNeigh(curV, Util::S, priQ);
+        compNeigh(curV, Util::SW, priQ);
+        compNeigh(curV, Util::W, priQ);
+        compNeigh(curV, Util::NW, priQ);
     }
 
     path_ = new QStack<QPointF>;
     //the points are pushed to path_. IRoomba doesn't first go to the middle
-    //of its startV unless startV == goalV
-    path_->push(curV->pos);
-    while(curV != startV)
+    //of its startV and it also skips the center of the goalV
+    path_->push(point);  //we want to go exactly to the end point
+    map_->scene()->addLine(point.x(), point.y(), curV->from->pos.x(),curV->from->pos.y());
+    while(curV != startV && curV->from != startV) //possible that curV is startV in the beginning
     {
         curV = curV->from;
         path_->push(curV->pos);
+        map_->scene()->addLine(curV->pos.x(),curV->pos.y(), curV->from->pos.x(),curV->from->pos.y());
     }
 
     double dist = goalV->dist;
 
     //resetting vertice info
-    for(unsigned int i = 1; i < vertices.size(); ++i)
+    for(unsigned int i = 0; i < vertices.size(); ++i)
     {
-        for(unsigned int j = 1; j < vertices.size(); ++j)
+        for(unsigned int j = 0; j < vertices.size(); ++j)
         {
             vertices.at(i).at(j)->dist = std::numeric_limits<double>::max();
             vertices.at(i).at(j)->from = NULL;
@@ -462,10 +471,10 @@ double IRoomba::calcPath(QVector<QVector<Util::Vertice*>> vertices, QPointF* poi
     return dist;
 }
 
-void IRoomba::compNeigh(Util::Vertice* curV, Util::Direction direction,
+void IRoomba::compNeigh(Util::Vertice *curV, Util::Direction direction,
                         std::priority_queue<Util::Vertice *,
-                                            std::vector<Util::Vertice*>,
-                                            bool (*)(Util::Vertice*, Util::Vertice*)>* priQ)
+                                            std::vector<Util::Vertice *>,
+                                            bool (*)(Util::Vertice *, Util::Vertice *)> &priQ)
 {
     double dist = 0.0;  //distance between curV and neighV
     Util::Vertice* neighV = NULL;
@@ -513,7 +522,7 @@ void IRoomba::compNeigh(Util::Vertice* curV, Util::Direction direction,
 
     if(neighV->dist == std::numeric_limits<double>::max())
     {
-        priQ->push(neighV);
+        priQ.push(neighV);
     }
 
     //relax

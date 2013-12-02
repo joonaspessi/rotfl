@@ -34,17 +34,17 @@ struct Vertice
         dist = std::numeric_limits<double>::max();
     }
 
-    Vertice(unsigned int pTopLeftX, unsigned int pTopLeftY,
-            Vertice* pn, Vertice* pne, Vertice* pe, Vertice* pse, Vertice* ps,
-            Vertice* psw, Vertice* pw, Vertice* pnw):
-        topLeftX(pTopLeftX), topLeftY(pTopLeftY), n(pn), ne(pne), e(pe),
-        se(pse), s(ps), sw(psw), w(pw), nw(pnw), from(NULL)
+//    Vertice(unsigned int pTopLeftX, unsigned int pTopLeftY,
+//            Vertice* pn, Vertice* pne, Vertice* pe, Vertice* pse, Vertice* ps,
+//            Vertice* psw, Vertice* pw, Vertice* pnw):
+//        topLeftX(pTopLeftX), topLeftY(pTopLeftY), n(pn), ne(pne), e(pe),
+//        se(pse), s(ps), sw(psw), w(pw), nw(pnw), from(NULL)
 
-    {
-        pos.setX(static_cast<double>(topLeftX)+Util::VERTICEWIDTH/2.0);
-        pos.setY(static_cast<double>(topLeftY)+Util::VERTICEWIDTH/2.0);
-        dist = std::numeric_limits<double>::max();
-    }
+//    {
+//        pos.setX(static_cast<double>(topLeftX)+Util::VERTICEWIDTH/2.0);
+//        pos.setY(static_cast<double>(topLeftY)+Util::VERTICEWIDTH/2.0);
+//        dist = std::numeric_limits<double>::max();
+//    }
 
     //vertice's location and area
     unsigned int topLeftX;

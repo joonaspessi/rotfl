@@ -33,13 +33,13 @@ void FleetManager::setMap(MapQGraphicsView* map)
     QVector<Util::Vertice*> verticeRow;
     for(unsigned int i = 0; i < mapW; ++i)
     {
-        verticeRow.append(new Util::Vertice());
-    }
-    for(unsigned int i = 0; i < mapW; ++i)
-    {
+        for(unsigned int j = 0; j < mapW; ++j)
+        {
+            verticeRow.append(new Util::Vertice());
+        }
         vertices_.append(verticeRow);
+        verticeRow.clear();
     }
-
     //setting corner vertices. note: .at(x).at(y)
     //setting vertice at 0,0
     vertices_.at(0).at(0)->e = vertices_.at(1).at(0);
@@ -47,24 +47,30 @@ void FleetManager::setMap(MapQGraphicsView* map)
     vertices_.at(0).at(0)->s = vertices_.at(0).at(1);
     //setting vertice at last,0
     vertices_.at(vertices_.size()-1).at(0)->topLeftX = Util::VERTICEWIDTH*(vertices_.size()-1);
+    vertices_.at(vertices_.size()-1).at(0)->pos.setX(Util::VERTICEWIDTH*(vertices_.size()-1)+Util::VERTICEWIDTH/2.0);
     vertices_.at(vertices_.size()-1).at(0)->s = vertices_.at(vertices_.size()-1).at(1);
     vertices_.at(vertices_.size()-1).at(0)->sw = vertices_.at(vertices_.size()-2).at(1);
     vertices_.at(vertices_.size()-1).at(0)->w = vertices_.at(vertices_.size()-2).at(0);
     //setting vertice at 0,last
     vertices_.at(0).at(vertices_.size()-1)->topLeftY = Util::VERTICEWIDTH*(vertices_.size()-1);
+    vertices_.at(0).at(vertices_.size()-1)->pos.setY(Util::VERTICEWIDTH*(vertices_.size()-1)+Util::VERTICEWIDTH/2.0);
     vertices_.at(0).at(vertices_.size()-1)->n = vertices_.at(vertices_.size()-2).at(0);
     vertices_.at(0).at(vertices_.size()-1)->ne = vertices_.at(vertices_.size()-2).at(1);
     vertices_.at(0).at(vertices_.size()-1)->e = vertices_.at(vertices_.size()-1).at(1);
     //setting vertice at last,last
     vertices_.at(vertices_.size()-1).at(vertices_.size()-1)->topLeftX = Util::VERTICEWIDTH*(vertices_.size()-1);
     vertices_.at(vertices_.size()-1).at(vertices_.size()-1)->topLeftY = Util::VERTICEWIDTH*(vertices_.size()-1);
+    vertices_.at(vertices_.size()-1).at(vertices_.size()-1)->pos.setX(Util::VERTICEWIDTH*(vertices_.size()-1)+Util::VERTICEWIDTH/2.0);
+    vertices_.at(vertices_.size()-1).at(vertices_.size()-1)->pos.setY(Util::VERTICEWIDTH*(vertices_.size()-1)+Util::VERTICEWIDTH/2.0);
     vertices_.at(vertices_.size()-1).at(vertices_.size()-1)->w = vertices_.at(vertices_.size()-2).at(vertices_.size()-1);
     vertices_.at(vertices_.size()-1).at(vertices_.size()-1)->nw = vertices_.at(vertices_.size()-2).at(vertices_.size()-2);
     vertices_.at(vertices_.size()-1).at(vertices_.size()-1)->n = vertices_.at(vertices_.size()-1).at(vertices_.size()-2);
+
     //setting vertices from 1,0 to last-1,0
     for(unsigned int i = 1; i < vertices_.size()-1; ++i)
     {
         vertices_.at(i).at(0)->topLeftX = Util::VERTICEWIDTH*i;
+        vertices_.at(i).at(0)->pos.setX(Util::VERTICEWIDTH*i+Util::VERTICEWIDTH/2.0);
         vertices_.at(i).at(0)->e = vertices_.at(i+1).at(0);
         vertices_.at(i).at(0)->se = vertices_.at(i+1).at(1);
         vertices_.at(i).at(0)->s = vertices_.at(i).at(1);
@@ -76,6 +82,8 @@ void FleetManager::setMap(MapQGraphicsView* map)
     {
         vertices_.at(i).at(vertices_.size()-1)->topLeftX = Util::VERTICEWIDTH*i;
         vertices_.at(i).at(vertices_.size()-1)->topLeftY = Util::VERTICEWIDTH*(vertices_.size()-1);
+        vertices_.at(i).at(vertices_.size()-1)->pos.setX(Util::VERTICEWIDTH*i+Util::VERTICEWIDTH/2.0);
+        vertices_.at(i).at(vertices_.size()-1)->pos.setY(Util::VERTICEWIDTH*(vertices_.size()-1)+Util::VERTICEWIDTH/2.0);
         vertices_.at(i).at(vertices_.size()-1)->w = vertices_.at(i-1).at(vertices_.size()-1);
         vertices_.at(i).at(vertices_.size()-1)->nw = vertices_.at(i-1).at(vertices_.size()-2);
         vertices_.at(i).at(vertices_.size()-1)->n = vertices_.at(i).at(vertices_.size()-2);
@@ -86,6 +94,7 @@ void FleetManager::setMap(MapQGraphicsView* map)
     for(unsigned int i = 1; i < vertices_.size()-1; ++i)
     {
         vertices_.at(0).at(i)->topLeftY = Util::VERTICEWIDTH*i;
+        vertices_.at(0).at(i)->pos.setY(Util::VERTICEWIDTH*i+Util::VERTICEWIDTH/2.0);
         vertices_.at(0).at(i)->n = vertices_.at(0).at(i-1);
         vertices_.at(0).at(i)->ne = vertices_.at(1).at(i-1);
         vertices_.at(0).at(i)->e = vertices_.at(1).at(i);
@@ -97,6 +106,8 @@ void FleetManager::setMap(MapQGraphicsView* map)
     {
         vertices_.at(vertices_.size()-1).at(i)->topLeftX = Util::VERTICEWIDTH*(vertices_.size()-1);
         vertices_.at(vertices_.size()-1).at(i)->topLeftY = Util::VERTICEWIDTH*i;
+        vertices_.at(vertices_.size()-1).at(i)->pos.setX(Util::VERTICEWIDTH*(vertices_.size()-1)+Util::VERTICEWIDTH/2.0);
+        vertices_.at(vertices_.size()-1).at(i)->pos.setY(Util::VERTICEWIDTH*i+Util::VERTICEWIDTH/2.0);
         vertices_.at(vertices_.size()-1).at(i)->s = vertices_.at(vertices_.size()-1).at(i+1);
         vertices_.at(vertices_.size()-1).at(i)->sw = vertices_.at(vertices_.size()-2).at(i+1);
         vertices_.at(vertices_.size()-1).at(i)->w = vertices_.at(vertices_.size()-2).at(i);
@@ -113,6 +124,8 @@ void FleetManager::setMap(MapQGraphicsView* map)
         {
             vertices_.at(i).at(j)->topLeftX = Util::VERTICEWIDTH*i;
             vertices_.at(i).at(j)->topLeftY = Util::VERTICEWIDTH*j;
+            vertices_.at(i).at(j)->pos.setX(Util::VERTICEWIDTH*i+Util::VERTICEWIDTH/2.0);
+            vertices_.at(i).at(j)->pos.setY(Util::VERTICEWIDTH*j+Util::VERTICEWIDTH/2.0);
             vertices_.at(i).at(j)->n = vertices_.at(i).at(i-1);
             vertices_.at(i).at(j)->ne = vertices_.at(i+1).at(i-1);
             vertices_.at(i).at(j)->e = vertices_.at(i+1).at(i);
@@ -123,6 +136,7 @@ void FleetManager::setMap(MapQGraphicsView* map)
             vertices_.at(i).at(j)->nw = vertices_.at(i-1).at(i-1);
         }
     }
+
 }
 
 void FleetManager::updateTimerTimeout()
@@ -407,17 +421,17 @@ void FleetManager::go2Poi()
         Croi::IRoomba* selectedRoomba = NULL;
         for(unsigned int i = 0; i < managedRoombas_.size(); ++i)
         {
-            //path calculated only for ready IRoombas
-            if(managedRoombas_.at(i)->isReady())
-            {
+//            //path calculated only for ready IRoombas
+//            if(managedRoombas_.at(i)->isReady())
+//            {
                 compareDistance = managedRoombas_.at(i)
-                                  ->calcPath(vertices_, &poiCoordinate);
+                                  ->calcPath(vertices_, poiCoordinate);
                 if(compareDistance < distance)
                 {
                     selectedRoomba = managedRoombas_.at(i);
                     distance = compareDistance;
                 }
-            }
+//            }
         }
         //the paths of other IRoombas are ignored
         for(unsigned int i = 0; i < managedRoombas_.size(); ++i)
