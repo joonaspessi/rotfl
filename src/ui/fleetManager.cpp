@@ -6,6 +6,7 @@
 #include <QList>
 #include <QMessageBox>
 #include "uiUtils.h"
+#include <limits>
 
 FleetManager::FleetManager(MainWindow* mainWindow, QObject *parent):
     QObject(parent), mainWindow_(mainWindow), map_(NULL)
@@ -387,9 +388,57 @@ void FleetManager::removeTraces()
 
 void FleetManager::go2Poi()
 {
-    QPointF poiCoordinate = (*pois_.begin())->pos();
-    selectedRoombas_.at(0)->go2Point(poiCoordinate);
+    if (pois_.empty())
+    {
+        QMessageBox::warning
+        (mainWindow_, "", tr("Please make a POI!"));
+    }
+    else if (selectedRoombas_.empty())
+    {
+        QMessageBox::warning
+        (mainWindow_, "", tr("Please select a Roomba!"));
+    }
+    else  //nearest IRoomba will be selectedRoomba
+    {
+        managedRoombas_ = selectedRoombas_;
+        QPointF poiCoordinate = (*pois_.begin())->pos();
+        double distance = std::numeric_limits<double>::max();
+        double compareDistance = 0.0;
+        Croi::IRoomba* selectedRoomba = NULL;
+        for(unsigned int i = 0; i < managedRoombas_.size(); ++i)
+        {
+            //path calculated only for ready IRoombas
+            if(managedRoombas_.at(i)->isReady())
+            {
+                compareDistance = managedRoombas_.at(i)
+                                  ->calcPath(vertices_, &poiCoordinate);
+                if(compareDistance < distance)
+                {
+                    selectedRoomba = managedRoombas_.at(i);
+                    distance = compareDistance;
+                }
+            }
+        }
+        //the paths of other IRoombas are ignored
+        for(unsigned int i = 0; i < managedRoombas_.size(); ++i)
+        {
+            if(managedRoombas_.at(i) != selectedRoomba)
+            {
+                managedRoombas_.at(i)->ignorePath();
+            }
+        }
+        managedRoombas_.clear();
 
+        if(selectedRoomba == NULL) //if none of selectedRoombas_ is ready
+        {
+            QMessageBox::warning
+            (mainWindow_, "", tr("Please select a ready Roomba!"));
+        }
+        else
+        {
+            selectedRoomba->usePath();  //selectedRoomba will go to Poi
+        }
+    }
 }
 
 void FleetManager::checkPoiCollision()

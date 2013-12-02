@@ -74,6 +74,7 @@ private:
 
     MainWindow* mainWindow_;
     QVector<Croi::IRoomba*> selectedRoombas_;
+    QVector<Croi::IRoomba*> managedRoombas_;
     QVector<Croi::IRoomba*> roombas_;
     std::set<WallQGraphicsLineItem*> walls_;
     std::set<PoiQGraphicsEllipseItem*> pois_;

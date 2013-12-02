@@ -73,11 +73,23 @@ public:
     void removeTraces();
     //is roomba ready to receive drive commands
     bool isReady();
-    void go2Point(QPointF point);
     //calculates the nearest path to point and returns it's distance
-    double calcPath(QVector<QVector<Util::Vertice*>> vertices, QPointF point);
+    double calcPath(QVector<QVector<Util::Vertice*>> vertices, QPointF* point);
+    //this makes the IRoomba to follow the path_ calculated by calcPath. This
+    //must be called once and only once after calcPath if ignorePath isn't
+    //called
+    void usePath();
+    //this makes the IRoomba to delete its path_. This should be called once
+    //after calcPath if usePath isn't called. This can be used to make sure
+    //that path_ is NULL
+    void ignorePath();
+
+signals:
+    void stateUpdate();
 
 private slots:
+    //updateState is now called. Also, if IRoomba is following a path, it
+    //gives new go2Point() calls and updates bools as necessary
     void sensorUpdateTimerTimeout();
     void turnTimerTimeout();
     void driveTimerTimeout();
@@ -86,6 +98,8 @@ private:
 
     //function for comparing vertices
     static bool verticeCompare(Util::Vertice* first, Util::Vertice* second);
+    //this is a function for going straight to a point. Used by usePath
+    void go2Point(QPointF point);
     //function for dealing with vertice's neighbour in Dijkstra's algorithm
     void compNeigh(Util::Vertice* curV, Util::Direction direction,
                    std::priority_queue<Util::Vertice *,
@@ -104,7 +118,6 @@ private:
     QGraphicsLineItem* curSpeed_;
     //roombas traces are shown here
     QVector<QGraphicsLineItem*> traces_;
-    QStack<QPointF> path;
     bool traceShown_;
     //current location's x-component
     double Xloc_;
@@ -117,6 +130,8 @@ private:
     bool isReady_;
     int driveTime_;
     QStack<QPointF>* path_;
+    bool followingPath_; //true when path_ is followed
+    bool prevPReached_; //true briefly as last point in path is reached
 };
 
 

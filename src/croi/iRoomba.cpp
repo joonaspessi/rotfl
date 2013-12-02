@@ -17,9 +17,8 @@ IRoomba::IRoomba(PoiQGraphicsEllipseItem *startPoint, MapQGraphicsView *map,
     startPoint_(startPoint), map_(map), polygon_(NULL), icon_(NULL),
     curSpeed_(NULL), Xloc_(startPoint->x()), Yloc_(startPoint->y()), angle_(0.0),
     radius_(RADSTRAIGHT), velocity_(0), traceShown_(true), isReady_(false), driveTime_(0),
-    path_(NULL)
+    path_(NULL), followingPath_(false), prevPReached_(false)
 {
-
 }
 
 int IRoomba::disconnect()
@@ -318,10 +317,10 @@ void IRoomba::go2Point(QPointF point)
     }
 
     // Roomba turns 1 degree in 18055 microseconds, when speed is 100
-    float tabs = abs(turningAngle*(180/PI));
-    float distance = sqrt(pow(deltaX,2)+pow(deltaY,2) );
-    int turnTime = tabs * 18055 / 1000;
-    driveTime_= distance*100;
+    float tabs = abs(turningAngle*(180.0/PI));
+    float distance = sqrt(pow(deltaX,2.0)+pow(deltaY,2.0));
+    int turnTime = round(tabs * 18055.0/1000.0);
+    driveTime_= round(distance*100.0);
 
     qDebug() << "turningAngle: " << tabs << "ttime: " << turnTime;
     qDebug() << "distance: " << distance << "dtime: " << driveTime_;
@@ -347,6 +346,25 @@ void IRoomba::go2Point(QPointF point)
 void IRoomba::sensorUpdateTimerTimeout()
 {
     updateState();
+
+    //nothing needs to be done atm if either one of these is false
+    if(!followingPath_ || !prevPReached_)
+    {
+        return;
+    }
+
+    if(path_->isEmpty())
+    {
+        delete path_;
+        path_ = NULL;
+        prevPReached_ = false;
+        followingPath_ = false;
+    }
+    else
+    {
+        prevPReached_ = false;
+        go2Point(path_->pop());
+    }
 }
 
 void IRoomba::turnTimerTimeout()
@@ -360,10 +378,10 @@ void IRoomba::turnTimerTimeout()
 void IRoomba::driveTimerTimeout()
 {
     this->drive(0,32767);
-
+    prevPReached_ = true;
 }
 
-double IRoomba::calcPath(QVector<QVector<Util::Vertice*>> vertices, QPointF point)
+double IRoomba::calcPath(QVector<QVector<Util::Vertice*>> vertices, QPointF* point)
 {
     //find the start vertice
     Util::Vertice* startV = NULL;
@@ -380,10 +398,10 @@ double IRoomba::calcPath(QVector<QVector<Util::Vertice*>> vertices, QPointF poin
             {
                 startV = vertices.at(i).at(j);
             }
-            if(point.x() >= vertices.at(i).at(j)->topLeftX &&
-               point.x() <= vertices.at(i).at(j)->topLeftX+Util::VERTICEWIDTH-1 &&
-               point.y() >= vertices.at(i).at(j)->topLeftY &&
-               point.y() <= vertices.at(i).at(j)->topLeftY+Util::VERTICEWIDTH-1)
+            if(point->x() >= vertices.at(i).at(j)->topLeftX &&
+               point->x() <= vertices.at(i).at(j)->topLeftX+Util::VERTICEWIDTH-1 &&
+               point->y() >= vertices.at(i).at(j)->topLeftY &&
+               point->y() <= vertices.at(i).at(j)->topLeftY+Util::VERTICEWIDTH-1)
             {
                 goalV = vertices.at(i).at(j);
             }
@@ -420,10 +438,13 @@ double IRoomba::calcPath(QVector<QVector<Util::Vertice*>> vertices, QPointF poin
     }
 
     path_ = new QStack<QPointF>;
+    //the points are pushed to path_. IRoomba doesn't first go to the middle
+    //of its startV unless startV == goalV
+    path_->push(curV->pos);
     while(curV != startV)
     {
-        path_->push(curV->pos);
         curV = curV->from;
+        path_->push(curV->pos);
     }
 
     double dist = goalV->dist;
@@ -500,6 +521,21 @@ void IRoomba::compNeigh(Util::Vertice* curV, Util::Direction direction,
     {
         neighV->dist = curV->dist+dist;
         neighV->from = curV;
+    }
+}
+
+void IRoomba::usePath()
+{
+    followingPath_ = true;
+    go2Point(path_->pop());
+}
+
+void IRoomba::ignorePath()
+{
+    if(path_ != NULL)
+    {
+        delete path_;
+        path_ = NULL;
     }
 }
 
