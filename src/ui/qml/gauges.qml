@@ -11,7 +11,7 @@ Item {
         height:380
         Image {
             anchors.fill: parent
-            source: "../graphics/carbon.png"
+            source: "carbon"
         }
     }
 
@@ -28,7 +28,7 @@ Item {
         color : "transparent"
         Image {
             anchors.fill: parent
-            source: "../graphics/defaultgauge.png"
+            source: "defaultgauge"
             sourceSize.width: 200
             sourceSize.height: 200
         }
@@ -37,7 +37,7 @@ Item {
             anchors.verticalCenter: parent.verticalCenter
             anchors.verticalCenterOffset: -30
 
-            source: "../graphics/needleminicrop.png"
+            source: "needle"
             sourceSize.width: 28
             sourceSize.height: 93
 
@@ -102,7 +102,7 @@ Item {
 
         Image {
             anchors.fill: parent
-            source: "../graphics/compass.png"
+            source: "compass"
             sourceSize.width: 200
             sourceSize.height: 200
         }
@@ -111,7 +111,7 @@ Item {
             anchors.verticalCenter: parent.verticalCenter
             anchors.verticalCenterOffset: -30
 
-            source: "../graphics/needleminicrop.png"
+            source: "needle"
             sourceSize.width: 28
             sourceSize.height: 93
 
@@ -168,7 +168,7 @@ Item {
 
         Image {
             anchors.fill: parent
-            source: "../graphics/odometer.png"
+            source: "odometer"
             sourceSize.width: 200
             sourceSize.height: 200
         }
@@ -177,7 +177,7 @@ Item {
             anchors.verticalCenter: parent.verticalCenter
             anchors.verticalCenterOffset: -30
 
-            source: "../graphics/needleminicrop.png"
+            source: "needle"
             sourceSize.width: 28
             sourceSize.height: 93
 
@@ -233,7 +233,7 @@ Item {
 
         Image {
             anchors.fill: parent
-            source: "../graphics/defaultgauge.png"
+            source: "defaultgauge"
             sourceSize.width: 200
             sourceSize.height: 200
         }
@@ -242,7 +242,7 @@ Item {
             anchors.verticalCenter: parent.verticalCenter
             anchors.verticalCenterOffset: -30
 
-            source: "../graphics/needleminicrop.png"
+            source: "needle"
             sourceSize.width: 28
             sourceSize.height: 93
 
