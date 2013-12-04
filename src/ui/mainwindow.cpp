@@ -149,8 +149,17 @@ void MainWindow::setRoombaStatusData(Croi::IRoomba* selectedRoomba)
     //QML
     QVariant returnedValue;
     QMetaObject::invokeMethod(roombaStatus_, "setBatteryLevelmAh", Q_RETURN_ARG(QVariant, returnedValue),
-                              Q_ARG(QVariant, selectedRoomba->getChargeLevel()/3000),
                               Q_ARG(QVariant, selectedRoomba->getChargeLevel()) );
+
+
+    QMetaObject::invokeMethod(roombaStatus_, "setSpeed", Q_RETURN_ARG(QVariant, returnedValue),
+                              Q_ARG(QVariant, abs(selectedRoomba->getVelocity())));
+
+    QMetaObject::invokeMethod(roombaStatus_, "setDirection", Q_RETURN_ARG(QVariant, returnedValue),
+                              Q_ARG(QVariant, abs(selectedRoomba->getCurrentAngle()*180/PI)));
+
+    QMetaObject::invokeMethod(roombaStatus_, "setOdometer", Q_RETURN_ARG(QVariant, returnedValue),
+                              Q_ARG(QVariant, abs(selectedRoomba->getDistance())));
 
 }
 
