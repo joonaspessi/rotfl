@@ -11,4 +11,12 @@
         <file alias="wall2">graphics/wall_red.png</file>
         <file alias="DEBUG_roomba_small">graphics/DEBUG_Roomba_round_icon_small.png</file>
     </qresource>
+    <qresource prefix="/widgets">
+        <file alias="gauges">qml/gauges.qml</file>
+        <file alias="carbon">graphics/carbon.png</file>
+        <file alias="compass">graphics/compass.png</file>
+        <file alias="defaultgauge">graphics/defaultgauge.png</file>
+        <file alias="needle">graphics/needleminicrop.png</file>
+        <file alias="odometer">graphics/odometer.png</file>
+    </qresource>
 </RCC>
