@@ -98,10 +98,10 @@ MainWindow::MainWindow(QWidget *parent) :
     container->setMinimumSize(400,380);
     container->setMaximumSize(400,380);
     container->setFocusPolicy(Qt::TabFocus);
-    qmlview->setSource(QUrl("/home/joonaspessi/Development/rotfl/src/ui/roombaMonitor.qml"));
+    qmlview->setSource(QUrl("/home/joonaspessi/Development/rotfl/src/ui/qml/gauges.qml"));
 
 
-    QDockWidget *widgetti = new QDockWidget(tr("qmlTest"), this);
+    QDockWidget *widgetti = new QDockWidget(tr("dashboard"), this);
     widgetti->setWidget(container);
     addDockWidget(Qt::RightDockWidgetArea,widgetti);
 

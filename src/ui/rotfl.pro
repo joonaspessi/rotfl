@@ -51,4 +51,4 @@ RESOURCES += \
     graphics.qrc
 
 OTHER_FILES += \
-    roombaMonitor.qml
+    qml/gauges.qml
