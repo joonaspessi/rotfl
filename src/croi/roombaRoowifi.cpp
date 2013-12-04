@@ -125,6 +125,16 @@ bool RoombaRoowifi::getRightBumb()
     return false;
 }
 
+bool RoombaRoowifi::getWall()
+{
+
+    if (roowifi_->Sensors.Wall && 1)
+    {
+        return true;
+    }
+    return false;
+}
+
 void RoombaRoowifi::drive(int velocity, int radius)
 {
     roowifi_->Drive(velocity, radius);

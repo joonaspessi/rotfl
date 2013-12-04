@@ -49,6 +49,7 @@ public:
     virtual short getAngle() = 0;
     virtual bool getLeftBumb() = 0;
     virtual bool getRightBumb() = 0;
+    virtual bool getWall() = 0;
 
 
     //all functions below do not need reimplementation by subclasses

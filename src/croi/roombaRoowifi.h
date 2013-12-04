@@ -30,6 +30,7 @@ public:
     virtual short getAngle();
     virtual bool getLeftBumb();
     virtual bool getRightBumb();
+    virtual bool getWall();
 
 public slots:
 

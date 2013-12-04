@@ -88,6 +88,7 @@ void IRoomba::updateState()
     int angle = getAngle();
     bool leftBump = getLeftBumb();
     bool rightBump = getRightBumb();
+    bool wall = getWall();
 
     //angle for distance calculation
     double angleForDist = angle_-static_cast<double>(angle)*PI*ANGLECORRECTION/180.0;
@@ -163,6 +164,7 @@ void IRoomba::updateState()
     //add new wall if bumb has happened
     if (leftBump || rightBump)
     {
+        this->drive(0); //stop
         qDebug() << "Roomba has collided with unknown object!";
         double tempAngle = angle_-40.0*PI/180.0;
         QPointF l (Xloc_+cos(tempAngle)*17, Yloc_+sin(tempAngle)*17);
@@ -171,6 +173,10 @@ void IRoomba::updateState()
         WallQGraphicsLineItem* bumbed = new WallQGraphicsLineItem
                                             (l.x(), l.y(), r.x(), r.y());
         map_->scene()->addItem(bumbed);
+    }
+    if (wall)
+    {
+        qDebug() << "Wallsensor has found something!";
     }
 }
 
