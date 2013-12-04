@@ -63,6 +63,9 @@ void FleetManager::createRoomba(PoiQGraphicsEllipseItem *startPoint)
 void FleetManager::addPoi(PoiQGraphicsEllipseItem* poi)
 {
     pois_.insert(poi);
+
+    //Checking if POI is in illegal position is done in checkpoicollision
+
 }
 
 void FleetManager::addWall(WallQGraphicsLineItem* wall)
@@ -182,11 +185,21 @@ void FleetManager::checkPoiCollision()
         {
             //Traceline is QgraphicsLineItem
             QGraphicsLineItem *traceL = qgraphicsitem_cast<QGraphicsLineItem *>(collidingItems.at(j));
+            //Wall is also a QgraphicsLineItem
+            WallQGraphicsLineItem * wall = qgraphicsitem_cast<WallQGraphicsLineItem *>(collidingItems.at(j));
 
             //Remove poi, if it's on top of some other object than traceLine
-            if (traceL == NULL)
+            if (traceL == NULL )
             {
                 removePoi(*i);
+                qDebug() << "Delete POI ";
+                break;
+            }
+            else if (wall != NULL)
+            {
+                removePoi(*i);
+                qDebug() << "Delete POI (wall) ";
+                break;
             }
 
         }

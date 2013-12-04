@@ -44,10 +44,10 @@ void MapQGraphicsView::mousePressEvent(QMouseEvent *event)
         poi->setFlag(QGraphicsItem::ItemIsSelectable,true);
         poi->setFlag(QGraphicsItem::ItemIsMovable,false); // Disabled so that the mapChanged signal works as expected
         scene()->addItem(poi);
-        fleetManager_->checkPoiCollision();
-        fleetManager_->addPoi(poi);
         qDebug() << "Adding POI with x: " << poi->scenePos().x()
                  << " , y: " << poi->scenePos().y();
+        fleetManager_->addPoi(poi);
+
         emit mapChanged();
     }
     else if (selectedPaintTool_ == Util::SelectedPaintTool::START)
