@@ -54,9 +54,9 @@ void FleetManager::setMap(MapQGraphicsView* map)
     //setting vertice at 0,last
     vertices_.at(0).at(vertices_.size()-1)->topLeftY = Util::VERTICEWIDTH*(vertices_.size()-1);
     vertices_.at(0).at(vertices_.size()-1)->pos.setY(Util::VERTICEWIDTH*(vertices_.size()-1)+Util::VERTICEWIDTH/2.0);
-    vertices_.at(0).at(vertices_.size()-1)->n = vertices_.at(vertices_.size()-2).at(0);
-    vertices_.at(0).at(vertices_.size()-1)->ne = vertices_.at(vertices_.size()-2).at(1);
-    vertices_.at(0).at(vertices_.size()-1)->e = vertices_.at(vertices_.size()-1).at(1);
+    vertices_.at(0).at(vertices_.size()-1)->n = vertices_.at(0).at(vertices_.size()-2);
+    vertices_.at(0).at(vertices_.size()-1)->ne = vertices_.at(1).at(vertices_.size()-2);
+    vertices_.at(0).at(vertices_.size()-1)->e = vertices_.at(1).at(vertices_.size()-1);
     //setting vertice at last,last
     vertices_.at(vertices_.size()-1).at(vertices_.size()-1)->topLeftX = Util::VERTICEWIDTH*(vertices_.size()-1);
     vertices_.at(vertices_.size()-1).at(vertices_.size()-1)->topLeftY = Util::VERTICEWIDTH*(vertices_.size()-1);
@@ -126,16 +126,62 @@ void FleetManager::setMap(MapQGraphicsView* map)
             vertices_.at(i).at(j)->topLeftY = Util::VERTICEWIDTH*j;
             vertices_.at(i).at(j)->pos.setX(Util::VERTICEWIDTH*i+Util::VERTICEWIDTH/2.0);
             vertices_.at(i).at(j)->pos.setY(Util::VERTICEWIDTH*j+Util::VERTICEWIDTH/2.0);
-            vertices_.at(i).at(j)->n = vertices_.at(i).at(i-1);
-            vertices_.at(i).at(j)->ne = vertices_.at(i+1).at(i-1);
-            vertices_.at(i).at(j)->e = vertices_.at(i+1).at(i);
-            vertices_.at(i).at(j)->se = vertices_.at(i+1).at(i+1);
-            vertices_.at(i).at(j)->s = vertices_.at(i).at(i+1);
-            vertices_.at(i).at(j)->sw = vertices_.at(i-1).at(i-1);
-            vertices_.at(i).at(j)->w = vertices_.at(i-1).at(i);
-            vertices_.at(i).at(j)->nw = vertices_.at(i-1).at(i-1);
+            vertices_.at(i).at(j)->n = vertices_.at(i).at(j-1);
+            vertices_.at(i).at(j)->ne = vertices_.at(i+1).at(j-1);
+            vertices_.at(i).at(j)->e = vertices_.at(i+1).at(j);
+            vertices_.at(i).at(j)->se = vertices_.at(i+1).at(j+1);
+            vertices_.at(i).at(j)->s = vertices_.at(i).at(j+1);
+            vertices_.at(i).at(j)->sw = vertices_.at(i-1).at(j+1);
+            vertices_.at(i).at(j)->w = vertices_.at(i-1).at(j);
+            vertices_.at(i).at(j)->nw = vertices_.at(i-1).at(j-1);
         }
     }
+
+    //drawing all vertices
+    QPen pen(Qt::GlobalColor::gray);
+    pen.setWidth(1);
+    for(unsigned int i = 0; i < vertices_.size(); ++i)
+    {
+        QVector<Util::Vertice*> verticeRow;
+        for(unsigned int j = 0; j < vertices_.size(); ++j)
+        {
+            map_->scene()->addLine(vertices_.at(i).at(j)->topLeftX, vertices_.at(i).at(j)->topLeftY,
+                                   vertices_.at(i).at(j)->topLeftX+Util::VERTICEWIDTH-1,
+                                   vertices_.at(i).at(j)->topLeftY, pen);
+            map_->scene()->addLine(vertices_.at(i).at(j)->topLeftX, vertices_.at(i).at(j)->topLeftY,
+                                   vertices_.at(i).at(j)->topLeftX,
+                                   vertices_.at(i).at(j)->topLeftY+Util::VERTICEWIDTH-1, pen);
+            map_->scene()->addLine(vertices_.at(i).at(j)->topLeftX+Util::VERTICEWIDTH-1,
+                                   vertices_.at(i).at(j)->topLeftY,
+                                   vertices_.at(i).at(j)->topLeftX+Util::VERTICEWIDTH-1,
+                                   vertices_.at(i).at(j)->topLeftY+Util::VERTICEWIDTH-1, pen);
+            map_->scene()->addLine(vertices_.at(i).at(j)->topLeftX,
+                                   vertices_.at(i).at(j)->topLeftY+Util::VERTICEWIDTH-1,
+                                   vertices_.at(i).at(j)->topLeftX+Util::VERTICEWIDTH-1,
+                                   vertices_.at(i).at(j)->topLeftY+Util::VERTICEWIDTH-1, pen);
+        }
+    }
+
+
+//DEBUG DRAWING FOR SHOWING THE CONNECTIONS FROM VERTICE at a,b
+//    int a = 6;
+//    int b = 4;
+//    map_->scene()->addLine(vertices_.at(a).at(b)->pos.x(),vertices_.at(a).at(b)->pos.y(),
+//                           vertices_.at(a).at(b)->n->pos.x(),vertices_.at(a).at(b)->n->pos.y());
+//    map_->scene()->addLine(vertices_.at(a).at(b)->pos.x(),vertices_.at(a).at(b)->pos.y(),
+//                           vertices_.at(a).at(b)->ne->pos.x(),vertices_.at(a).at(b)->ne->pos.y());
+//    map_->scene()->addLine(vertices_.at(a).at(b)->pos.x(),vertices_.at(a).at(b)->pos.y(),
+//                           vertices_.at(a).at(b)->e->pos.x(),vertices_.at(a).at(b)->e->pos.y());
+//    map_->scene()->addLine(vertices_.at(a).at(b)->pos.x(),vertices_.at(a).at(b)->pos.y(),
+//                           vertices_.at(a).at(b)->se->pos.x(),vertices_.at(a).at(b)->se->pos.y());
+//    map_->scene()->addLine(vertices_.at(a).at(b)->pos.x(),vertices_.at(a).at(b)->pos.y(),
+//                           vertices_.at(a).at(b)->s->pos.x(),vertices_.at(a).at(b)->s->pos.y());
+//    map_->scene()->addLine(vertices_.at(a).at(b)->pos.x(),vertices_.at(a).at(b)->pos.y(),
+//                           vertices_.at(a).at(b)->sw->pos.x(),vertices_.at(a).at(b)->sw->pos.y());
+//    map_->scene()->addLine(vertices_.at(a).at(b)->pos.x(),vertices_.at(a).at(b)->pos.y(),
+//                           vertices_.at(a).at(b)->w->pos.x(),vertices_.at(a).at(b)->w->pos.y());
+//    map_->scene()->addLine(vertices_.at(a).at(b)->pos.x(),vertices_.at(a).at(b)->pos.y(),
+//                           vertices_.at(a).at(b)->nw->pos.x(),vertices_.at(a).at(b)->nw->pos.y());
 
 }
 
@@ -418,12 +464,14 @@ void FleetManager::go2Poi()
         QPointF poiCoordinate = (*pois_.begin())->pos();
         double distance = std::numeric_limits<double>::max();
         double compareDistance = 0.0;
+        bool isReadyFound = false;
         Croi::IRoomba* selectedRoomba = NULL;
         for(unsigned int i = 0; i < managedRoombas_.size(); ++i)
         {
-//            //path calculated only for ready IRoombas
-//            if(managedRoombas_.at(i)->isReady())
-//            {
+            //path calculated only for ready IRoombas
+            if(managedRoombas_.at(i)->isReady())
+            {
+                isReadyFound = true;
                 compareDistance = managedRoombas_.at(i)
                                   ->calcPath(vertices_, poiCoordinate);
                 if(compareDistance < distance)
@@ -431,7 +479,7 @@ void FleetManager::go2Poi()
                     selectedRoomba = managedRoombas_.at(i);
                     distance = compareDistance;
                 }
-//            }
+            }
         }
         //the paths of other IRoombas are ignored
         for(unsigned int i = 0; i < managedRoombas_.size(); ++i)
@@ -443,10 +491,16 @@ void FleetManager::go2Poi()
         }
         managedRoombas_.clear();
 
-        if(selectedRoomba == NULL) //if none of selectedRoombas_ is ready
+        if(!isReadyFound) //if none of selectedRoombas_ is ready
         {
             QMessageBox::warning
             (mainWindow_, "", tr("Please select a ready Roomba!"));
+        }
+        //if no route found
+        else if(selectedRoomba == NULL)
+        {
+            QMessageBox::warning
+            (mainWindow_, "", tr("No possible route!"));
         }
         else
         {
@@ -463,7 +517,7 @@ void FleetManager::checkPoiCollision()
         QList<QGraphicsItem*> collidingItems = (*i)->collidingItems();
         if (!collidingItems.empty())
         {
-            removePoi(*i);
+            //removePoi(*i);  //temporarily taken off
         }
         //TODO: check issue #3 on Github, implementation is missing
         //bool isTrace = false;

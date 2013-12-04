@@ -448,7 +448,11 @@ double IRoomba::calcPath(QVector<QVector<Util::Vertice *> > &vertices, QPointF& 
     //the points are pushed to path_. IRoomba doesn't first go to the middle
     //of its startV and it also skips the center of the goalV
     path_->push(point);  //we want to go exactly to the end point
-    map_->scene()->addLine(point.x(), point.y(), curV->from->pos.x(),curV->from->pos.y());
+    if(curV->from != NULL)  //for debug-lines
+    {
+        map_->scene()->addLine(point.x(), point.y(), curV->from->pos.x(),curV->from->pos.y());
+    }
+
     while(curV != startV && curV->from != startV) //possible that curV is startV in the beginning
     {
         curV = curV->from;
@@ -551,7 +555,7 @@ void IRoomba::ignorePath()
 //function for comparing vertices
 bool IRoomba::verticeCompare(Util::Vertice* first, Util::Vertice* second)
 {
-    return first->dist < second->dist;
+    return first->dist > second->dist;
 }
 
 IRoomba::~IRoomba()
