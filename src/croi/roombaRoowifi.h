@@ -32,7 +32,7 @@ public:
     virtual bool getRightBumb();
 
 public slots:
-
+    void startAutocapturing();
 private:
     RooWifi* roowifi_;
 };

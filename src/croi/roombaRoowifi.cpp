@@ -1,3 +1,6 @@
+#include <QMessageBox>
+#include <QDebug>
+
 #include "roombaRoowifi.h"
 #include "croiUtil.h"
 #include "mapQGraphicsView.h"
@@ -22,14 +25,35 @@ RoombaRoowifi::~RoombaRoowifi()
 
 int RoombaRoowifi::rmb_connect(std::string ip)
 {
+    //TODO: implement own timer instead of using autocapture
     QString qip = QString::fromStdString(ip);
     qDebug() << "set ip to:" << qip;
     roowifi_->SetIP(qip);
     roowifi_->Connect();
-    //TODO: implement own timer
-    roowifi_->StartAutoCapture();
-    roowifi_->SetAutoCaptureTime(500);
+//    roowifi_->StopAutoCapture();
+//    roowifi_->Disconnect();
+//    sleep(1);
+//    roowifi_->Connect();
+//    roowifi_->StartAutoCapture();
+
+    if (!roowifi_->IsConnected())
+    {
+        QMessageBox connectionError_messageBox;
+        connectionError_messageBox.setWindowTitle("Connection error");
+        connectionError_messageBox.setText("Connection not established.\nTry again?");
+        connectionError_messageBox.setStandardButtons(QMessageBox::No|QMessageBox::Yes);
+        connectionError_messageBox.setDefaultButton(QMessageBox::Yes);
+        while(connectionError_messageBox.exec() == QMessageBox::Yes && !roowifi_->IsConnected())
+        {
+//            roowifi_->StopAutoCapture();
+//            roowifi_->Disconnect();
+            roowifi_->Connect();
+//            roowifi_->StartAutoCapture();
+            qDebug()<<"Trying to connect again";
+        }
+    }
 }
+
 
 int RoombaRoowifi::disconnect()
 {
@@ -72,7 +96,10 @@ void RoombaRoowifi::fullMode()
 
 void RoombaRoowifi::allMotorsOn()
 {
-    roowifi_->AllCleaningMotors_On();
+    roowifi_->Disconnect();
+    roowifi_->Connect();
+    roowifi_->StartAutoCapture();
+//    roowifi_->AllCleaningMotors_On();
 }
 
 void RoombaRoowifi::allMotorsOff()
@@ -142,5 +169,10 @@ void RoombaRoowifi::playSong(int songNumber)
     roowifi_->PlaySong(songNumber);
 }
 
+void RoombaRoowifi::startAutocapturing()
+{
+    roowifi_->StartAutoCapture();
+    roowifi_->SetAutoCaptureTime(500);
+}
 
 } //namespace Croi
