@@ -130,6 +130,32 @@ MainWindow::MainWindow(QWidget *parent) :
 
     // This event filter is implemented in eventFilter function, keeps mouse coordinates in status bar
     qApp->installEventFilter(this);
+
+    QLabel *name = new QLabel("Roomba1");
+    name->setMinimumSize(30,1);
+    statusBar()->addPermanentWidget( name );
+
+    QLabel *connectionState = new QLabel();
+    connectionState->setMinimumSize(30,1);
+    connectionState->setStyleSheet("QLabel { background-color : red; }");
+    statusBar()->addPermanentWidget( connectionState );
+
+    QLabel *operationMode = new QLabel("Safe");
+    operationMode->setMinimumSize(30,1);
+    statusBar()->addPermanentWidget( operationMode );
+
+    QLabel *name2 = new QLabel("Roomba2");
+    name2->setMinimumSize(30,1);
+    statusBar()->addPermanentWidget( name2 );
+
+    QLabel *connectionState2 = new QLabel();
+    connectionState2->setMinimumSize(30,1);
+    connectionState2->setStyleSheet("QLabel { background-color : green; }");
+    statusBar()->addPermanentWidget( connectionState2 );
+
+    QLabel *operationMode2 = new QLabel("Safe");
+    operationMode2->setMinimumSize(30,1);
+    statusBar()->addPermanentWidget( operationMode2 );
 }
 
 MainWindow::~MainWindow()
