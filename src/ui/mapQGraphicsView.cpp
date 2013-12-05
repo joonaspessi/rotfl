@@ -113,9 +113,11 @@ void MapQGraphicsView::mouseMoveEvent(QMouseEvent *event)
             float deltaY = wallToBeAdded_->line().y1() - wallToBeAdded_->line().y2();
             // TODO: Add pythagoras from here and iRoomba to some utility function
             float distance = sqrt(pow(deltaX,2)+pow(deltaY,2) );
-            wallToBeAddedEndPointText_->setPos(p);
-            wallToBeAddedEndPointText_->setText("X: " + QString::number(p.x()) + " Y: " +  QString::number(p.y())
-                                                + " Length: " + QString::number(distance) + "cm");
+            // Use offset to avoid colliding with cursor
+            QPointF pointToDrawLength = p;
+            pointToDrawLength.setY(pointToDrawLength.y()+Util::WALLLENGTHINDICATOROFFSET);
+            wallToBeAddedEndPointText_->setPos(pointToDrawLength);
+            wallToBeAddedEndPointText_->setText(QString::number(distance, 'f', 0) + "cm"); // Ignore decimals in wall length
         }
     }
     // Call the base class implementation to deliver the event for QGraphicsScene
