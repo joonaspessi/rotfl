@@ -17,7 +17,7 @@ IRoomba::IRoomba(PoiQGraphicsEllipseItem *startPoint, MapQGraphicsView *map,
     startPoint_(startPoint), map_(map), polygon_(NULL), icon_(NULL),
     curSpeed_(NULL), Xloc_(startPoint->x()), Yloc_(startPoint->y()), angle_(0.0),
     radius_(RADSTRAIGHT), velocity_(0), traceShown_(true), isReady_(false), driveTime_(0),
-    path_(NULL), followingPath_(false), prevPReached_(false)
+    followingPath_(false), prevPReached_(false)
 {
 }
 
@@ -354,17 +354,22 @@ void IRoomba::sensorUpdateTimerTimeout()
         return;
     }
 
-    if(path_->isEmpty())
+    if(path_.isEmpty())
     {
-        delete path_;
-        path_ = NULL;
         prevPReached_ = false;
         followingPath_ = false;
+
+        for(unsigned int i = 0; i < pathLines_.size(); ++i)
+        {
+            map_->scene()->removeItem(pathLines_.at(i));
+            delete pathLines_.at(i);
+        }
+        pathLines_.clear();
     }
     else
     {
         prevPReached_ = false;
-        go2Point(path_->pop());
+        go2Point(path_.pop());
     }
 }
 
@@ -385,8 +390,7 @@ void IRoomba::driveTimerTimeout()
 double IRoomba::calcPath(QVector<QVector<Util::Vertice *> > &vertices, QPointF& point)
 {
 //commented lines skip the shortest path to perform simple go2point
-//    path_ = new QStack<QPointF>;
-//    path_->push(point);
+//    path_.push(point);
 //    return 1;
     //find the start vertice
     Util::Vertice* startV = NULL;
@@ -444,20 +448,48 @@ double IRoomba::calcPath(QVector<QVector<Util::Vertice *> > &vertices, QPointF& 
         compNeigh(curV, Util::NW, priQ);
     }
 
-    path_ = new QStack<QPointF>;
     //the points are pushed to path_. IRoomba doesn't first go to the middle
     //of its startV and it also skips the center of the goalV
-    path_->push(point);  //we want to go exactly to the end point
-    if(curV->from != NULL)  //for debug-lines
+    unsigned int straightCount = 0;  //unnecessary path points will be taken away
+    path_.push(point);  //we want to go exactly to the end point
+    if(curV->from != NULL)  //for drawing line exactly to the goal point
     {
-        map_->scene()->addLine(point.x(), point.y(), curV->from->pos.x(),curV->from->pos.y());
+        pathLines_.append(new QGraphicsLineItem(point.x(), point.y(), curV->from->pos.x(), curV->from->pos.y()));
     }
 
-    while(curV != startV && curV->from != startV) //possible that curV is startV in the beginning
+    if(curV != startV) //possible that curV is startV in the beginning
     {
-        curV = curV->from;
-        path_->push(curV->pos);
-        map_->scene()->addLine(curV->pos.x(),curV->pos.y(), curV->from->pos.x(),curV->from->pos.y());
+        while(curV->from != startV)
+        {
+            curV = curV->from;
+            //center point of vertice isn't pushed to path_ if is a part of a straight line.
+            //maximum of ceil(1.0/Util::VERTICEWIDTH*50) vertices can be ignored from a path.
+            //The limit is there to avoid problems with the slight inaccuracy in going to a point
+            if(curV->from != startV &&
+               straightCount <= static_cast<unsigned int>(ceil(1.0/Util::VERTICEWIDTH*50.0)) &&
+               ((curV->from == curV->n && curV->from->from == curV->from->n) ||
+               (curV->from == curV->ne && curV->from->from == curV->from->ne) ||
+               (curV->from == curV->e && curV->from->from == curV->from->e) ||
+               (curV->from == curV->se && curV->from->from == curV->from->se) ||
+               (curV->from == curV->s && curV->from->from == curV->from->s) ||
+               (curV->from == curV->sw && curV->from->from == curV->from->sw) ||
+               (curV->from == curV->w && curV->from->from == curV->from->w) ||
+               (curV->from == curV->nw && curV->from->from == curV->from->nw)))
+            {
+                if(straightCount == 0)
+                {
+                    pathLines_.append(new QGraphicsLineItem(path_.top().x(), path_.top().y(), curV->pos.x(), curV->pos.y()));
+                    path_.push(curV->pos);
+                }
+                ++straightCount;
+            }
+            else
+            {
+                straightCount = 0;
+                pathLines_.append(new QGraphicsLineItem(path_.top().x(), path_.top().y(), curV->pos.x(), curV->pos.y()));
+                path_.push(curV->pos);
+            }
+        }
     }
 
     double dist = goalV->dist;
@@ -539,17 +571,25 @@ void IRoomba::compNeigh(Util::Vertice *curV, Util::Direction direction,
 
 void IRoomba::usePath()
 {
+    for(unsigned int i = 0; i < pathLines_.size(); ++i)
+    {
+        map_->scene()->addItem(pathLines_.at(i));
+    }
+
+
     followingPath_ = true;
-    go2Point(path_->pop());
+    go2Point(path_.pop());
 }
 
 void IRoomba::ignorePath()
 {
-    if(path_ != NULL)
+    path_.clear();
+
+    for(unsigned int i = 0; i < pathLines_.size(); ++i)
     {
-        delete path_;
-        path_ = NULL;
+        delete pathLines_.at(i);
     }
+    pathLines_.clear();
 }
 
 //function for comparing vertices

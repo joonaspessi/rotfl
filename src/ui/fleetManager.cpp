@@ -231,10 +231,11 @@ void FleetManager::addWall(WallQGraphicsLineItem* wall)
 {
     walls_.insert(wall);
 
-    //breaking verticeconnections
-    for(unsigned int i = 1; i < vertices_.size(); ++i)
+    //breaking verticeconnections to vertices where there are
+    //walls
+    for(unsigned int i = 0; i < vertices_.size(); ++i)
     {
-        for(unsigned int j = 1; j < vertices_.size(); ++j)
+        for(unsigned int j = 0; j < vertices_.size(); ++j)
         {
             QList<QGraphicsItem*> items =
                 map_->items(vertices_.at(i).at(j)->topLeftX,
@@ -245,6 +246,7 @@ void FleetManager::addWall(WallQGraphicsLineItem* wall)
             {
                 if(*k == wall)
                 {
+
                     if(vertices_.at(i).at(j)->n != NULL)
                     {
                         vertices_.at(i).at(j)->n->s = NULL;
@@ -358,9 +360,9 @@ void FleetManager::removePoi(PoiQGraphicsEllipseItem* poi)
 void FleetManager::removeWall(WallQGraphicsLineItem* wall)
 {
     //renewing verticeconnections
-    for(unsigned int i = 1; i < vertices_.size(); ++i)
+    for(unsigned int i = 0; i < vertices_.size(); ++i)
     {
-        for(unsigned int j = 1; j < vertices_.size(); ++j)
+        for(unsigned int j = 0; j < vertices_.at(0).size(); ++j)
         {
             QList<QGraphicsItem*> items =
                 map_->items(vertices_.at(i).at(j)->topLeftX,

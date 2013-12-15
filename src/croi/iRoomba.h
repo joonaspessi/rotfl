@@ -129,7 +129,9 @@ private:
     int velocity_;
     bool isReady_;
     int driveTime_;
-    QStack<QPointF>* path_;
+    QStack<QPointF> path_;
+    //the path's lines are stored here as long as path_ != NULL
+    QVector<QGraphicsLineItem*> pathLines_;
     bool followingPath_; //true when path_ is followed
     bool prevPReached_; //true briefly as last point in path is reached
 };
