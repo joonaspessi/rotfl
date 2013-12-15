@@ -27,7 +27,8 @@ struct Vertice
 {
     Vertice():
         topLeftX(0), topLeftY(0), n(NULL), ne(NULL), e(NULL), se(NULL),
-        s(NULL), sw(NULL), w(NULL), nw(NULL), from(NULL)
+        s(NULL), sw(NULL), w(NULL), nw(NULL), from(NULL), hasWall(false),
+        blocked(false)
     {
         pos.setX(static_cast<double>(topLeftX)+Util::VERTICEWIDTH/2.0);
         pos.setY(static_cast<double>(topLeftY)+Util::VERTICEWIDTH/2.0);
@@ -48,6 +49,9 @@ struct Vertice
     Vertice* sw;
     Vertice* w;
     Vertice* nw;
+
+    bool hasWall;  //when the vertice collides with wall
+    bool blocked;  //as above or too close to a wall
 
     //needed for finding shortest path
     Vertice* from;

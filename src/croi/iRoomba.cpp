@@ -551,7 +551,7 @@ void IRoomba::compNeigh(Util::Vertice *curV, Util::Direction direction,
         break;
     }
 
-    if(neighV == NULL) //no link to neighbour -> nothing is done
+    if(neighV == NULL || neighV->blocked) //no link to neighbour, nothing is done
     {
         return;
     }

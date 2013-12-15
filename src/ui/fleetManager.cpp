@@ -235,7 +235,7 @@ void FleetManager::addWall(WallQGraphicsLineItem* wall)
     //walls
     for(unsigned int i = 0; i < vertices_.size(); ++i)
     {
-        for(unsigned int j = 0; j < vertices_.size(); ++j)
+        for(unsigned int j = 0; j < vertices_.at(0).size(); ++j)
         {
             QList<QGraphicsItem*> items =
                 map_->items(vertices_.at(i).at(j)->topLeftX,
@@ -246,38 +246,34 @@ void FleetManager::addWall(WallQGraphicsLineItem* wall)
             {
                 if(*k == wall)
                 {
+                    vertices_.at(i).at(j)->hasWall = true;
 
-                    if(vertices_.at(i).at(j)->n != NULL)
+                    int lInit = static_cast<int>(i-ceil(1.0/Util::VERTICEWIDTH*20.0));
+                    int mInit = static_cast<int>(j-ceil(1.0/Util::VERTICEWIDTH*20.0));
+                    int lEnd = static_cast<int>(i+ceil(1.0/Util::VERTICEWIDTH*20.0));
+                    int mEnd = static_cast<int>(j+ceil(1.0/Util::VERTICEWIDTH*20.0));
+                    if(lInit < 0)
                     {
-                        vertices_.at(i).at(j)->n->s = NULL;
+                        lInit = 0;
                     }
-                    if(vertices_.at(i).at(j)->ne != NULL)
+                    if (mInit < 0)
                     {
-                        vertices_.at(i).at(j)->ne->sw = NULL;
+                        mInit = 0;
                     }
-                    if(vertices_.at(i).at(j)->e != NULL)
+                    if(lEnd > vertices_.size()-1)
                     {
-                        vertices_.at(i).at(j)->e->w = NULL;
+                        lEnd = vertices_.size()-1;
                     }
-                    if(vertices_.at(i).at(j)->se != NULL)
+                    if (mEnd > vertices_.at(0).size()-1)
                     {
-                        vertices_.at(i).at(j)->se->nw = NULL;
+                        mEnd = vertices_.at(0).size()-1;
                     }
-                    if(vertices_.at(i).at(j)->s != NULL)
+                    for(int l = lInit; l <= lEnd; ++l)
                     {
-                        vertices_.at(i).at(j)->s->n = NULL;
-                    }
-                    if(vertices_.at(i).at(j)->sw != NULL)
-                    {
-                        vertices_.at(i).at(j)->sw->ne = NULL;
-                    }
-                    if(vertices_.at(i).at(j)->w != NULL)
-                    {
-                        vertices_.at(i).at(j)->w->e = NULL;
-                    }
-                    if(vertices_.at(i).at(j)->nw != NULL)
-                    {
-                        vertices_.at(i).at(j)->nw->se = NULL;
+                        for(int m = mInit; m <= mEnd ; ++m)
+                        {
+                            vertices_.at(l).at(m)->blocked = true;
+                        }
                     }
                     break; //no need to go further through items
                 }
@@ -316,24 +312,6 @@ void FleetManager::removeRedObjects()
             removeWall(*i);
         }
     }
-
-    //THE STARTING POINT CAN'T BE REMOVED NOW (TEMPORARY CHANGE)
-    //all tracking and tracing is taken away if startPoint_ is removed
-    //    if (startPoint_ != NULL && startPoint_->pen().color() == Qt::GlobalColor::red)
-    //    {
-    //        delete startPoint_;
-    //        startPoint_ = NULL;
-    //        removeTraces();
-    //        scene()->removeItem(curPoint_);
-    //        delete curPoint_;
-    //        curPoint_ = NULL;
-    //        scene()->removeItem(curSpeed_);
-    //        delete curSpeed_;
-    //        curSpeed_ = NULL;
-    //        initX_= 0.0;
-    //        initY_= 0.0;
-
-    //    }
 }
 
 void FleetManager::removeAllObjects()
@@ -389,45 +367,64 @@ void FleetManager::removeWall(WallQGraphicsLineItem* wall)
 
             if(wallFound && !anotherWallFound)
             {
-                if(vertices_.at(i).at(j)->n != NULL)
-                {
-                    vertices_.at(i).at(j)->n->s = vertices_.at(i).at(j);
-                }
-                if(vertices_.at(i).at(j)->ne != NULL)
-                {
-                    vertices_.at(i).at(j)->ne->sw = vertices_.at(i).at(j);
-                }
-                if(vertices_.at(i).at(j)->e != NULL)
-                {
-                    vertices_.at(i).at(j)->e->w = vertices_.at(i).at(j);
-                }
-                if(vertices_.at(i).at(j)->se != NULL)
-                {
-                    vertices_.at(i).at(j)->se->nw = vertices_.at(i).at(j);
-                }
-                if(vertices_.at(i).at(j)->s != NULL)
-                {
-                    vertices_.at(i).at(j)->s->n = vertices_.at(i).at(j);
-                }
-                if(vertices_.at(i).at(j)->sw != NULL)
-                {
-                    vertices_.at(i).at(j)->sw->ne = vertices_.at(i).at(j);
-                }
-                if(vertices_.at(i).at(j)->w != NULL)
-                {
-                    vertices_.at(i).at(j)->w->e = vertices_.at(i).at(j);
-                }
-                if(vertices_.at(i).at(j)->nw != NULL)
-                {
-                    vertices_.at(i).at(j)->nw->se = vertices_.at(i).at(j);
-                }
+                vertices_.at(i).at(j)->hasWall = false;
             }
+
         }
     }
 
     map_->scene()->removeItem(wall);
     delete wall;
     walls_.erase(wall);
+
+    for(unsigned int i = 0; i < vertices_.size(); ++i)
+    {
+        for(unsigned int j = 0; j < vertices_.at(0).size(); ++j)
+        {
+            //unblocked already so checks can be skipped
+            if(!vertices_.at(i).at(j)->blocked)
+            {
+                continue;
+            }
+
+            bool wallNear = false;
+            int lInit = static_cast<int>(i-ceil(1.0/Util::VERTICEWIDTH*20.0));
+            int mInit = static_cast<int>(j-ceil(1.0/Util::VERTICEWIDTH*20.0));
+            int lEnd = static_cast<int>(i+ceil(1.0/Util::VERTICEWIDTH*20.0));
+            int mEnd = static_cast<int>(j+ceil(1.0/Util::VERTICEWIDTH*20.0));
+            if(lInit < 0)
+            {
+                lInit = 0;
+            }
+            if (mInit < 0)
+            {
+                mInit = 0;
+            }
+            if(lEnd > vertices_.size()-1)
+            {
+                lEnd = vertices_.size()-1;
+            }
+            if (mEnd > vertices_.at(0).size()-1)
+            {
+                mEnd = vertices_.at(0).size()-1;
+            }
+            for(int l = lInit; l <= lEnd; ++l)
+            {
+                for(int m = mInit; m <= mEnd ; ++m)
+                {
+                    if(vertices_.at(l).at(m)->hasWall == true)
+                    {
+                        wallNear = true;
+                    }
+                }
+            }
+
+            if(!wallNear)
+            {
+                vertices_.at(i).at(j)->blocked = false;
+            }
+        }
+    }
 }
 
 //shows or hides all traces
