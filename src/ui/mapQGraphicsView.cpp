@@ -8,6 +8,7 @@
 #include "mainwindow.h"
 #include <cmath>
 #include <QDebug>
+#include <QMessageBox>
 #include "flogger.h"
 
 MapQGraphicsView::MapQGraphicsView(FleetManager* fleetManager, QWidget* parent) :
@@ -49,19 +50,27 @@ void MapQGraphicsView::mousePressEvent(QMouseEvent *event)
     }
     else if (selectedPaintTool_ == Util::SelectedPaintTool::POI)
     {
-        qDebug() << "Draw a poi!";
-        setDragMode(QGraphicsView::NoDrag);
-        PoiQGraphicsEllipseItem* poi = new PoiQGraphicsEllipseItem
-                (0.0-POIWIDTH/2.0, 0.0-POIWIDTH/2.0, POIWIDTH, POIWIDTH);
-        poi->setPos(p);
-        poi->setFlag(QGraphicsItem::ItemIsSelectable,true);
-        poi->setFlag(QGraphicsItem::ItemIsMovable,false); // Disabled so that the mapChanged signal works as expected
-        scene()->addItem(poi);
-        fleetManager_->addPoi(poi);
-        qDebug() << "Adding POI with x: " << poi->scenePos().x()
-                 << " , y: " << poi->scenePos().y();
-        emit mapChanged();
-        (*flog.ts)<< QString("Draw a POI, Adding POI with x: %1 y: %2").arg(p.x()).arg(p.y()) <<endl;
+        if(fleetManager_->isBlocked(&p))
+        {
+            QMessageBox::warning
+                (parentWidget(), "", tr("POI must be inserted further away from wall!"));
+        }
+        else
+        {
+            qDebug() << "Draw a poi!";
+            setDragMode(QGraphicsView::NoDrag);
+            PoiQGraphicsEllipseItem* poi = new PoiQGraphicsEllipseItem
+                    (0.0-POIWIDTH/2.0, 0.0-POIWIDTH/2.0, POIWIDTH, POIWIDTH);
+            poi->setPos(p);
+            poi->setFlag(QGraphicsItem::ItemIsSelectable,true);
+            poi->setFlag(QGraphicsItem::ItemIsMovable,false); // Disabled so that the mapChanged signal works as expected
+            scene()->addItem(poi);
+            fleetManager_->addPoi(poi);
+            qDebug() << "Adding POI with x: " << poi->scenePos().x()
+                     << " , y: " << poi->scenePos().y();
+            emit mapChanged();
+            (*flog.ts)<< QString("Draw a POI, Adding POI with x: %1 y: %2").arg(p.x()).arg(p.y()) <<endl;
+        }
     }
     else if (selectedPaintTool_ == Util::SelectedPaintTool::START)
     {
@@ -127,11 +136,18 @@ void MapQGraphicsView::mouseMoveEvent(QMouseEvent *event)
 void MapQGraphicsView::mouseReleaseEvent(QMouseEvent *event)
 {
     Q_UNUSED(event);
+
     if (selectedPaintTool_ == Util::SelectedPaintTool::WALL)
     {
         wallToBeAdded_->setFlag(QGraphicsItem::ItemIsSelectable,true);
         wallToBeAdded_->setFlag(QGraphicsItem::ItemIsMovable,false); // Disabled so that the mapChanged signal works as expected
         fleetManager_->addWall(wallToBeAdded_);
+        if(fleetManager_->removeBlockedPois())  //POIs blocked by the wall are removed
+        {
+            QMessageBox::warning
+                (parentWidget(), "", tr("POIs too close to the wall were removed"));
+        }
+        wallToBeAdded_ = NULL;
         delete wallToBeAddedStartPoint_;
         wallToBeAddedStartPoint_ = NULL;
         delete wallToBeAddedStartPointText_;

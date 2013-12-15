@@ -44,10 +44,14 @@ public:
     void ifShowTraces();
     void removeTraces();
     void go2Poi();
-    //removes POIs if it colllides with any item
-    //TODO: exclude trace
-    void checkPoiCollision();
-    //these functions work for current selectedRoomba_
+
+    //these functions work for selectedRoombas_
+
+    //returns true if vertice at point is too close to a wall
+    bool isBlocked(QPointF* point);
+    //removes all blocked POIs and returns true if there was any.
+    //This is called when creating a new wall
+    bool removeBlockedPois();
     void connect(std::string stdip);
     void disconnect();
     void clean();

@@ -163,9 +163,9 @@ void FleetManager::setMap(MapQGraphicsView* map)
     }
 
 
-//DEBUG DRAWING FOR SHOWING THE CONNECTIONS FROM VERTICE at a,b
-//    int a = 6;
-//    int b = 4;
+//    //DEBUG DRAWING FOR SHOWING THE CONNECTIONS FROM VERTICE at a,b
+//    int a = 1;
+//    int b = 1;
 //    map_->scene()->addLine(vertices_.at(a).at(b)->pos.x(),vertices_.at(a).at(b)->pos.y(),
 //                           vertices_.at(a).at(b)->n->pos.x(),vertices_.at(a).at(b)->n->pos.y());
 //    map_->scene()->addLine(vertices_.at(a).at(b)->pos.x(),vertices_.at(a).at(b)->pos.y(),
@@ -460,7 +460,6 @@ void FleetManager::go2Poi()
     else  //nearest IRoomba will be selectedRoomba
     {
         managedRoombas_ = selectedRoombas_;
-        QPointF poiCoordinate = (*pois_.begin())->pos();
         double distance = std::numeric_limits<double>::max();
         double compareDistance = 0.0;
         bool isReadyFound = false;
@@ -472,7 +471,7 @@ void FleetManager::go2Poi()
             {
                 isReadyFound = true;
                 compareDistance = managedRoombas_.at(i)
-                                  ->calcPath(vertices_, poiCoordinate);
+                                  ->calcPath(vertices_, *pois_.begin());
                 if(compareDistance < distance)
                 {
                     selectedRoomba = managedRoombas_.at(i);
@@ -508,25 +507,37 @@ void FleetManager::go2Poi()
     }
 }
 
-void FleetManager::checkPoiCollision()
+bool FleetManager::isBlocked(QPointF* point)
 {
+    for(unsigned int i = 0; i < vertices_.size(); ++i)
+    {
+        for(unsigned int j = 0; j < vertices_.at(0).size(); ++j)
+        {
+            if(vertices_.at(i).at(j)->topLeftX <= point->x() &&
+               vertices_.at(i).at(j)->topLeftX+Util::VERTICEWIDTH-1 >= point->x() &&
+               vertices_.at(i).at(j)->topLeftY <= point->y() &&
+               vertices_.at(i).at(j)->topLeftY+Util::VERTICEWIDTH-1 >= point->y())
+            {
+                return vertices_.at(i).at(j)->blocked;
+            }
+        }
+    }
+}
+
+bool FleetManager::removeBlockedPois()
+{
+    bool blockedPoiFound = false;
     for (std::set<PoiQGraphicsEllipseItem*>::iterator i = pois_.begin();
          i != pois_.end(); ++i)
     {
-        QList<QGraphicsItem*> collidingItems = (*i)->collidingItems();
-        if (!collidingItems.empty())
+        QPointF point = (*i)->pos();
+        if (isBlocked(&point))
         {
-            //removePoi(*i);  //temporarily taken off
+            blockedPoiFound = true;
+            removePoi(*i);
         }
-        //TODO: check issue #3 on Github, implementation is missing
-        //bool isTrace = false;
-        //goes through collidingItems and removes POI if it
-        //finds an item that isn't a trace
-        //while (!collidingItems.empty())
-        //{
-        //  collidingItems.pop_front();
-        //}
     }
+    return blockedPoiFound;
 }
 
 void FleetManager::connect(std::string stdip)

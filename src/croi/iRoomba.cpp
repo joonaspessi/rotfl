@@ -17,7 +17,7 @@ IRoomba::IRoomba(PoiQGraphicsEllipseItem *startPoint, MapQGraphicsView *map,
     startPoint_(startPoint), map_(map), polygon_(NULL), icon_(NULL),
     curSpeed_(NULL), Xloc_(startPoint->x()), Yloc_(startPoint->y()), angle_(0.0),
     radius_(RADSTRAIGHT), velocity_(0), traceShown_(true), isReady_(false), driveTime_(0),
-    followingPath_(false), prevPReached_(false)
+    followingPath_(false), prevPReached_(false), destPoi_(NULL)
 {
 }
 
@@ -160,9 +160,7 @@ void IRoomba::updateState()
         // Roomba icon is in angle of 270 by default in the pixmap, setRotation accepts also negative angles
         icon_->setRotation((angle_*(180/PI))-270);
     }
-    icon_->setZValue(1);
-
-    qobject_cast<FleetManager*>(parent())->checkPoiCollision();
+    icon_->setZValue(2);
 
     //add new wall if bumb has happened
     if (leftBump || rightBump)
@@ -365,6 +363,9 @@ void IRoomba::sensorUpdateTimerTimeout()
             delete pathLines_.at(i);
         }
         pathLines_.clear();
+
+        qobject_cast<FleetManager*>(parent())->removePoi(destPoi_);
+        destPoi_ = NULL;
     }
     else
     {
@@ -387,7 +388,7 @@ void IRoomba::driveTimerTimeout()
     prevPReached_ = true;
 }
 
-double IRoomba::calcPath(QVector<QVector<Util::Vertice *> > &vertices, QPointF& point)
+double IRoomba::calcPath(QVector<QVector<Util::Vertice *> > &vertices, QPointF point)
 {
 //commented lines skip the shortest path to perform simple go2point
 //    path_.push(point);
@@ -507,6 +508,13 @@ double IRoomba::calcPath(QVector<QVector<Util::Vertice *> > &vertices, QPointF& 
     return dist;
 }
 
+double IRoomba::calcPath(QVector<QVector<Util::Vertice *> > &vertices, PoiQGraphicsEllipseItem *poi)
+{
+    destPoi_ = poi;
+    return calcPath(vertices, poi->pos());
+}
+
+
 void IRoomba::compNeigh(Util::Vertice *curV, Util::Direction direction,
                         std::priority_queue<Util::Vertice *,
                                             std::vector<Util::Vertice *>,
@@ -584,6 +592,7 @@ void IRoomba::usePath()
 void IRoomba::ignorePath()
 {
     path_.clear();
+    destPoi_ = NULL;
 
     for(unsigned int i = 0; i < pathLines_.size(); ++i)
     {

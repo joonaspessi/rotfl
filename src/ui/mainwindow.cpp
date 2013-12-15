@@ -421,11 +421,21 @@ void MainWindow::keyPressEvent(QKeyEvent* event)
         (*flog.ts) << "UpArrow" << endl;
     }
     else if(event->key() == Qt::Key_A) {
+        fleetManager_->drive(velocity_horizontalSlider_->value(), RADTURNCCW);
+        qDebug() << "Turn clockwise";
+        (*flog.ts) << "Turn clockwise" << endl;
+    }
+    else if(event->key() == Qt::Key_D) {
+        fleetManager_->drive(velocity_horizontalSlider_->value(), RADTURNCW);
+        qDebug() << "Turn clockwise";
+        (*flog.ts) << "Turn clockwise" << endl;
+    }
+    else if(event->key() == Qt::Key_E) {
         fleetManager_->drive(velocity_horizontalSlider_->value(),200);
         qDebug() << "RightArrow";
         (*flog.ts) << "RightArrow" << endl;
     }
-    else if(event->key() == Qt::Key_D) {
+    else if(event->key() == Qt::Key_R) {
         fleetManager_->drive(velocity_horizontalSlider_->value(),-200);
         qDebug() << "LeftArrow";
         (*flog.ts) << "LeftArrow" << endl;
@@ -445,11 +455,6 @@ void MainWindow::keyPressEvent(QKeyEvent* event)
         }
         qDebug() << "BackArrow";
         (*flog.ts) << "BackArrow" << endl;
-    }
-    else if(event->key() == Qt::Key_E) {
-        fleetManager_->drive(velocity_horizontalSlider_->value(), RADTURNCW);
-        qDebug() << "Turn clockwise";
-        (*flog.ts) << "Turn clockwise" << endl;
     }
     else if(event->key() == Qt::Key_Q) {
         releaseKeyboard();

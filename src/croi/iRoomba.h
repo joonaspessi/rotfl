@@ -74,7 +74,8 @@ public:
     //is roomba ready to receive drive commands
     bool isReady();
     //calculates the nearest path to point and returns it's distance
-    double calcPath(QVector<QVector<Util::Vertice *> >& vertices, QPointF& point);
+    double calcPath(QVector<QVector<Util::Vertice *> > &vertices, QPointF point);
+    double calcPath(QVector<QVector<Util::Vertice *> > &vertices, PoiQGraphicsEllipseItem *poi);
     //this makes the IRoomba to follow the path_ calculated by calcPath. This
     //must be called once and only once after calcPath if ignorePath isn't
     //called
@@ -106,13 +107,13 @@ private:
                                        std::vector<Util::Vertice*>,
                                        bool (*)(Util::Vertice*, Util::Vertice*)> &priQ);
 
-    PoiQGraphicsEllipseItem* startPoint_;
-    MapQGraphicsView* map_;
+    PoiQGraphicsEllipseItem *startPoint_;
+    MapQGraphicsView *map_;
     //roombas triangle is stored in this.
     //TODO: make better icon
-    QGraphicsPolygonItem* polygon_;
+    QGraphicsPolygonItem *polygon_;
     //ICON
-    QGraphicsPixmapItem * icon_;
+    QGraphicsPixmapItem *icon_;
 
     //roomba's speedvector
     QGraphicsLineItem* curSpeed_;
@@ -134,6 +135,7 @@ private:
     QVector<QGraphicsLineItem*> pathLines_;
     bool followingPath_; //true when path_ is followed
     bool prevPReached_; //true briefly as last point in path is reached
+    PoiQGraphicsEllipseItem *destPoi_;
 };
 
 
