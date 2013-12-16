@@ -64,7 +64,7 @@ private slots:
 
     void velocity_horizontalSlider_sliderMoved(int position);
 
-    void pushButton_Go2POI_clicked();
+    void pushButton_Go2POIs_clicked();
 
     void action_Cursor_toggled(bool toggleStatus);
 

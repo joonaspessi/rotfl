@@ -579,13 +579,11 @@ void IRoomba::compNeigh(Util::Vertice *curV, Util::Direction direction,
 
 void IRoomba::usePath()
 {
+    followingPath_ = true;
     for(unsigned int i = 0; i < pathLines_.size(); ++i)
     {
         map_->scene()->addItem(pathLines_.at(i));
     }
-
-
-    followingPath_ = true;
     go2Point(path_.pop());
 }
 

@@ -43,7 +43,7 @@ public:
     void removeAllObjects();
     void ifShowTraces();
     void removeTraces();
-    void go2Poi();
+    void go2Pois();
 
     //these functions work for selectedRoombas_
 
@@ -75,6 +75,9 @@ public slots:
 private:
 
     void removeWall(WallQGraphicsLineItem* wall);
+    //returns false is no roomba is ready to
+    //go to a POI
+    bool go2Poi(PoiQGraphicsEllipseItem *poi);
 
     MainWindow* mainWindow_;
     QVector<Croi::IRoomba*> selectedRoombas_;

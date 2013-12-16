@@ -207,8 +207,8 @@ void MainWindow::createActionDock()
     connect(motorsOff_pushButton,SIGNAL(clicked()),this,SLOT(pushButton_allMotorsOff_clicked()));
     QPushButton *playSong_pushButton = new QPushButton("&Play song", this);
     connect(playSong_pushButton,SIGNAL(clicked()),this,SLOT(pushButton_playSong_clicked()));
-    QPushButton *Go2POI_pushButton = new QPushButton("&Go 2 POI", this);
-    connect(Go2POI_pushButton,SIGNAL(clicked()),this,SLOT(pushButton_Go2POI_clicked()));
+    QPushButton *Go2POIs_pushButton = new QPushButton("&Go 2 POIs", this);
+    connect(Go2POIs_pushButton,SIGNAL(clicked()),this,SLOT(pushButton_Go2POIs_clicked()));
     velocity_horizontalSlider_ = new QSlider(Qt::Horizontal);
     velocity_horizontalSlider_->setMaximum(500);
     velocity_horizontalSlider_->setMinimum(-500);
@@ -220,7 +220,7 @@ void MainWindow::createActionDock()
     action_layout->addWidget(motorsOn_pushButton);
     action_layout->addWidget(motorsOff_pushButton);
     action_layout->addWidget(playSong_pushButton);
-    action_layout->addWidget(Go2POI_pushButton);
+    action_layout->addWidget(Go2POIs_pushButton);
     action_layout->addWidget(velocity_horizontalSlider_);
 
     QWidget *actionWidget = new QWidget;
@@ -488,10 +488,10 @@ void MainWindow::pushButton_mapWidth_clicked()
     (*flog.ts) << "Map width Button pressed." << endl;
 }
 
-void MainWindow::pushButton_Go2POI_clicked()
+void MainWindow::pushButton_Go2POIs_clicked()
 {
-    fleetManager_->go2Poi();
-    (*flog.ts) << "Go2POI Button pressed." << endl;
+    fleetManager_->go2Pois();
+    (*flog.ts) << "Go2POIs Button pressed." << endl;
 }
 
 void MainWindow::action_Cursor_toggled(bool toggleStatus)

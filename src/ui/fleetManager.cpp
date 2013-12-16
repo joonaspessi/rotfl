@@ -445,7 +445,7 @@ void FleetManager::removeTraces()
     }
 }
 
-void FleetManager::go2Poi()
+void FleetManager::go2Pois()
 {
     if (pois_.empty())
     {
@@ -457,53 +457,85 @@ void FleetManager::go2Poi()
         QMessageBox::warning
         (mainWindow_, "", tr("Please select a Roomba!"));
     }
-    else  //nearest IRoomba will be selectedRoomba
+    else
     {
         managedRoombas_ = selectedRoombas_;
-        double distance = std::numeric_limits<double>::max();
-        double compareDistance = 0.0;
-        bool isReadyFound = false;
-        Croi::IRoomba* selectedRoomba = NULL;
-        for(unsigned int i = 0; i < managedRoombas_.size(); ++i)
-        {
-            //path calculated only for ready IRoombas
-            if(managedRoombas_.at(i)->isReady())
-            {
-                isReadyFound = true;
-                compareDistance = managedRoombas_.at(i)
-                                  ->calcPath(vertices_, *pois_.begin());
-                if(compareDistance < distance)
-                {
-                    selectedRoomba = managedRoombas_.at(i);
-                    distance = compareDistance;
-                }
-            }
-        }
-        //the paths of other IRoombas are ignored
-        for(unsigned int i = 0; i < managedRoombas_.size(); ++i)
-        {
-            if(managedRoombas_.at(i) != selectedRoomba)
-            {
-                managedRoombas_.at(i)->ignorePath();
-            }
-        }
-        managedRoombas_.clear();
 
-        if(!isReadyFound) //if none of selectedRoombas_ is ready
+        for (std::set<PoiQGraphicsEllipseItem*>::iterator i = pois_.begin();
+             i != pois_.end(); ++i)
         {
-            QMessageBox::warning
-            (mainWindow_, "", tr("Please select a ready Roomba!"));
+            if(!go2Poi(*i))
+            {
+                if(i == pois_.begin())
+                {
+                    QMessageBox::warning
+                            (mainWindow_, "", tr("No selected Roomba is ready"));
+                }
+                else
+                {
+                    QMessageBox::warning
+                            (mainWindow_, "", tr("TODO: Roombas to have a task list for collecting unlimited amount of POIs"));
+                }
+
+                return;
+            }
         }
-        //if no route found
-        else if(selectedRoomba == NULL)
+    }
+}
+
+bool FleetManager::go2Poi(PoiQGraphicsEllipseItem *poi)
+{
+    double distance = std::numeric_limits<double>::max();
+    double compareDistance = 0.0;
+    bool isReadyFound = false;
+    Croi::IRoomba* selectedRoomba = NULL;
+
+    //nearest IRoomba will be selectedRoomba
+    for(unsigned int i = 0; i < managedRoombas_.size(); ++i)
+    {
+        //path calculated only for ready IRoombas
+        if(managedRoombas_.at(i)->isReady())
         {
-            QMessageBox::warning
-            (mainWindow_, "", tr("No possible route!"));
+            isReadyFound = true;
+            compareDistance = managedRoombas_.at(i)
+                    ->calcPath(vertices_, poi);
+            if(compareDistance < distance)
+            {
+                selectedRoomba = managedRoombas_.at(i);
+                distance = compareDistance;
+            }
+        }
+    }
+    //the paths of other IRoombas are ignored and
+    //the selectedRoomba is taken away from managedRoombas_
+    for(unsigned int i = 0; i < managedRoombas_.size(); ++i)
+    {
+        if(managedRoombas_.at(i) == selectedRoomba)
+        {
+            managedRoombas_.remove(i);
         }
         else
         {
-            selectedRoomba->usePath();  //selectedRoomba will go to Poi
+            managedRoombas_.at(i)->ignorePath();
         }
+    }
+
+
+    if(!isReadyFound) //if none of selectedRoombas_ is ready
+    {
+        return false;
+    }
+    //if no route found
+    else if(selectedRoomba == NULL)
+    {
+        QMessageBox::warning
+                (mainWindow_, "", tr("No possible route to one of the POIs!"));
+        return true;
+    }
+    else
+    {
+        selectedRoomba->usePath();  //selectedRoomba will go to Poi
+        return true;
     }
 }
 
