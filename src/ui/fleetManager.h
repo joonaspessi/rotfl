@@ -44,6 +44,7 @@ public:
     void ifShowTraces();
     void removeTraces();
     void go2Pois();
+    void stopFleet();
 
     //these functions work for selectedRoombas_
 

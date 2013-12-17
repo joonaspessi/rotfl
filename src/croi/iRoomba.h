@@ -84,6 +84,8 @@ public:
     //after calcPath if usePath isn't called. This can be used to make sure
     //that path_ is NULL
     void ignorePath();
+    //Roomba stops moving and everything related to following a path is reset
+    void stop();
 
 signals:
     void stateUpdate();

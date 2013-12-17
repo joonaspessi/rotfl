@@ -599,6 +599,23 @@ void IRoomba::ignorePath()
     pathLines_.clear();
 }
 
+void IRoomba::stop()
+{
+    followingPath_ = false;
+    prevPReached_ = false;
+    drive(0, RADSTRAIGHT);
+
+    path_.clear();
+
+    for(unsigned int i = 0; i < pathLines_.size(); ++i)
+    {
+        map_->scene()->removeItem(pathLines_.at(i));
+        delete pathLines_.at(i);
+    }
+    pathLines_.clear();
+    destPoi_ = NULL;
+}
+
 //function for comparing vertices
 bool IRoomba::verticeCompare(Util::Vertice* first, Util::Vertice* second)
 {

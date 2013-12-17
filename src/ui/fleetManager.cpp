@@ -539,6 +539,14 @@ bool FleetManager::go2Poi(PoiQGraphicsEllipseItem *poi)
     }
 }
 
+void FleetManager::stopFleet()
+{
+    for(unsigned int i = 0; i < roombas_.size(); ++i)
+    {
+        roombas_.at(i)->stop();
+    }
+}
+
 bool FleetManager::isBlocked(QPointF* point)
 {
     for(unsigned int i = 0; i < vertices_.size(); ++i)

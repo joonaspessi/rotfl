@@ -66,6 +66,8 @@ private slots:
 
     void pushButton_Go2POIs_clicked();
 
+    void pushButton_stopFleet_clicked();
+
     void action_Cursor_toggled(bool toggleStatus);
 
     void action_Wall_toggled(bool toggleStatus);

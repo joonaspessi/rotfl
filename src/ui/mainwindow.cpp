@@ -209,6 +209,8 @@ void MainWindow::createActionDock()
     connect(playSong_pushButton,SIGNAL(clicked()),this,SLOT(pushButton_playSong_clicked()));
     QPushButton *Go2POIs_pushButton = new QPushButton("&Go 2 POIs", this);
     connect(Go2POIs_pushButton,SIGNAL(clicked()),this,SLOT(pushButton_Go2POIs_clicked()));
+    QPushButton *stopFleet_pushButton = new QPushButton("S&top Fleet", this);
+    connect(stopFleet_pushButton,SIGNAL(clicked()),this,SLOT(pushButton_stopFleet_clicked()));
     velocity_horizontalSlider_ = new QSlider(Qt::Horizontal);
     velocity_horizontalSlider_->setMaximum(500);
     velocity_horizontalSlider_->setMinimum(-500);
@@ -221,6 +223,7 @@ void MainWindow::createActionDock()
     action_layout->addWidget(motorsOff_pushButton);
     action_layout->addWidget(playSong_pushButton);
     action_layout->addWidget(Go2POIs_pushButton);
+    action_layout->addWidget(stopFleet_pushButton);
     action_layout->addWidget(velocity_horizontalSlider_);
 
     QWidget *actionWidget = new QWidget;
@@ -493,6 +496,12 @@ void MainWindow::pushButton_Go2POIs_clicked()
     fleetManager_->go2Pois();
     (*flog.ts) << "Go2POIs Button pressed." << endl;
 }
+
+void MainWindow::pushButton_stopFleet_clicked()
+{
+    fleetManager_->stopFleet();
+}
+
 
 void MainWindow::action_Cursor_toggled(bool toggleStatus)
 {
