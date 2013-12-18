@@ -390,10 +390,50 @@ void IRoomba::driveTimerTimeout()
 
 double IRoomba::calcPath(QVector<QVector<Util::Vertice *> > &vertices, QPointF point)
 {
-//commented lines skip the shortest path to perform simple go2point
-//    path_.push(point);
-//    return 1;
-    //find the start vertice
+    //first we try to find a straight path without turns caused by dividing map to
+    //vertices. For that we use a testLine and check if it collides with a wall. If no
+    //colliding wall is found, point is pushed to path and its distance returned.
+    //Otherwise, we proceed with using Dijkstra's algorithm.
+    QGraphicsLineItem *testLine = new QGraphicsLineItem
+                                      (Xloc_, Yloc_, point.x(), point.y());
+    QPen testLinePen;
+    testLinePen.setWidth(Util::ROOMBAWIDTH+6); //6 is to have some leeway due to inaccuracies
+    testLine->setPen(testLinePen);
+    map_->scene()->addItem(testLine);
+    QList<QGraphicsItem*> colList = testLine->collidingItems();
+    map_->scene()->removeItem(testLine);
+    delete testLine;
+    bool wallFound = false;
+
+    for(QList<QGraphicsItem*>::iterator i = colList.begin(); i != colList.end(); ++i)
+    {
+        if((*i)->type() == Util::WALLTYPE)
+        {
+            wallFound = true;
+        }
+    }
+
+    if(!wallFound)
+    {
+        double deltaX = point.x()-Xloc_;
+        double deltaY = point.y()-Yloc_;
+        double distance = sqrt(pow(deltaX,2.0)+pow(deltaY,2.0));
+
+        //due to inaccuracies, the straight path is divided into several points. This
+        //allows roomba to stay on course accurately enough.
+        path_.push(point);
+        pathLines_.append(new QGraphicsLineItem(Xloc_, Yloc_, point.x(), point.y()));
+        if(distance != 0)
+        {
+            unsigned int pointCount = ceil(distance/70.0);
+            for(unsigned int i = pointCount-1; i > 0; --i)
+            {
+                path_.push(QPointF(Xloc_+i*deltaX/pointCount, Yloc_+i*deltaY/pointCount));
+            }
+        }
+        return distance;
+    }
+
     Util::Vertice* startV = NULL;
     Util::Vertice* curV = NULL;
     Util::Vertice* goalV = NULL;
@@ -520,41 +560,37 @@ void IRoomba::compNeigh(Util::Vertice *curV, Util::Direction direction,
                                             std::vector<Util::Vertice *>,
                                             bool (*)(Util::Vertice *, Util::Vertice *)> &priQ)
 {
-    double dist = 0.0;  //distance between curV and neighV
+    double dist = Util::VERTICEWIDTH;  //distance between curV and neighV
     Util::Vertice* neighV = NULL;
 
-    switch(direction)
+    switch(direction) //some directions need updated distances
     {
     case Util::N:
-        dist = 1.0;
         neighV = curV->n;
         break;
     case Util::NE:
-        dist = sqrt(2.0);
+        dist = sqrt(2.0*pow(Util::VERTICEWIDTH, 2));
         neighV = curV->ne;
         break;
     case Util::E:
-        dist = 1.0;
         neighV = curV->e;
         break;
     case Util::SE:
-        dist = sqrt(2.0);
+        dist = sqrt(2.0*pow(Util::VERTICEWIDTH, 2));
         neighV = curV->se;
         break;
     case Util::S:
-        dist = 1.0;
         neighV = curV->s;
         break;
     case Util::SW:
-        dist = sqrt(2.0);
+        dist = sqrt(2.0*pow(Util::VERTICEWIDTH, 2));
         neighV = curV->sw;
         break;
     case Util::W:
-        dist = 1.0;
         neighV = curV->w;
         break;
     case Util::NW:
-        dist = sqrt(2.0);
+        dist = sqrt(2.0*pow(Util::VERTICEWIDTH, 2));
         neighV = curV->nw;
         break;
     }

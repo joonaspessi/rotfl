@@ -16,6 +16,7 @@ const double PI = 3.14159265;
 const double ANGLECORRECTION = 3.057;
 const double DISTANCECORRECTION = 6.1;
 
+
 class MapQGraphicsView;
 class FleetManager;
 
