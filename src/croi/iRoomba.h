@@ -48,8 +48,8 @@ public:
     virtual void playSong( int songNumber ) = 0;
     virtual char getTemperature() = 0;
     virtual unsigned short getChargeLevel() = 0;
-    virtual short getDistance() = 0;
-    virtual short getAngle() = 0;
+    virtual double getDistance() = 0;
+    virtual double getAngle() = 0;
     virtual bool getLeftBumb() = 0;
     virtual bool getRightBumb() = 0;
 
@@ -92,10 +92,13 @@ public:
 signals:
     void stateUpdate();
 
-private slots:
+protected slots:
     //updateState is now called. Also, if IRoomba is following a path, it
     //gives new go2Point() calls and updates bools as necessary
     void sensorUpdateTimerTimeout();
+
+private slots:
+
     void turnTimerTimeout();
     void driveTimerTimeout();
 

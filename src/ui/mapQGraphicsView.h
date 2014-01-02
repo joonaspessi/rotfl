@@ -8,12 +8,6 @@
 #include "croi/iRoomba.h"
 //#include "fleetManager.h"
 
-//SOME OF THESE CONSTANTS ARE TO BE MOVED
-//AND SOME CHANGED TO VARIABLES
-const double POIWIDTH = 10.0;
-const double TRACEWIDTH = 34.0;
-const double ARROWWIDTH = 27.0;
-
 class FleetManager;
 
 class MapQGraphicsView : public QGraphicsView

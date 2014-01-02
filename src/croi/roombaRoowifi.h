@@ -26,8 +26,8 @@ public:
     virtual char getTemperature();
     virtual unsigned short getChargeLevel();
 
-    virtual short getDistance();
-    virtual short getAngle();
+    virtual double getDistance();
+    virtual double getAngle();
     virtual bool getLeftBumb();
     virtual bool getRightBumb();
 

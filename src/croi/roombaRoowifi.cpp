@@ -10,7 +10,7 @@ RoombaRoowifi::RoombaRoowifi(PoiQGraphicsEllipseItem *startPoint,
 {
     roowifi_ = new RooWifi(this);
     //TODO: implement own timer
-    connect(roowifi_,SIGNAL(AutoCaptureUpdated()), this, SLOT(sensorUpdateTimerTimeout()));
+    connect(roowifi_,SIGNAL(AutoCaptureUpdated()), this, SLOT(IRoomba::sensorUpdateTimerTimeout()));
     IRoomba::updateState(); //call needed to have no null pointer in polygon_
 }
 
@@ -95,12 +95,12 @@ unsigned short RoombaRoowifi::getChargeLevel()
     return roowifi_->Sensors.Charge;
 }
 
-short RoombaRoowifi::getDistance()
+double RoombaRoowifi::getDistance()
 {
     return roowifi_->Sensors.Distance;
 }
 
-short RoombaRoowifi::getAngle()
+double RoombaRoowifi::getAngle()
 {
     return roowifi_->Sensors.Angle;
 }

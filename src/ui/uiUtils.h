@@ -25,6 +25,13 @@ const double ONTHEFLYCORRECTION = 2.0;
 
 const int POITYPE = QGraphicsItem::UserType;
 const int WALLTYPE = QGraphicsItem::UserType+1;
+const int RADSTRAIGHT = 32768;
+const int RADTURNCW = 65535;
+const int RADTURNCCW = 1;
+const double PI = 3.14159265;
+const double POIWIDTH = 10.0;
+const double TRACEWIDTH = 34.0;
+const double ARROWWIDTH = 27.0;
 
 struct Vertice
 {

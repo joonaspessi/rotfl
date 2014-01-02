@@ -8,6 +8,7 @@
 #include <vector>
 #include <cmath>
 #include <limits>
+#include "croiUtil.h"
 
 namespace Croi {
 
@@ -16,7 +17,7 @@ IRoomba::IRoomba(PoiQGraphicsEllipseItem *startPoint, MapQGraphicsView *map,
     QObject(parent),
     startPoint_(startPoint), map_(map), polygon_(NULL), icon_(NULL),
     curSpeed_(NULL), Xloc_(startPoint->x()), Yloc_(startPoint->y()), angle_(0.0),
-    radius_(RADSTRAIGHT), velocity_(0), traceShown_(true), isReady_(false), driveTime_(0),
+    radius_(Util::RADSTRAIGHT), velocity_(0), traceShown_(true), isReady_(false), driveTime_(0),
     followingPath_(false), prevPReached_(false), destPoi_(NULL)
 {
 }
@@ -126,7 +127,7 @@ void IRoomba::updateState()
     bool rightBump = getRightBumb();
 
     //angle for distance calculation
-    double angleForDist = angle_-static_cast<double>(angle)*PI*ANGLECORRECTION/180.0;
+    double angleForDist = angle_-static_cast<double>(angle)*Util::PI*ANGLECORRECTION/180.0;
     //distance changed to cm
     double dist = -static_cast<double>(distance)/10.0*DISTANCECORRECTION;
     //special radiuses mean no adaptation needed
@@ -141,12 +142,12 @@ void IRoomba::updateState()
         angleForDist = angle_-static_cast<double>(distance)/radius_/2.0;
     }
     //real angle (always used for roomba's angle)
-    angle_ -= static_cast<double>(angle)*PI*ANGLECORRECTION/180.0;
+    angle_ -= static_cast<double>(angle)*Util::PI*ANGLECORRECTION/180.0;
     //qDebug() << "Roomba's angle in degrees: " << angle_*(180/PI);
-    angle_ = fmod(angle_, 2.0*PI);
+    angle_ = fmod(angle_, 2.0*Util::PI);
     if (angle_ < 0)
     {
-        angle_ = 2*PI+angle_;
+        angle_ = 2*Util::PI+angle_;
     }
     //qDebug() << "Roomba's angle in degrees after correction: " << angle_*(180/PI);
 
@@ -160,7 +161,7 @@ void IRoomba::updateState()
         QGraphicsLineItem* traceL = new QGraphicsLineItem
                 (Xloc_, Yloc_, x, y);
         QPen linePen(Qt::GlobalColor::gray);
-        linePen.setWidth(TRACEWIDTH);
+        linePen.setWidth(Util::TRACEWIDTH);
         traceL->setPen(linePen);
         //opacity, so we get the idea which parts are cleaned well
         traceL->setOpacity(0.25);
@@ -190,7 +191,7 @@ void IRoomba::updateState()
         icon_->setPos(Xloc_, Yloc_);
         icon_->resetTransform();
         // Roomba icon is in angle of 270 by default in the pixmap, setRotation accepts also negative angles
-        icon_->setRotation((angle_*(180/PI))-270);
+        icon_->setRotation((angle_*(180/Util::PI))-270);
     }
     icon_->setZValue(2);
 
@@ -198,9 +199,9 @@ void IRoomba::updateState()
     if (leftBump || rightBump)
     {
         qDebug() << "Roomba has collided with unknown object!";
-        double tempAngle = angle_-40.0*PI/180.0;
+        double tempAngle = angle_-40.0*Util::PI/180.0;
         QPointF l (Xloc_+cos(tempAngle)*17, Yloc_+sin(tempAngle)*17);
-        tempAngle = angle_+40.0*PI/180.0;
+        tempAngle = angle_+40.0*Util::PI/180.0;
         QPointF r (Xloc_+cos(tempAngle)*17, Yloc_+sin(tempAngle)*17);
         WallQGraphicsLineItem* bumbed = new WallQGraphicsLineItem
                                             (l.x(), l.y(), r.x(), r.y());
@@ -289,9 +290,9 @@ void IRoomba::go2Point(QPointF point)
     float turningAngle = 0.0;
     float roombasAngle = angle_; //0 - 2PI
 
-    if (roombasAngle > PI)
+    if (roombasAngle > Util::PI)
     {
-        roombasAngle -= 2*PI;
+        roombasAngle -= 2*Util::PI;
     }
 //    qDebug() << "Roombas angle in degrees: " << roombasAngle*(180/PI);
 
@@ -311,9 +312,9 @@ void IRoomba::go2Point(QPointF point)
         }
         else //calculatedAngle < 0
         {
-            if (calculatedAngle -roombasAngle < (-1*PI) )
+            if (calculatedAngle -roombasAngle < (-1*Util::PI) )
             {
-                turningAngle = calculatedAngle - roombasAngle + 2*PI;
+                turningAngle = calculatedAngle - roombasAngle + 2*Util::PI;
             }
             else
             {
@@ -325,9 +326,9 @@ void IRoomba::go2Point(QPointF point)
     {
         if (calculatedAngle >= 0)
         {
-            if ( calculatedAngle - roombasAngle > PI )
+            if ( calculatedAngle - roombasAngle > Util::PI )
             {
-                turningAngle = calculatedAngle - roombasAngle - 2*PI;
+                turningAngle = calculatedAngle - roombasAngle - 2*Util::PI;
             }
             else
             {
@@ -347,10 +348,9 @@ void IRoomba::go2Point(QPointF point)
         }
     }
 
-    // Roomba turns 1 degree in 18055 microseconds, when speed is 100
-    float tabs = abs(turningAngle*(180.0/PI));
+    float tabs = abs(turningAngle*(180.0/Util::PI));
     float distance = sqrt(pow(deltaX,2.0)+pow(deltaY,2.0));
-    int turnTime = round(tabs * 18055.0/1000.0);
+    int turnTime = round(tabs*TURNTIMEINUSFORDEG/1000.0);
     driveTime_= round(distance*100.0);
 
     qDebug() << "turningAngle: " << tabs << "ttime: " << turnTime;
@@ -362,12 +362,12 @@ void IRoomba::go2Point(QPointF point)
 
     if (turningAngle > 0) //Turn clockwise
     {
-        this->drive(100,RADTURNCW);
+        this->drive(100,Util::RADTURNCW);
 
     }
     else
     {
-        this->drive(100,RADTURNCCW);
+        this->drive(100,Util::RADTURNCCW);
     }
     QTimer::singleShot(turnTime, this, SLOT(turnTimerTimeout()));
 
@@ -409,7 +409,7 @@ void IRoomba::sensorUpdateTimerTimeout()
 void IRoomba::turnTimerTimeout()
 {
     this->drive(0,32767);
-    this->drive(100, RADSTRAIGHT);
+    this->drive(100, Util::RADSTRAIGHT);
     QTimer::singleShot(driveTime_, this, SLOT(driveTimerTimeout()));
 
 }
@@ -671,7 +671,7 @@ void IRoomba::stop()
 {
     followingPath_ = false;
     prevPReached_ = false;
-    drive(0, RADSTRAIGHT);
+    drive(0, Util::RADSTRAIGHT);
 
     path_.clear();
 

@@ -27,8 +27,8 @@ public:
     virtual void playSong( int songNumber );
     virtual char getTemperature();
     virtual unsigned short getChargeLevel();
-    virtual short getDistance();
-    virtual short getAngle();
+    virtual double getDistance();
+    virtual double getAngle();
     //virtual int getRadius();
     //virtual int getVelocity();
 

@@ -13,10 +13,6 @@
 #include <limits>
 #include "uiUtils.h"
 
-const int RADSTRAIGHT = 32768;
-const int RADTURNCW = 65535;
-const int RADTURNCCW = 1;
-
 class MainWindow;
 class MapQGraphicsView;
 

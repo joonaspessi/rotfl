@@ -156,7 +156,7 @@ void MainWindow::setRoombaStatusData(Croi::IRoomba* selectedRoomba)
                               Q_ARG(QVariant, abs(selectedRoomba->getVelocity())));
 
     QMetaObject::invokeMethod(roombaStatus_, "setDirection", Q_RETURN_ARG(QVariant, returnedValue),
-                              Q_ARG(QVariant, abs(selectedRoomba->getCurrentAngle()*180/PI)));
+                              Q_ARG(QVariant, abs(selectedRoomba->getCurrentAngle()*180/Util::PI)));
 
     QMetaObject::invokeMethod(roombaStatus_, "setOdometer", Q_RETURN_ARG(QVariant, returnedValue),
                               Q_ARG(QVariant, abs(selectedRoomba->getDistance())));
@@ -466,18 +466,18 @@ void MainWindow::keyPressEvent(QKeyEvent* event)
         }
         else
         {
-            fleetManager_->drive(velocity_horizontalSlider_->value(), RADSTRAIGHT);
+            fleetManager_->drive(velocity_horizontalSlider_->value(), Util::RADSTRAIGHT);
         }
         qDebug() << "UpArrow";
         (*flog.ts) << "UpArrow" << endl;
     }
     else if(event->key() == Qt::Key_A) {
-        fleetManager_->drive(velocity_horizontalSlider_->value(), RADTURNCCW);
+        fleetManager_->drive(velocity_horizontalSlider_->value(), Util::RADTURNCCW);
         qDebug() << "Turn clockwise";
         (*flog.ts) << "Turn clockwise" << endl;
     }
     else if(event->key() == Qt::Key_D) {
-        fleetManager_->drive(velocity_horizontalSlider_->value(), RADTURNCW);
+        fleetManager_->drive(velocity_horizontalSlider_->value(), Util::RADTURNCW);
         qDebug() << "Turn clockwise";
         (*flog.ts) << "Turn clockwise" << endl;
     }
@@ -502,14 +502,14 @@ void MainWindow::keyPressEvent(QKeyEvent* event)
         }
         else
         {
-            fleetManager_->drive(velocity_horizontalSlider_->value(),RADSTRAIGHT);
+            fleetManager_->drive(velocity_horizontalSlider_->value(),Util::RADSTRAIGHT);
         }
         qDebug() << "BackArrow";
         (*flog.ts) << "BackArrow" << endl;
     }
     else if(event->key() == Qt::Key_Q) {
         releaseKeyboard();
-        fleetManager_->drive(0, RADSTRAIGHT);
+        fleetManager_->drive(0, Util::RADSTRAIGHT);
         qDebug() << "Stop";
         (*flog.ts) << "Stop" << endl;
     }
@@ -727,7 +727,7 @@ void MainWindow::openFile(const QString &fileName)
     for (QStringList::iterator it = pois.begin(); it != pois.end(); ++it)
     {
         PoiQGraphicsEllipseItem* poi = new PoiQGraphicsEllipseItem
-                (0.0-POIWIDTH/2.0, 0.0-POIWIDTH/2.0, POIWIDTH, POIWIDTH);
+                (0.0-Util::POIWIDTH/2.0, 0.0-Util::POIWIDTH/2.0, Util::POIWIDTH, Util::POIWIDTH);
         poi->setPos((roomba_map.value(*it)).toPointF());
         poi->setFlag(QGraphicsItem::ItemIsSelectable,true);
         poi->setFlag(QGraphicsItem::ItemIsMovable,false);  // Disabled so that the mapChanged signal works as expected

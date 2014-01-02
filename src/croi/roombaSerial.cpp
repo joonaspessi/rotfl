@@ -87,12 +87,12 @@ unsigned short RoombaSerial::getChargeLevel()
 
 }
 
-short RoombaSerial::getDistance()
+double RoombaSerial::getDistance()
 {
 
 }
 
-short RoombaSerial::getAngle()
+double RoombaSerial::getAngle()
 {
     char command[2];
 

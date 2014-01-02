@@ -7,6 +7,7 @@
 #include <QMessageBox>
 #include "uiUtils.h"
 #include <limits>
+#include "croi/roombaVirtual.h"
 
 FleetManager::FleetManager(MainWindow* mainWindow, QObject *parent):
     QObject(parent), mainWindow_(mainWindow), map_(NULL)
@@ -215,9 +216,10 @@ void FleetManager::updateTimerTimeout()
 
 void FleetManager::createRoomba(PoiQGraphicsEllipseItem *startPoint)
 {
-    Croi::RoombaRoowifi* roomba = new Croi::RoombaRoowifi(startPoint, map_, this);
-    //Croi::RoombaRoowifi roomba = new Croi::RoombaSerial();
-    //TODO: Croi::RoombaRoowifi roomba = new Croi::RoombaVirtual();
+    //Croi::RoombaRoowifi* roomba = new Croi::RoombaRoowifi(startPoint, map_, this);
+    Croi::RoombaVirtual* roomba = new Croi::RoombaVirtual(startPoint, map_, this);
+    //Croi::RoombaSerial* roomba = new Croi::RoombaSerial(startPoint, map_, this);
+
     roombas_.append(roomba);
     selectedRoombas_.append(roomba);
 }
