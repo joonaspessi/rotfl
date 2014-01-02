@@ -63,6 +63,38 @@ void IRoomba::resetAngle()
     angle_ = 0.0;
 }
 
+void IRoomba::correctLocation(Util::Direction direction)
+{
+    switch (direction) {
+    case Util::Direction::W:
+        Xloc_ -= Util::ONTHEFLYCORRECTION;
+        break;
+    case Util::Direction::E:
+        Xloc_ += Util::ONTHEFLYCORRECTION;
+        break;
+    case Util::Direction::N:
+        Yloc_ -= Util::ONTHEFLYCORRECTION;
+        break;
+    case Util::Direction::S:
+        Yloc_ += Util::ONTHEFLYCORRECTION;
+        break;
+    default:
+        break;
+    }
+}
+
+void IRoomba::correctAngle(bool clockWise)
+{
+    if(clockWise)
+    {
+        angle_ += Util::ONTHEFLYCORRECTION;
+    }
+    else
+    {
+        angle_ -= Util::ONTHEFLYCORRECTION;
+    }
+}
+
 QPointF IRoomba::getLoc()
 {
     QPointF point(Xloc_, Yloc_);

@@ -779,6 +779,48 @@ void FleetManager::drive( int velocity)
     }
 }
 
+void FleetManager::correctLocation(Util::Direction direction)
+{
+    if (selectedRoombas_.empty())
+    {
+        QMessageBox::warning
+        (mainWindow_, "", tr("Please select one Roomba!"));
+    }
+    else if(selectedRoombas_.size() > 1)
+    {
+        QMessageBox::warning
+        (mainWindow_, "", tr("Please select only one Roomba!"));
+    }
+    else
+    {
+        for (int i = 0; i < selectedRoombas_.size(); ++i)
+        {
+            selectedRoombas_.at(i)->correctLocation(direction);
+        }
+    }
+}
+
+void FleetManager::correctAngle(bool clockWise)
+{
+    if (selectedRoombas_.empty())
+    {
+        QMessageBox::warning
+        (mainWindow_, "", tr("Please select one Roomba!"));
+    }
+    else if(selectedRoombas_.size() > 1)
+    {
+        QMessageBox::warning
+        (mainWindow_, "", tr("Please select only one Roomba!"));
+    }
+    else
+    {
+        for (int i = 0; i < selectedRoombas_.size(); ++i)
+        {
+            selectedRoombas_.at(i)->correctAngle(clockWise);
+        }
+    }
+}
+
 FleetManager::~FleetManager()
 {
     for (int i = 0; i < roombas_.size(); ++i)

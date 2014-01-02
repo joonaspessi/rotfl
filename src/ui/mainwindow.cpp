@@ -279,6 +279,18 @@ void MainWindow::createMapTestingDock()
     connect(unshowTraces_pushButton,SIGNAL(clicked()),this,SLOT(pushButton_unshowTraces_clicked()));
     QPushButton *resetAngle_pushButton = new QPushButton("Reset angle", this);
     connect(resetAngle_pushButton,SIGNAL(clicked()),this,SLOT(pushButton_resetAngle_clicked()));
+    QPushButton *correctLeft_pushButton = new QPushButton("Correct location to left by 2 cm", this);
+    connect(correctLeft_pushButton,SIGNAL(clicked()),this,SLOT(pushButton_correctLeft_clicked()));
+    QPushButton *correctRight_pushButton = new QPushButton("Correct location to right by 2 cm", this);
+    connect(correctRight_pushButton,SIGNAL(clicked()),this,SLOT(pushButton_correctRight_clicked()));
+    QPushButton *correctUp_pushButton = new QPushButton("Correct location to up by 2 cm", this);
+    connect(correctUp_pushButton,SIGNAL(clicked()),this,SLOT(pushButton_correctUp_clicked()));
+    QPushButton *correctDown_pushButton = new QPushButton("Correct location to down by 2 cm", this);
+    connect(correctDown_pushButton,SIGNAL(clicked()),this,SLOT(pushButton_correctDown_clicked()));
+    QPushButton *correctCw_pushButton = new QPushButton("Correct angle clockwise by 2 degrees", this);
+    connect(correctCw_pushButton,SIGNAL(clicked()),this,SLOT(pushButton_correctCw_clicked()));
+    QPushButton *correctCcw_pushButton = new QPushButton("Correct angle counterclockwise by 2 degrees", this);
+    connect(correctCcw_pushButton,SIGNAL(clicked()),this,SLOT(pushButton_correctCcw_clicked()));
 
     QHBoxLayout *mapWidth_layout = new QHBoxLayout;
     QLabel *mapWidth_label = new QLabel("Define map's width (cm):");
@@ -292,6 +304,12 @@ void MainWindow::createMapTestingDock()
     mapTesting_layout->addWidget(removeRedObjects_pushButton);
     mapTesting_layout->addWidget(unshowTraces_pushButton);
     mapTesting_layout->addWidget(resetAngle_pushButton);
+    mapTesting_layout->addWidget(correctLeft_pushButton);
+    mapTesting_layout->addWidget(correctRight_pushButton);
+    mapTesting_layout->addWidget(correctUp_pushButton);
+    mapTesting_layout->addWidget(correctDown_pushButton);
+    mapTesting_layout->addWidget(correctCw_pushButton);
+    mapTesting_layout->addWidget(correctCcw_pushButton);
     mapTesting_layout->addLayout(mapWidth_layout);
 
     QWidget *mapTestingWidget = new QWidget;
@@ -403,6 +421,36 @@ void MainWindow::pushButton_resetAngle_clicked()
 {
     fleetManager_->resetAngle();
     (*flog.ts) << "ResetAngle Button pressed." << endl;
+}
+
+void MainWindow::pushButton_correctLeft_clicked()
+{
+    fleetManager_->correctLocation(Util::Direction::W);
+}
+
+void MainWindow::pushButton_correctRight_clicked()
+{
+    fleetManager_->correctLocation(Util::Direction::E);
+}
+
+void MainWindow::pushButton_correctUp_clicked()
+{
+    fleetManager_->correctLocation(Util::Direction::N);
+}
+
+void MainWindow::pushButton_correctDown_clicked()
+{
+    fleetManager_->correctLocation(Util::Direction::S);
+}
+
+void MainWindow::pushButton_correctCw_clicked()
+{
+    fleetManager_->correctAngle(true);
+}
+
+void MainWindow::pushButton_correctCcw_clicked()
+{
+    fleetManager_->correctAngle(false);
 }
 
 void MainWindow::keyPressEvent(QKeyEvent* event)

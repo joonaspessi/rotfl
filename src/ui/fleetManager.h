@@ -65,6 +65,8 @@ public:
     void setVelocity(int velocity);
     void drive( int velocity, int radius );
     void drive( int velocity);
+    void correctLocation(Util::Direction direction);
+    void correctAngle(bool clockWise);
 
     ~FleetManager();
 

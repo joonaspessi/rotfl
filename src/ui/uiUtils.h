@@ -21,6 +21,8 @@ enum Direction {N, NE, E, SE, S, SW, W, NW};
 const unsigned int VERTICEWIDTH = 10;
 const unsigned int ROOMBAWIDTH = 34;
 const unsigned int MAPWIDTH = 400;
+const double ONTHEFLYCORRECTION = 2.0;
+
 const int POITYPE = QGraphicsItem::UserType;
 const int WALLTYPE = QGraphicsItem::UserType+1;
 

@@ -16,7 +16,6 @@ const double PI = 3.14159265;
 const double ANGLECORRECTION = 3.057;
 const double DISTANCECORRECTION = 6.1;
 
-
 class MapQGraphicsView;
 class FleetManager;
 
@@ -57,6 +56,8 @@ public:
 
     //all functions below do not need reimplementation by subclasses
     void resetAngle();
+    void correctLocation(Util::Direction direction);
+    void correctAngle(bool clockWise);
     QPointF getLoc();  //Xloc_ and Yloc_ is given as a point
     double getCurrentAngle();
     int getRadius();

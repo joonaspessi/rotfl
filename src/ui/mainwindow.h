@@ -62,6 +62,18 @@ private slots:
 
     void pushButton_resetAngle_clicked();
 
+    void pushButton_correctLeft_clicked();
+
+    void pushButton_correctRight_clicked();
+
+    void pushButton_correctUp_clicked();
+
+    void pushButton_correctDown_clicked();
+
+    void pushButton_correctCw_clicked();
+
+    void pushButton_correctCcw_clicked();
+
     void velocity_horizontalSlider_sliderMoved(int position);
 
     void pushButton_Go2POIs_clicked();
