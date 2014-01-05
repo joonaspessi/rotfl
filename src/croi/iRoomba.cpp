@@ -87,11 +87,11 @@ void IRoomba::correctAngle(bool clockWise)
 {
     if(clockWise)
     {
-        angle_ += Util::ONTHEFLYCORRECTION;
+        angle_ += Util::ONTHEFLYCORRECTION*PI/180.0;
     }
     else
     {
-        angle_ -= Util::ONTHEFLYCORRECTION;
+        angle_ -= Util::ONTHEFLYCORRECTION*PI/180.0;
     }
 }
 
