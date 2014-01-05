@@ -13,7 +13,8 @@ typedef enum {
     CURSOR,
     WALL,
     POI,
-    START
+    START,
+    STARTVIRTUAL
 }SelectedPaintTool;
 
 enum Direction {N, NE, E, SE, S, SW, W, NW};

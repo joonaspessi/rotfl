@@ -87,6 +87,7 @@ private slots:
     void action_Poi_toggled(bool toggleStatus);
 
     void action_Start_toggled(bool toggleStatus);
+    void action_StartVirtual_toggled(bool toggleStatus);
     void actionSave_triggered();
     void actionSaveAs_triggered();
     void actionOpen_triggered();

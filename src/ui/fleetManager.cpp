@@ -214,10 +214,17 @@ void FleetManager::updateTimerTimeout()
     }
 }
 
-void FleetManager::createRoomba(PoiQGraphicsEllipseItem *startPoint)
+void FleetManager::createRoomba(PoiQGraphicsEllipseItem *startPoint, bool virtualRoomba)
 {
-    //Croi::RoombaRoowifi* roomba = new Croi::RoombaRoowifi(startPoint, map_, this);
-    Croi::RoombaVirtual* roomba = new Croi::RoombaVirtual(startPoint, map_, this);
+    Croi::IRoomba *roomba;
+    if(virtualRoomba)
+    {
+        roomba = new Croi::RoombaVirtual(startPoint, map_, this);
+    }
+    else
+    {
+        roomba = new Croi::RoombaRoowifi(startPoint, map_, this);
+    }
     //Croi::RoombaSerial* roomba = new Croi::RoombaSerial(startPoint, map_, this);
 
     roombas_.append(roomba);

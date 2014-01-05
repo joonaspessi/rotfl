@@ -354,6 +354,12 @@ void MainWindow::createToolbar()
     connect(start_action,SIGNAL(toggled(bool)),this,SLOT(action_Start_toggled(bool)));
     toolbar_->addAction(start_action);
 
+    QAction* startVirtual_action = new QAction("StartVirtual", actionGroup);
+    startVirtual_action->setIcon(QIcon(":/icons/roomba_virtual_small"));
+    startVirtual_action->setCheckable(true);
+    connect(startVirtual_action,SIGNAL(toggled(bool)),this,SLOT(action_StartVirtual_toggled(bool)));
+    toolbar_->addAction(startVirtual_action);
+
     toolbar_->adjustSize();
     this->addToolBar(toolbar_);
 }
@@ -473,8 +479,8 @@ void MainWindow::keyPressEvent(QKeyEvent* event)
     }
     else if(event->key() == Qt::Key_A) {
         fleetManager_->drive(velocity_horizontalSlider_->value(), Util::RADTURNCCW);
-        qDebug() << "Turn clockwise";
-        (*flog.ts) << "Turn clockwise" << endl;
+        qDebug() << "Turn counterclockwise";
+        (*flog.ts) << "Turn counterclockwise" << endl;
     }
     else if(event->key() == Qt::Key_D) {
         fleetManager_->drive(velocity_horizontalSlider_->value(), Util::RADTURNCW);
@@ -580,6 +586,14 @@ void MainWindow::action_Start_toggled(bool toggleStatus)
     if (toggleStatus) {
         map_->setSelectedPaintTool(Util::SelectedPaintTool::START);
         (*flog.ts) << "Action Start toggled." << endl;
+    }
+}
+
+void MainWindow::action_StartVirtual_toggled(bool toggleStatus)
+{
+    if (toggleStatus) {
+        map_->setSelectedPaintTool(Util::SelectedPaintTool::STARTVIRTUAL);
+        (*flog.ts) << "Action StartVirtual toggled." << endl;
     }
 }
 

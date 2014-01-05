@@ -24,7 +24,7 @@ public:
 
     //makes new roomba, adds it to class variables and
     //also returns a pointer to the added roomba
-    void createRoomba(PoiQGraphicsEllipseItem *startPoint);
+    void createRoomba(PoiQGraphicsEllipseItem *startPoint, bool virtualRoomba);
 
     //set's the MapQGraphicsView for this class. not done in constructor
     //because map is created later (needs this class).

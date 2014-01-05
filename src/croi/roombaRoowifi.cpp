@@ -10,7 +10,7 @@ RoombaRoowifi::RoombaRoowifi(PoiQGraphicsEllipseItem *startPoint,
 {
     roowifi_ = new RooWifi(this);
     //TODO: implement own timer
-    connect(roowifi_,SIGNAL(AutoCaptureUpdated()), this, SLOT(IRoomba::sensorUpdateTimerTimeout()));
+    connect(roowifi_,SIGNAL(AutoCaptureUpdated()), qobject_cast<IRoomba*>(this), SLOT(sensorUpdateTimerTimeout()));
     IRoomba::updateState(); //call needed to have no null pointer in polygon_
 }
 

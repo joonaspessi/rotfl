@@ -72,7 +72,8 @@ void MapQGraphicsView::mousePressEvent(QMouseEvent *event)
             (*flog.ts)<< QString("Draw a POI, Adding POI with x: %1 y: %2").arg(p.x()).arg(p.y()) <<endl;
         }
     }
-    else if (selectedPaintTool_ == Util::SelectedPaintTool::START)
+    else if (selectedPaintTool_ == Util::SelectedPaintTool::START ||
+             selectedPaintTool_ == Util::SelectedPaintTool::STARTVIRTUAL)
     {
         qDebug() << "Draw a start!";
         (*flog.ts) << "Draw a start" << endl;
@@ -88,7 +89,14 @@ void MapQGraphicsView::mousePressEvent(QMouseEvent *event)
         startPoint->setFlag(QGraphicsItem::ItemIsMovable,false);
         //TODO: Add deleleting of startPoint when moving it
         scene()->addItem(startPoint);
-        fleetManager_->createRoomba(startPoint);
+        if(selectedPaintTool_ == Util::SelectedPaintTool::START)
+        {
+            fleetManager_->createRoomba(startPoint, false); //real roomba
+        }
+        else
+        {
+            fleetManager_->createRoomba(startPoint, true); //virtual roomba
+        }
     }
     // Call the base class implementation to deliver the event for QGraphicsScene
     QGraphicsView::mousePressEvent(event);

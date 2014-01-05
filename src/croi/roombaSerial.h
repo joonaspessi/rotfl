@@ -9,6 +9,7 @@ class PosixSerial;
 
 class RoombaSerial : public IRoomba
 {
+    Q_OBJECT
 
 public:
     RoombaSerial(PoiQGraphicsEllipseItem *startPoint, MapQGraphicsView* map,

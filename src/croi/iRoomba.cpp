@@ -118,6 +118,11 @@ int IRoomba::getVelocity()
     return velocity_;
 }
 
+MapQGraphicsView* IRoomba::getMap()
+{
+    return map_;
+}
+
 void IRoomba::updateState()
 {
     //subclass handles the retrieval of sensor information
@@ -178,13 +183,7 @@ void IRoomba::updateState()
 
     if (icon_ == NULL)  //first update
     {
-         // TODO: Improve icon graphics before deploying
-        QPixmap pixmap(":/icons/DEBUG_roomba_small");
-        icon_ = map_->scene()->addPixmap(pixmap);
-        icon_->setOffset(-17, -17);
-        icon_->setPos(Xloc_, Yloc_);
-        icon_->setFlag(QGraphicsItem::ItemIsSelectable, true);
-        icon_->setFlag(QGraphicsItem::ItemIsMovable,false);
+        icon_ = setIcon();
     }
     else
     {
@@ -682,6 +681,18 @@ void IRoomba::stop()
     }
     pathLines_.clear();
     destPoi_ = NULL;
+}
+
+QGraphicsPixmapItem* IRoomba::setIcon()
+{
+    // TODO: Improve icon graphics before deploying
+    QPixmap pixmap(":/icons/DEBUG_roomba_small");
+    QGraphicsPixmapItem* icon = map_->scene()->addPixmap(pixmap);
+    icon->setOffset(Util::ROOMBAWIDTH/-2.0, Util::ROOMBAWIDTH/-2.0);
+    icon->setPos(Xloc_, Yloc_);
+    icon->setFlag(QGraphicsItem::ItemIsSelectable, true);
+    icon->setFlag(QGraphicsItem::ItemIsMovable,false);
+    return icon;
 }
 
 //function for comparing vertices

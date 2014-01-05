@@ -52,6 +52,7 @@ public:
     virtual double getAngle() = 0;
     virtual bool getLeftBumb() = 0;
     virtual bool getRightBumb() = 0;
+    virtual QGraphicsPixmapItem* setIcon();
 
 
     //all functions below do not need reimplementation by subclasses
@@ -62,6 +63,7 @@ public:
     double getCurrentAngle();
     int getRadius();
     int getVelocity();
+    MapQGraphicsView* getMap();
     //this function updates the class variables to represent actual roomba.
     //It's called in regular intervals in timer timeouts.
     void updateState();
@@ -92,7 +94,7 @@ public:
 signals:
     void stateUpdate();
 
-protected slots:
+public slots:
     //updateState is now called. Also, if IRoomba is following a path, it
     //gives new go2Point() calls and updates bools as necessary
     void sensorUpdateTimerTimeout();

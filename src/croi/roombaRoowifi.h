@@ -8,6 +8,8 @@ namespace Croi {
 
 class RoombaRoowifi : public IRoomba
 {
+    Q_OBJECT
+
 public:
     RoombaRoowifi(PoiQGraphicsEllipseItem *startPoint, MapQGraphicsView* map,
                   FleetManager *parent = NULL);

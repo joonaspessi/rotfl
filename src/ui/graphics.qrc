@@ -7,9 +7,11 @@
         <file alias="clear_hand">graphics/Pointer_hand_icon.png</file>
         <file alias="roomba_big">graphics/Roomba_round_icon_big.png</file>
         <file alias="roomba_small">graphics/Roomba_round_icon_small.png</file>
+        <file alias="roomba_virtual_small">graphics/RoombaVirtual_round_icon_small.png</file>
         <file alias="wall1">graphics/brick-wall-icon.png</file>
         <file alias="wall2">graphics/wall_red.png</file>
         <file alias="DEBUG_roomba_small">graphics/DEBUG_Roomba_round_icon_small.png</file>
+        <file alias="DEBUG_roomba_virtual_small">graphics/DEBUG_RoombaVirtual_round_icon_small.png</file>
     </qresource>
     <qresource prefix="/widgets">
         <file alias="gauges">qml/gauges.qml</file>
