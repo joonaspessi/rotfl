@@ -126,28 +126,28 @@ MapQGraphicsView* IRoomba::getMap()
 void IRoomba::updateState()
 {
     //subclass handles the retrieval of sensor information
-    int distance = getDistance();
-    int angle = getAngle();
+    double distance = getDistance();
+    double angle = getAngle();
     bool leftBump = getLeftBumb();
     bool rightBump = getRightBumb();
 
     //angle for distance calculation
-    double angleForDist = angle_-static_cast<double>(angle)*Util::PI*ANGLECORRECTION/180.0;
+    double angleForDist = angle_-angle*Util::PI*ANGLECORRECTION/180.0;
     //distance changed to cm
-    double dist = -static_cast<double>(distance)/10.0*DISTANCECORRECTION;
+    double dist = -distance/10.0*DISTANCECORRECTION;
     //special radiuses mean no adaptation needed
     if (radius_ != 32768 && radius_ != 32767 && radius_ != -1 && radius_ != 1)
     {
         //corrected distance (and change to cm)
         dist = -2.0*(static_cast<double>(radius_))*
-                sin(static_cast<double>(distance)/radius_/2)/10.0*DISTANCECORRECTION;
+                sin(distance/radius_/2)/10.0*DISTANCECORRECTION;
         //corrected angle in radians for distance calculation
-        //angleForDist = static_cast<double>(angle)*PI/180.0*ANGLECORRECTION/2.0;
-        //other version that doesn't work curently
-        angleForDist = angle_-static_cast<double>(distance)/radius_/2.0;
+        //angleForDist = angle*PI/180.0*ANGLECORRECTION/2.0;
+        //other version
+        angleForDist = angle_-distance/radius_/2.0;
     }
     //real angle (always used for roomba's angle)
-    angle_ -= static_cast<double>(angle)*Util::PI*ANGLECORRECTION/180.0;
+    angle_ -= angle*Util::PI*ANGLECORRECTION/180.0;
     //qDebug() << "Roomba's angle in degrees: " << angle_*(180/PI);
     angle_ = fmod(angle_, 2.0*Util::PI);
     if (angle_ < 0)
@@ -160,9 +160,9 @@ void IRoomba::updateState()
     double x = Xloc_+cos(angleForDist)*dist;
     double y = Yloc_+sin(angleForDist)*dist;
 
-    if (Xloc_ != x || Yloc_ != y)
+    if(round(Xloc_) != round(x) || round(Yloc_) != round(y))
     {
-        //new piece of trace is created (polygon_ set as parent)
+        //new piece of trace is created
         QGraphicsLineItem* traceL = new QGraphicsLineItem
                 (Xloc_, Yloc_, x, y);
         QPen linePen(Qt::GlobalColor::gray);
