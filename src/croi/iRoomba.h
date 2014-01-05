@@ -118,14 +118,9 @@ private:
 
     PoiQGraphicsEllipseItem *startPoint_;
     MapQGraphicsView *map_;
-    //roombas triangle is stored in this.
-    //TODO: make better icon
-    QGraphicsPolygonItem *polygon_;
     //ICON
     QGraphicsPixmapItem *icon_;
 
-    //roomba's speedvector
-    QGraphicsLineItem* curSpeed_;
     //roombas traces are shown here
     QVector<QGraphicsLineItem*> traces_;
     bool traceShown_;

@@ -15,9 +15,9 @@ namespace Croi {
 IRoomba::IRoomba(PoiQGraphicsEllipseItem *startPoint, MapQGraphicsView *map,
                  FleetManager* parent):
     QObject(parent),
-    startPoint_(startPoint), map_(map), polygon_(NULL), icon_(NULL),
-    curSpeed_(NULL), Xloc_(startPoint->x()), Yloc_(startPoint->y()), angle_(0.0),
-    radius_(Util::RADSTRAIGHT), velocity_(0), traceShown_(true), isReady_(false), driveTime_(0),
+    startPoint_(startPoint), map_(map), icon_(NULL), Xloc_(startPoint->x()),
+    Yloc_(startPoint->y()), angle_(0.0), radius_(Util::RADSTRAIGHT),
+    velocity_(0), traceShown_(true), isReady_(false), driveTime_(0),
     followingPath_(false), prevPReached_(false), destPoi_(NULL)
 {
 }
