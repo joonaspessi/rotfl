@@ -33,7 +33,7 @@ void MapQGraphicsView::mousePressEvent(QMouseEvent *event)
         setDragMode(QGraphicsView::NoDrag);
         qDebug() << "Start a wall!";
         wallToBeAdded_ = new WallQGraphicsLineItem
-                (p.x(), p.y(), p.x(), p.y());
+                (fleetManager_, p.x(), p.y(), p.x(), p.y());
         wallToBeAddedStartPoint_ = new QPointF(p.x(), p.y());
         scene()->addItem(wallToBeAdded_);
 

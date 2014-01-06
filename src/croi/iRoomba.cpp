@@ -203,7 +203,7 @@ void IRoomba::updateState()
         QPointF r (Xloc_+cos(tempAngle)*17, Yloc_+sin(tempAngle)*17);
         FleetManager *fleetManager = qobject_cast<FleetManager*>(parent());
         WallQGraphicsLineItem* bumbed = new WallQGraphicsLineItem
-                                            (l.x(), l.y(), r.x(), r.y());
+                                            (fleetManager, l.x(), l.y(), r.x(), r.y());
         map_->scene()->addItem(bumbed);
         fleetManager->addWall(bumbed);
     }

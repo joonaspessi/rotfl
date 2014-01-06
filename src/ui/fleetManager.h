@@ -34,6 +34,7 @@ public:
     std::set<WallQGraphicsLineItem*> getWalls();
     std::set<PoiQGraphicsEllipseItem *> getPOIs();
     void removePoi(PoiQGraphicsEllipseItem* poi);
+    void removeWall(WallQGraphicsLineItem* wall);
     //removes all selected objects except roombas and startPoints
     void removeRedObjects();
     void removeAllObjects();
@@ -73,7 +74,6 @@ public slots:
 
 private:
 
-    void removeWall(WallQGraphicsLineItem* wall);
     //returns false is no roomba is ready to
     //go to a POI
     bool go2Poi(PoiQGraphicsEllipseItem *poi);

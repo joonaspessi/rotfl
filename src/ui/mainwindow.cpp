@@ -720,7 +720,8 @@ void MainWindow::openFile(const QString &fileName)
 
     for (QStringList::iterator it = walls.begin(); it != walls.end(); ++it)
     {
-        WallQGraphicsLineItem* wall = new WallQGraphicsLineItem((roomba_map.value(*it)).toLineF().x1(),
+        WallQGraphicsLineItem* wall = new WallQGraphicsLineItem(fleetManager_,
+                                                                (roomba_map.value(*it)).toLineF().x1(),
                                                                 (roomba_map.value(*it)).toLineF().y1(),
                                                                 (roomba_map.value(*it)).toLineF().x2(),
                                                                 (roomba_map.value(*it)).toLineF().y2());
