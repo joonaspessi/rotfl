@@ -77,7 +77,6 @@ MainWindow::MainWindow(QWidget *parent) :
     map_ = new MapQGraphicsView(fleetManager_, this);
     map_->setScene(new QGraphicsScene(QRect(0,0,Util::MAPWIDTH,Util::MAPWIDTH), this));
     map_->centerOn(0,0);
-    map_->setMapWidth(Util::MAPWIDTH);
     fleetManager_->setMap(map_);
     setCentralWidget(map_);
     centralWidget()->setFixedWidth(Util::MAPWIDTH+2);
@@ -118,12 +117,6 @@ MainWindow::MainWindow(QWidget *parent) :
     createToolbar();
 
     setCurrentFile("");
-
-    //show the default real world width of map in cm
-    mapWidth_lineEdit_->setText(QString::number(map_->getMapWidth()));
-    // TODO: Height in this one?
-    //show the default real world width of map in cm
-    //    mapWidth_lineEdit_->setText(QString::number(map_->giveMapWidth()));
 
     // TODO: Improve this to NOT trigger on start
     connect(map_,SIGNAL(mapChanged()),this,SLOT(mapModified()));
@@ -292,14 +285,16 @@ void MainWindow::createMapTestingDock()
     QPushButton *correctCcw_pushButton = new QPushButton("Correct angle counterclockwise by 2 degrees", this);
     connect(correctCcw_pushButton,SIGNAL(clicked()),this,SLOT(pushButton_correctCcw_clicked()));
 
-    QHBoxLayout *mapWidth_layout = new QHBoxLayout;
-    QLabel *mapWidth_label = new QLabel("Define map's width (cm):");
-    mapWidth_lineEdit_ = new QLineEdit("");
-    QPushButton *mapWidth_pushButton = new QPushButton("Ok", this);
-    connect(mapWidth_pushButton,SIGNAL(clicked()),this,SLOT(pushButton_mapWidth_clicked()));
-    mapWidth_layout->addWidget(mapWidth_label);
-    mapWidth_layout->addWidget(mapWidth_lineEdit_);
-    mapWidth_layout->addWidget(mapWidth_pushButton);
+    QHBoxLayout *mapScale_layout = new QHBoxLayout;
+    QLabel *mapScale_label = new QLabel("Zoom factor:");
+    mapScale_horizontalSlider_ = new QSlider(Qt::Horizontal);
+    mapScale_horizontalSlider_->setMinimum(10);
+    mapScale_horizontalSlider_->setMaximum(100);
+    connect(mapScale_horizontalSlider_,SIGNAL(valueChanged(int)),this,SLOT(mapScale_horizontalSlider_sliderMoved(int)));
+    mapScaleValue_label_ = new QLabel("1.0");
+    mapScale_layout->addWidget(mapScale_label);
+    mapScale_layout->addWidget(mapScale_horizontalSlider_);
+    mapScale_layout->addWidget(mapScaleValue_label_);
 
     mapTesting_layout->addWidget(removeRedObjects_pushButton);
     mapTesting_layout->addWidget(unshowTraces_pushButton);
@@ -310,7 +305,7 @@ void MainWindow::createMapTestingDock()
     mapTesting_layout->addWidget(correctDown_pushButton);
     mapTesting_layout->addWidget(correctCw_pushButton);
     mapTesting_layout->addWidget(correctCcw_pushButton);
-    mapTesting_layout->addLayout(mapWidth_layout);
+    mapTesting_layout->addLayout(mapScale_layout);
 
     QWidget *mapTestingWidget = new QWidget;
     mapTestingWidget->setLayout(mapTesting_layout);
@@ -539,10 +534,10 @@ void MainWindow::velocity_horizontalSlider_sliderMoved(int position)
     fleetManager_->setVelocity(position);
 }
 
-void MainWindow::pushButton_mapWidth_clicked()
+void MainWindow::mapScale_horizontalSlider_sliderMoved(int position)
 {
-    map_->setMapWidth(mapWidth_lineEdit_->text().toInt());
-    (*flog.ts) << "Map width Button pressed." << endl;
+    mapScaleValue_label_->setText(QString::number(position/10.0));
+    map_->setmapScale(position/10.0);
 }
 
 void MainWindow::pushButton_Go2POIs_clicked()

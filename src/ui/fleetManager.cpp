@@ -28,13 +28,12 @@ void FleetManager::setMap(MapQGraphicsView* map)
 {
     map_ = map;
     //map's width in vertices
-    unsigned int mapW = map_->getMapWidth()/Util::VERTICEWIDTH;
 
     //creating vertices (with all values set to zero)
     QVector<Util::Vertice*> verticeRow;
-    for(unsigned int i = 0; i < mapW; ++i)
+    for(unsigned int i = 0; i < Util::MAPWIDTH/Util::VERTICEWIDTH; ++i)
     {
-        for(unsigned int j = 0; j < mapW; ++j)
+        for(unsigned int j = 0; j < Util::MAPWIDTH/Util::VERTICEWIDTH; ++j)
         {
             verticeRow.append(new Util::Vertice());
         }
@@ -92,7 +91,7 @@ void FleetManager::setMap(MapQGraphicsView* map)
         vertices_.at(i).at(vertices_.size()-1)->e = vertices_.at(i+1).at(vertices_.size()-1);
     }
     //setting vertices from 0,1 to 0,last-1
-    for(unsigned int i = 1; i < vertices_.size()-1; ++i)
+    for(unsigned int i = 1; i < vertices_.at(0).size()-1; ++i)
     {
         vertices_.at(0).at(i)->topLeftY = Util::VERTICEWIDTH*i;
         vertices_.at(0).at(i)->pos.setY(Util::VERTICEWIDTH*i+Util::VERTICEWIDTH/2.0);
@@ -103,7 +102,7 @@ void FleetManager::setMap(MapQGraphicsView* map)
         vertices_.at(0).at(i)->s = vertices_.at(0).at(i+1);
     }
     //setting vertices from last,1 to last,last-1
-    for(unsigned int i = 1; i < vertices_.size()-1; ++i)
+    for(unsigned int i = 1; i < vertices_.at(0).size()-1; ++i)
     {
         vertices_.at(vertices_.size()-1).at(i)->topLeftX = Util::VERTICEWIDTH*(vertices_.size()-1);
         vertices_.at(vertices_.size()-1).at(i)->topLeftY = Util::VERTICEWIDTH*i;
@@ -121,7 +120,7 @@ void FleetManager::setMap(MapQGraphicsView* map)
     for(unsigned int i = 1; i < vertices_.size()-1; ++i)
     {
         QVector<Util::Vertice*> verticeRow;
-        for(unsigned int j = 1; j < vertices_.size()-1; ++j)
+        for(unsigned int j = 1; j < vertices_.at(0).size()-1; ++j)
         {
             vertices_.at(i).at(j)->topLeftX = Util::VERTICEWIDTH*i;
             vertices_.at(i).at(j)->topLeftY = Util::VERTICEWIDTH*j;
@@ -144,7 +143,7 @@ void FleetManager::setMap(MapQGraphicsView* map)
     for(unsigned int i = 0; i < vertices_.size(); ++i)
     {
         QVector<Util::Vertice*> verticeRow;
-        for(unsigned int j = 0; j < vertices_.size(); ++j)
+        for(unsigned int j = 0; j < vertices_.at(0).size(); ++j)
         {
             map_->scene()->addLine(vertices_.at(i).at(j)->topLeftX, vertices_.at(i).at(j)->topLeftY,
                                    vertices_.at(i).at(j)->topLeftX+Util::VERTICEWIDTH-1,

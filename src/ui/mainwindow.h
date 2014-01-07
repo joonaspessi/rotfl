@@ -58,8 +58,6 @@ private slots:
 
     void pushButton_unshowTraces_clicked();
 
-    void pushButton_mapWidth_clicked();
-
     void pushButton_resetAngle_clicked();
 
     void pushButton_correctLeft_clicked();
@@ -75,6 +73,8 @@ private slots:
     void pushButton_correctCcw_clicked();
 
     void velocity_horizontalSlider_sliderMoved(int position);
+
+    void mapScale_horizontalSlider_sliderMoved(int position);
 
     void pushButton_Go2POIs_clicked();
 
@@ -115,11 +115,12 @@ private:
     QLineEdit *ipLineEdit_3_;
     QLineEdit *ipLineEdit_4_;
     QLabel *velocityValue_label_;
+    QLabel *mapScaleValue_label_;
     QLabel *temperature_label_;
     QLabel *chargeLevel_label_;
     QLabel *rmbPosition_label_;
     QSlider *velocity_horizontalSlider_;
-    QLineEdit *mapWidth_lineEdit_;
+    QSlider *mapScale_horizontalSlider_;
     QDockWidget *connection_dockWidget_;
     QDockWidget *status_dockWidget_;
     QDockWidget *action_dockWidget_;
