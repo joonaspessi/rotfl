@@ -21,82 +21,85 @@ MapQGraphicsView::MapQGraphicsView(FleetManager* fleetManager, QWidget* parent) 
 
 void MapQGraphicsView::mousePressEvent(QMouseEvent *event)
 {
-    QPointF p = mapToScene(event->pos());
-    if (selectedPaintTool_ == Util::SelectedPaintTool::CURSOR)
+    if (event->button()==Qt::LeftButton)
     {
-        setDragMode(QGraphicsView::RubberBandDrag);
-        qDebug() << "Draw a cursor!";
-        (*flog.ts) << "Draw a cursor!" << endl;
-    }
-    else if (selectedPaintTool_ == Util::SelectedPaintTool::WALL)
-    {
-        setDragMode(QGraphicsView::NoDrag);
-        qDebug() << "Start a wall!";
-        wallToBeAdded_ = new WallQGraphicsLineItem
-                (fleetManager_, p.x(), p.y(), p.x(), p.y());
-        wallToBeAddedStartPoint_ = new QPointF(p.x(), p.y());
-        scene()->addItem(wallToBeAdded_);
-
-        // Add textual coordinates to the beginning of the wall line
-        wallToBeAddedStartPointText_ = new QGraphicsSimpleTextItem("X: " + QString::number(p.x()*Util::COORDCORRECTION) +
-                                                                   " Y: " +  QString::number(p.y()*Util::COORDCORRECTION));
-        wallToBeAddedStartPointText_->setPos(p);
-        wallToBeAddedStartPointText_->setZValue(5);
-        QBrush wallToBeAddedStartPointBrush(Qt::GlobalColor::blue);
-        wallToBeAddedStartPointText_->setBrush(wallToBeAddedStartPointBrush);
-        scene()->addItem(wallToBeAddedStartPointText_);
-
-        qDebug() << "Pos: " << p.x() << "y: "<< p.y();
-        (*flog.ts)<< QString("Start a wall @ x: %1 y: %2").arg(p.x()).arg(p.y()) <<endl;
-    }
-    else if (selectedPaintTool_ == Util::SelectedPaintTool::POI)
-    {
-        if(fleetManager_->isBlocked(&p))
+        QPointF p = mapToScene(event->pos());
+        if (selectedPaintTool_ == Util::SelectedPaintTool::CURSOR)
         {
-            QMessageBox::warning
-                (parentWidget(), "", tr("POI must be inserted further away from wall!"));
+            setDragMode(QGraphicsView::RubberBandDrag);
+            qDebug() << "Draw a cursor!";
+            (*flog.ts) << "Draw a cursor!" << endl;
         }
-        else
+        else if (selectedPaintTool_ == Util::SelectedPaintTool::WALL)
         {
-            qDebug() << "Draw a poi!";
             setDragMode(QGraphicsView::NoDrag);
-            PoiQGraphicsEllipseItem* poi = new PoiQGraphicsEllipseItem
-                    (0.0-Util::POIWIDTH/2.0, 0.0-Util::POIWIDTH/2.0, Util::POIWIDTH, Util::POIWIDTH);
-            poi->setPos(p);
-            poi->setFlag(QGraphicsItem::ItemIsSelectable,true);
-            poi->setFlag(QGraphicsItem::ItemIsMovable,false); // Disabled so that the mapChanged signal works as expected
-            scene()->addItem(poi);
-            fleetManager_->addPoi(poi);
-            qDebug() << "Adding POI with x: " << poi->scenePos().x()
-                     << " , y: " << poi->scenePos().y();
-            emit mapChanged();
-            (*flog.ts)<< QString("Draw a POI, Adding POI with x: %1 y: %2").arg(p.x()).arg(p.y()) <<endl;
+            qDebug() << "Start a wall!";
+            wallToBeAdded_ = new WallQGraphicsLineItem
+                    (fleetManager_, p.x(), p.y(), p.x(), p.y());
+            wallToBeAddedStartPoint_ = new QPointF(p.x(), p.y());
+            scene()->addItem(wallToBeAdded_);
+
+            // Add textual coordinates to the beginning of the wall line
+            wallToBeAddedStartPointText_ = new QGraphicsSimpleTextItem("X: " + QString::number(p.x()*Util::COORDCORRECTION) +
+                                                                       " Y: " +  QString::number(p.y()*Util::COORDCORRECTION));
+            wallToBeAddedStartPointText_->setPos(p);
+            wallToBeAddedStartPointText_->setZValue(5);
+            QBrush wallToBeAddedStartPointBrush(Qt::GlobalColor::blue);
+            wallToBeAddedStartPointText_->setBrush(wallToBeAddedStartPointBrush);
+            scene()->addItem(wallToBeAddedStartPointText_);
+
+            qDebug() << "Pos: " << p.x() << "y: "<< p.y();
+            (*flog.ts)<< QString("Start a wall @ x: %1 y: %2").arg(p.x()).arg(p.y()) <<endl;
         }
-    }
-    else if (selectedPaintTool_ == Util::SelectedPaintTool::START ||
-             selectedPaintTool_ == Util::SelectedPaintTool::STARTVIRTUAL)
-    {
-        qDebug() << "Draw a start!";
-        (*flog.ts) << "Draw a start" << endl;
-        setDragMode(QGraphicsView::NoDrag);
-        PoiQGraphicsEllipseItem *startPoint = new PoiQGraphicsEllipseItem
-                (0.0-Util::POIWIDTH*2.0/3.0, 0.0-Util::POIWIDTH*2.0/3.0,
-                 Util::POIWIDTH*4.0/3.0, Util::POIWIDTH*4.0/3.0);
-        startPoint->setPos(p);
-        QBrush brush(Qt::GlobalColor::green);
-        startPoint->setBrush(brush);
-        startPoint->setFlag(QGraphicsItem::ItemIsSelectable,true);
-        //movable needs additional logic before allowing
-        startPoint->setFlag(QGraphicsItem::ItemIsMovable,false);
-        //TODO: Add deleleting of startPoint when moving it
-        scene()->addItem(startPoint);
-        if(selectedPaintTool_ == Util::SelectedPaintTool::START)
+        else if (selectedPaintTool_ == Util::SelectedPaintTool::POI)
         {
-            fleetManager_->createRoomba(startPoint, false); //real roomba
+            if(fleetManager_->isBlocked(&p))
+            {
+                QMessageBox::warning
+                        (parentWidget(), "", tr("POI must be inserted further away from wall!"));
+            }
+            else
+            {
+                qDebug() << "Draw a poi!";
+                setDragMode(QGraphicsView::NoDrag);
+                PoiQGraphicsEllipseItem* poi = new PoiQGraphicsEllipseItem
+                        (0.0-Util::POIWIDTH/2.0, 0.0-Util::POIWIDTH/2.0, Util::POIWIDTH, Util::POIWIDTH);
+                poi->setPos(p);
+                poi->setFlag(QGraphicsItem::ItemIsSelectable,true);
+                poi->setFlag(QGraphicsItem::ItemIsMovable,false); // Disabled so that the mapChanged signal works as expected
+                scene()->addItem(poi);
+                fleetManager_->addPoi(poi);
+                qDebug() << "Adding POI with x: " << poi->scenePos().x()
+                         << " , y: " << poi->scenePos().y();
+                emit mapChanged();
+                (*flog.ts)<< QString("Draw a POI, Adding POI with x: %1 y: %2").arg(p.x()).arg(p.y()) <<endl;
+            }
         }
-        else
+        else if (selectedPaintTool_ == Util::SelectedPaintTool::START ||
+                 selectedPaintTool_ == Util::SelectedPaintTool::STARTVIRTUAL)
         {
-            fleetManager_->createRoomba(startPoint, true); //virtual roomba
+            qDebug() << "Draw a start!";
+            (*flog.ts) << "Draw a start" << endl;
+            setDragMode(QGraphicsView::NoDrag);
+            PoiQGraphicsEllipseItem *startPoint = new PoiQGraphicsEllipseItem
+                    (0.0-Util::POIWIDTH*2.0/3.0, 0.0-Util::POIWIDTH*2.0/3.0,
+                     Util::POIWIDTH*4.0/3.0, Util::POIWIDTH*4.0/3.0);
+            startPoint->setPos(p);
+            QBrush brush(Qt::GlobalColor::green);
+            startPoint->setBrush(brush);
+            startPoint->setFlag(QGraphicsItem::ItemIsSelectable,true);
+            //movable needs additional logic before allowing
+            startPoint->setFlag(QGraphicsItem::ItemIsMovable,false);
+            //TODO: Add deleleting of startPoint when moving it
+            scene()->addItem(startPoint);
+            if(selectedPaintTool_ == Util::SelectedPaintTool::START)
+            {
+                fleetManager_->createRoomba(startPoint, false); //real roomba
+            }
+            else
+            {
+                fleetManager_->createRoomba(startPoint, true); //virtual roomba
+            }
         }
     }
     // Call the base class implementation to deliver the event for QGraphicsScene
@@ -105,6 +108,7 @@ void MapQGraphicsView::mousePressEvent(QMouseEvent *event)
 
 void MapQGraphicsView::mouseMoveEvent(QMouseEvent *event)
 {
+    // event->button() returns always Qt::NoButton for mouse move events, so button check is not needed
     if (wallToBeAddedStartPoint_ != NULL)
     {
         QPointF p = mapToScene(event->pos());
@@ -144,26 +148,27 @@ void MapQGraphicsView::mouseMoveEvent(QMouseEvent *event)
 
 void MapQGraphicsView::mouseReleaseEvent(QMouseEvent *event)
 {
-    Q_UNUSED(event);
-
-    if (selectedPaintTool_ == Util::SelectedPaintTool::WALL)
+    if (event->button()==Qt::LeftButton)
     {
-        wallToBeAdded_->setFlag(QGraphicsItem::ItemIsSelectable,true);
-        wallToBeAdded_->setFlag(QGraphicsItem::ItemIsMovable,false); // Disabled so that the mapChanged signal works as expected
-        fleetManager_->addWall(wallToBeAdded_);
-        if(fleetManager_->removeBlockedPois())  //POIs blocked by the wall are removed
+        if (selectedPaintTool_ == Util::SelectedPaintTool::WALL)
         {
-            QMessageBox::warning
-                (parentWidget(), "", tr("POIs too close to the wall were removed"));
+            wallToBeAdded_->setFlag(QGraphicsItem::ItemIsSelectable,true);
+            wallToBeAdded_->setFlag(QGraphicsItem::ItemIsMovable,false); // Disabled so that the mapChanged signal works as expected
+            fleetManager_->addWall(wallToBeAdded_);
+            if(fleetManager_->removeBlockedPois())  //POIs blocked by the wall are removed
+            {
+                QMessageBox::warning
+                        (parentWidget(), "", tr("POIs too close to the wall were removed"));
+            }
+            wallToBeAdded_ = NULL;
+            delete wallToBeAddedStartPoint_;
+            wallToBeAddedStartPoint_ = NULL;
+            delete wallToBeAddedStartPointText_;
+            wallToBeAddedStartPointText_ = NULL;
+            delete wallToBeAddedEndPointText_;
+            wallToBeAddedEndPointText_ = NULL;
+            emit mapChanged();
         }
-        wallToBeAdded_ = NULL;
-        delete wallToBeAddedStartPoint_;
-        wallToBeAddedStartPoint_ = NULL;
-        delete wallToBeAddedStartPointText_;
-        wallToBeAddedStartPointText_ = NULL;
-        delete wallToBeAddedEndPointText_;
-        wallToBeAddedEndPointText_ = NULL;
-        emit mapChanged();
     }
     // Call the base class implementation to deliver the event for QGraphicsScene
     QGraphicsView::mouseReleaseEvent(event);
