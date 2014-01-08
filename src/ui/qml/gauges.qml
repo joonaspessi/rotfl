@@ -27,6 +27,11 @@ Item {
         return true;
     }
 
+    function setDistance(totalDistance) {
+        speedgauge.setSpeedGaugeDistance(totalDistance);
+        return true;
+    }
+
     function setDirection(direction) {
         //onsole.log(direction);
         directiongauge.setDirection(direction);
@@ -34,9 +39,9 @@ Item {
         return true;
     }
 
-    function setOdometer(deltaDistance) {
+    function setTemperature(temperature) {
         //console.log(deltaDistance);
-        odometergauge.setDistance(deltaDistance);
+        thermogauge.setTemperature(temperature);
     }
 
 
@@ -54,6 +59,11 @@ Item {
         function setSpeedGauge(speed) {
             speedText.text = speed + ' cm/s';
             speedgauge.needleangle = needlezero + ((needlezero*-1 + needle100)/100 )*speed;
+        }
+
+        function setSpeedGaugeDistance(distance) {
+            distanceText.text = distance + ' m';
+
         }
 
         Image {
@@ -112,11 +122,19 @@ Item {
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.horizontalCenterOffset: 1
             color : "white"
-            text: "50 cm/s"
+            text: "- cm/s"
+        }
+        Text {
+            id: distanceText
+            anchors.top: parent.top
+            anchors.topMargin: parent.width*0.76
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.horizontalCenterOffset: 1
+            color : "white"
+            text: "- m"
         }
 
     }
-
 
     Rectangle {
         id: directiongauge
@@ -192,12 +210,12 @@ Item {
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.horizontalCenterOffset: 1
             color : "white"
-            text: "45 Deg"
+            text: "- Deg"
         }
     }
 
     Rectangle {
-        id: odometergauge
+        id: thermogauge
         color: "transparent"
         width: 180
         height: 180
@@ -205,25 +223,22 @@ Item {
         anchors.bottomMargin : 4
         anchors.right: parent.right
         anchors.rightMargin: 21
-        property int distance : 0
+        property int temperature : 0
+        property int needlezero : -115
+        property int needle100 : 115
+        property int needleangle : needlezero
 
-        function setDistance(deltaDistance) {
+        function setTemperature(temperature) {
 
-            odometergauge.distance += deltaDistance;
+            thermogauge.temperature = temperature;
 
-
-            var tempangle = odometermeter.angle + 360/30*deltaDistance;
-            odometermeter.angle = tempangle;
+            temperaturemeter.angle = needlezero + 2*((needlezero*-1 + needle100)/100 )*temperature;
             return true;
-
-
         }
-
-
 
         Image {
             anchors.fill: parent
-            source: "odometer"
+            source: "thermometer"
             sourceSize.width: 200
             sourceSize.height: 200
         }
@@ -238,7 +253,7 @@ Item {
 
             transform:
                 Rotation {
-                id:odometermeter
+                id:temperaturemeter
                 // Transform origin is the middle point of the lower border
                 origin {
                     x: 14
@@ -246,7 +261,7 @@ Item {
                 }
 
                 //angle: -117
-                angle: 0
+                angle: thermogauge.needleangle
                 Behavior on angle { SpringAnimation { spring: 10; damping: 0.1 } }
             }
         }
@@ -254,7 +269,7 @@ Item {
             anchors.fill: parent
             onClicked: {
 
-                odometermeter.angle += 360/30;
+                thermogauge.setTemperature(thermogauge.temperature + 10);
             }
         }
         Text {
@@ -263,16 +278,16 @@ Item {
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.horizontalCenterOffset: 1
             color : "white"
-            text: "odometer"
+            text: "Temperature"
         }
         Text {
-            id : odometerdistanceText;
+            id : temperatureText;
             anchors.top: parent.top
             anchors.topMargin: parent.width*0.67
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.horizontalCenterOffset: 1
             color : "white"
-            text: odometergauge.distance + ' mm';
+            text: thermogauge.temperature + ' C';
         }
     }
 

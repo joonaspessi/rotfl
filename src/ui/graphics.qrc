@@ -20,5 +20,6 @@
         <file alias="defaultgauge">graphics/defaultgauge.png</file>
         <file alias="needle">graphics/needleminicrop.png</file>
         <file alias="odometer">graphics/odometer.png</file>
+        <file alias="thermometer">graphics/thermometer.png</file>
     </qresource>
 </RCC>

@@ -99,15 +99,12 @@ MainWindow::MainWindow(QWidget *parent) :
     container->setFocusPolicy(Qt::TabFocus);
     qmlview->setSource(QUrl("qrc:/widgets/gauges"));
 
-
-    QDockWidget *widgetti = new QDockWidget(tr("dashboard"), this);
+    QDockWidget *widgetti = new QDockWidget(tr("gauges"), this);
     widgetti->setWidget(container);
     addDockWidget(Qt::RightDockWidgetArea,widgetti);
 
      roombaStatus_ = qmlview->rootObject();
-
-
-    //End of qml
+    //End of QML
 
     tabifyDockWidget(status_dockWidget_,action_dockWidget_);
     tabifyDockWidget(action_dockWidget_,mapTesting_dockWidget_);
@@ -152,7 +149,10 @@ void MainWindow::setRoombaStatusData(Croi::IRoomba* selectedRoomba)
     QMetaObject::invokeMethod(roombaStatus_, "setDirection", Q_RETURN_ARG(QVariant, returnedValue),
                               Q_ARG(QVariant, abs(selectedRoomba->getCurrentAngle()*180/Util::PI)));
 
-    QMetaObject::invokeMethod(roombaStatus_, "setOdometer", Q_RETURN_ARG(QVariant, returnedValue),
+    QMetaObject::invokeMethod(roombaStatus_, "setTemperature", Q_RETURN_ARG(QVariant, returnedValue),
+                              Q_ARG(QVariant, abs(selectedRoomba->getTemperature())));
+
+    QMetaObject::invokeMethod(roombaStatus_, "setDistance", Q_RETURN_ARG(QVariant, returnedValue),
                               Q_ARG(QVariant, abs(selectedRoomba->getDistance())));
 
 }
