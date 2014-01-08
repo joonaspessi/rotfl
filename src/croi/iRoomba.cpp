@@ -17,7 +17,7 @@ IRoomba::IRoomba(PoiQGraphicsEllipseItem *startPoint, MapQGraphicsView *map,
     startPoint_(startPoint), map_(map), icon_(NULL), Xloc_(startPoint->x()),
     Yloc_(startPoint->y()), angle_(0.0), radius_(Util::RADSTRAIGHT),
     velocity_(0), traceShown_(true), isReady_(false), driveTime_(0),
-    followingPath_(false), prevPReached_(false), destPoi_(NULL)
+    followingPath_(false), prevPReached_(false), destPoi_(NULL), totalDistance_(0)
 {
 }
 
