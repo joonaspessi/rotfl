@@ -50,7 +50,7 @@ void IRoomba::drive( int velocity)
 
 double IRoomba::getTotalDistance()
 {
-    return totalDistance_;
+    return totalDistance_/100;
 }
 
 PoiQGraphicsEllipseItem* IRoomba::getStartPoint()
