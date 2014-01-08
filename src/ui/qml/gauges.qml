@@ -99,11 +99,11 @@ Item {
             anchors.fill: parent
             onClicked: {
                 //rot.angle = (speedgauge.needle100 + -1*(speedgauge.needlezero))*0.85 + speedgauge.needlezero
-                rot.angle += 10;
+//                rot.angle += 10;
 
-                if(rot.angle >= speedgauge.needle100) {
-                    rot.angle = speedgauge.needlezero;
-                }
+//                if(rot.angle >= speedgauge.needle100) {
+//                    rot.angle = speedgauge.needlezero;
+//                }
             }
         }
 
@@ -191,7 +191,7 @@ Item {
         MouseArea {
             anchors.fill: parent
             onClicked: {
-                rotationcompass.angle += 90;
+                //rotationcompass.angle += 90; Debug
             }
         }
 
@@ -269,7 +269,7 @@ Item {
             anchors.fill: parent
             onClicked: {
 
-                thermogauge.setTemperature(thermogauge.temperature + 10);
+                //thermogauge.setTemperature(thermogauge.temperature + 10);
             }
         }
         Text {
@@ -354,7 +354,7 @@ Item {
             anchors.fill: parent
             onClicked: {
 
-                rotationbattery.angle += 10;
+                //rotationbattery.angle += 10;
             }
         }
         Text {
