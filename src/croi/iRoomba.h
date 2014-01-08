@@ -44,6 +44,7 @@ public:
     virtual char getTemperature() = 0;
     virtual unsigned short getChargeLevel() = 0;
     virtual double getDistance() = 0;
+    virtual double getTotalDistance();
     virtual double getAngle() = 0;
     virtual bool getLeftBumb() = 0;
     virtual bool getRightBumb() = 0;
@@ -135,6 +136,8 @@ private:
     bool followingPath_; //true when path_ is followed
     bool prevPReached_; //true briefly as last point in path is reached
     PoiQGraphicsEllipseItem *destPoi_;
+
+    double totalDistance_;
 };
 
 

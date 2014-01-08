@@ -153,7 +153,7 @@ void MainWindow::setRoombaStatusData(Croi::IRoomba* selectedRoomba)
                               Q_ARG(QVariant, abs(selectedRoomba->getTemperature())));
 
     QMetaObject::invokeMethod(roombaStatus_, "setDistance", Q_RETURN_ARG(QVariant, returnedValue),
-                              Q_ARG(QVariant, abs(selectedRoomba->getDistance())));
+                              Q_ARG(QVariant, abs(selectedRoomba->getTotalDistance())));
 
 }
 

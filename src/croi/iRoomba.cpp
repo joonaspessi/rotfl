@@ -48,6 +48,11 @@ void IRoomba::drive( int velocity)
     velocity_ = velocity;
 }
 
+double IRoomba::getTotalDistance()
+{
+    return totalDistance_;
+}
+
 PoiQGraphicsEllipseItem* IRoomba::getStartPoint()
 {
     return startPoint_;
@@ -126,6 +131,8 @@ void IRoomba::updateState()
 {
     //subclass handles the retrieval of sensor information
     double distance = getDistance()/Util::COORDCORRECTION;
+    totalDistance_ += distance;
+
     double angle = getAngle();
     bool leftBump = getLeftBumb();
     bool rightBump = getRightBumb();
