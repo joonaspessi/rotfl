@@ -113,7 +113,7 @@ Item {
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.horizontalCenterOffset: 1
             color : "white"
-            text: "speed"
+            text: "Speed"
         }
         Text {
             id: speedText
@@ -201,7 +201,7 @@ Item {
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.horizontalCenterOffset: 1
             color : "white"
-            text: "compass"
+            text: "Compass"
         }
         Text {
             id: compassdegreeText
@@ -363,7 +363,7 @@ Item {
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.horizontalCenterOffset: 1
             color : "white"
-            text: "battery %"
+            text: "Battery %"
         }
         Text {
             id: batteryleveltext
