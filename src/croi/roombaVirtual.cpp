@@ -170,10 +170,11 @@ QGraphicsPixmapItem* RoombaVirtual::setIcon()
     // TODO: Improve icon graphics before deploying
     QPixmap pixmap(":/icons/DEBUG_roomba_virtual_small");
     QGraphicsPixmapItem* icon = IRoomba::getMap()->scene()->addPixmap(pixmap);
-    icon->setOffset(Util::ROOMBAWIDTH/-2.0, Util::ROOMBAWIDTH/-2.0);
+    icon->setOffset(icon->pixmap().width()/-2.0, icon->pixmap().width()/-2.0);
     icon->setPos(IRoomba::getLoc().x(), IRoomba::getLoc().y());
     icon->setFlag(QGraphicsItem::ItemIsSelectable, true);
     icon->setFlag(QGraphicsItem::ItemIsMovable,false);
+    icon->setScale(1.0/Util::COORDCORRECTION);
     return icon;
 }
 

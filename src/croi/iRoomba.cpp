@@ -1,7 +1,6 @@
 #include "iRoomba.h"
 #include "mapQGraphicsView.h"
 #include "fleetManager.h"
-#include "math.h"
 #include "QDebug"
 #include <QObject>
 #include <queue>
@@ -126,7 +125,7 @@ MapQGraphicsView* IRoomba::getMap()
 void IRoomba::updateState()
 {
     //subclass handles the retrieval of sensor information
-    double distance = getDistance();
+    double distance = getDistance()/Util::COORDCORRECTION;
     double angle = getAngle();
     bool leftBump = getLeftBumb();
     bool rightBump = getRightBumb();
@@ -348,7 +347,7 @@ void IRoomba::go2Point(QPointF point)
     }
 
     float tabs = abs(turningAngle*(180.0/Util::PI));
-    float distance = sqrt(pow(deltaX,2.0)+pow(deltaY,2.0));
+    float distance = sqrt(pow(deltaX,2.0)+pow(deltaY,2.0))*Util::COORDCORRECTION;
     int turnTime = round(tabs*TURNTIMEINUSFORDEG/1000.0);
     driveTime_= round(distance*100.0);
 
@@ -688,10 +687,11 @@ QGraphicsPixmapItem* IRoomba::setIcon()
     // TODO: Improve icon graphics before deploying
     QPixmap pixmap(":/icons/DEBUG_roomba_small");
     QGraphicsPixmapItem* icon = map_->scene()->addPixmap(pixmap);
-    icon->setOffset(Util::ROOMBAWIDTH/-2.0, Util::ROOMBAWIDTH/-2.0);
+    icon->setOffset(icon->pixmap().width()/-2.0, icon->pixmap().width()/-2.0);
     icon->setPos(Xloc_, Yloc_);
     icon->setFlag(QGraphicsItem::ItemIsSelectable, true);
     icon->setFlag(QGraphicsItem::ItemIsMovable,false);
+    icon->setScale(1.0/Util::COORDCORRECTION);
     return icon;
 }
 

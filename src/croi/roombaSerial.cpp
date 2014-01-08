@@ -6,6 +6,7 @@
 #include "roombaSerial.h"
 #include "posixSerial.h"
 #include "croiUtil.h"
+#include "uiUtils.h"
 
 
 namespace Croi {

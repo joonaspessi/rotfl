@@ -8,6 +8,7 @@ namespace Croi {
 
 const double ANGLECORRECTION = 3.057;
 const double DISTANCECORRECTION = 6.1;
+const double PI = 3.14159265;
 //Roomba turns 1 degree in 18055 microseconds, when speed is 100
 const unsigned int TURNTIMEINUSFORDEG = 18055;
 

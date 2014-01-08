@@ -10,11 +10,6 @@
 #include "poiQGraphicsEllipseItem.h"
 #include "uiUtils.h"
 #include <queue>
-//#include "fleetManager.h"
-
-const double PI = 3.14159265;
-const double ANGLECORRECTION = 3.057;
-const double DISTANCECORRECTION = 6.1;
 
 class MapQGraphicsView;
 class FleetManager;
@@ -59,7 +54,7 @@ public:
     void resetAngle();
     void correctLocation(Util::Direction direction);
     void correctAngle(bool clockWise);
-    QPointF getLoc();  //Xloc_ and Yloc_ is given as a point
+    QPointF getLoc();  //location IN PIXELS is given as a point
     double getCurrentAngle();
     int getRadius();
     int getVelocity();
@@ -124,9 +119,9 @@ private:
     //roombas traces are shown here
     QVector<QGraphicsLineItem*> traces_;
     bool traceShown_;
-    //current location's x-component
+    //current location's x-component IN PIXELS
     double Xloc_;
-    //current location's y-component
+    //current location's y-component IN PIXELS
     double Yloc_;
     //current angle. Value range 0..2*PI
     double angle_;

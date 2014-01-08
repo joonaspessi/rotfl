@@ -38,7 +38,8 @@ void MapQGraphicsView::mousePressEvent(QMouseEvent *event)
         scene()->addItem(wallToBeAdded_);
 
         // Add textual coordinates to the beginning of the wall line
-        wallToBeAddedStartPointText_ = new QGraphicsSimpleTextItem("X: " + QString::number(p.x()) + " Y: " +  QString::number(p.y()));
+        wallToBeAddedStartPointText_ = new QGraphicsSimpleTextItem("X: " + QString::number(p.x()*Util::COORDCORRECTION) +
+                                                                   " Y: " +  QString::number(p.y()*Util::COORDCORRECTION));
         wallToBeAddedStartPointText_->setPos(p);
         wallToBeAddedStartPointText_->setZValue(5);
         QBrush wallToBeAddedStartPointBrush(Qt::GlobalColor::blue);
@@ -129,7 +130,7 @@ void MapQGraphicsView::mouseMoveEvent(QMouseEvent *event)
             float deltaX = wallToBeAdded_->line().x2() - wallToBeAdded_->line().x1();
             float deltaY = wallToBeAdded_->line().y1() - wallToBeAdded_->line().y2();
             // TODO: Add pythagoras from here and iRoomba to some utility function
-            float distance = sqrt(pow(deltaX,2)+pow(deltaY,2) );
+            float distance = sqrt(pow(deltaX,2)+pow(deltaY,2) )*Util::COORDCORRECTION;
             // Use offset to avoid colliding with cursor
             QPointF pointToDrawLength = p;
             pointToDrawLength.setY(pointToDrawLength.y()+Util::WALLLENGTHINDICATOROFFSET);

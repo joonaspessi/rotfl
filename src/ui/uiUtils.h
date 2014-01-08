@@ -3,6 +3,7 @@
 
 #include <limits>
 #include <QGraphicsItem>
+#include <cmath>
 
 namespace Util {
 
@@ -19,10 +20,13 @@ typedef enum {
 
 enum Direction {N, NE, E, SE, S, SW, W, NW};
 
-const unsigned int VERTICEWIDTH = 10;
-const unsigned int ROOMBAWIDTH = 34;
+const unsigned int REALVERTICEWIDTH = 10;  //real world width
 const unsigned int MAPWIDTH = 600;
-const double ONTHEFLYCORRECTION = 2.0;
+const unsigned int REALMAPWIDTH = 800;
+const double COORDCORRECTION = double(REALMAPWIDTH)/MAPWIDTH;
+const unsigned int VERTICEWIDTH = ceil(REALVERTICEWIDTH/COORDCORRECTION);  //width in pixels
+const unsigned int REALROOMBAWIDTH = 34;  //real world width in cm
+const unsigned int ROOMBAWIDTH = round(REALROOMBAWIDTH/COORDCORRECTION);  //width in pixels
 
 const int POITYPE = QGraphicsItem::UserType;
 const int WALLTYPE = QGraphicsItem::UserType+1;
@@ -31,8 +35,9 @@ const int RADTURNCW = 65535;
 const int RADTURNCCW = 1;
 const double PI = 3.14159265;
 const double POIWIDTH = 10.0;
-const double TRACEWIDTH = 34.0;
-const double ARROWWIDTH = 27.0;
+const double TRACEWIDTH = ROOMBAWIDTH;
+const double ONTHEFLYCORRECTION = 2.0;
+
 
 struct Vertice
 {
@@ -41,8 +46,8 @@ struct Vertice
         s(NULL), sw(NULL), w(NULL), nw(NULL), from(NULL), hasWall(false),
         blocked(false)
     {
-        pos.setX(static_cast<double>(topLeftX)+Util::VERTICEWIDTH/2.0);
-        pos.setY(static_cast<double>(topLeftY)+Util::VERTICEWIDTH/2.0);
+        pos.setX(double(topLeftX)+Util::VERTICEWIDTH/2.0);
+        pos.setY(double(topLeftY)+Util::VERTICEWIDTH/2.0);
         dist = std::numeric_limits<double>::max();
     }
 

@@ -12,7 +12,6 @@
 FleetManager::FleetManager(MainWindow* mainWindow, QObject *parent):
     QObject(parent), mainWindow_(mainWindow), map_(NULL)
 {
-
     updateTimer_ = new QTimer(this);
     QObject::connect(updateTimer_, SIGNAL(timeout()), this, SLOT(updateTimerTimeout()));
     updateTimer_->setSingleShot(false);
@@ -31,9 +30,9 @@ void FleetManager::setMap(MapQGraphicsView* map)
 
     //creating vertices (with all values set to zero)
     QVector<Util::Vertice*> verticeRow;
-    for(unsigned int i = 0; i < Util::MAPWIDTH/Util::VERTICEWIDTH; ++i)
+    for(int i = 0; i < int(ceil(double(Util::MAPWIDTH)/Util::VERTICEWIDTH)); ++i)
     {
-        for(unsigned int j = 0; j < Util::MAPWIDTH/Util::VERTICEWIDTH; ++j)
+        for(int j = 0; j < int(ceil(double(Util::MAPWIDTH)/Util::VERTICEWIDTH)); ++j)
         {
             verticeRow.append(new Util::Vertice());
         }
@@ -256,10 +255,12 @@ void FleetManager::addWall(WallQGraphicsLineItem* wall)
                 {
                     vertices_.at(i).at(j)->hasWall = true;
 
-                    int lInit = static_cast<int>(i-ceil(1.0/Util::VERTICEWIDTH*20.0));
-                    int mInit = static_cast<int>(j-ceil(1.0/Util::VERTICEWIDTH*20.0));
-                    int lEnd = static_cast<int>(i+ceil(1.0/Util::VERTICEWIDTH*20.0));
-                    int mEnd = static_cast<int>(j+ceil(1.0/Util::VERTICEWIDTH*20.0));
+                    //calculates how many vertices have to be blocked that are next to the vertice that has a wall
+                    //includes some leeway (the factor 1.5), byt that is lessened by flooring
+                    int lInit = static_cast<int>(i-floor(double(Util::REALROOMBAWIDTH)/2*1.5/Util::REALVERTICEWIDTH));
+                    int mInit = static_cast<int>(j-floor(double(Util::REALROOMBAWIDTH)/2*1.5/Util::REALVERTICEWIDTH));
+                    int lEnd = static_cast<int>(i+floor(double(Util::REALROOMBAWIDTH)/2*1.5/Util::REALVERTICEWIDTH));
+                    int mEnd = static_cast<int>(j+floor(double(Util::REALROOMBAWIDTH)/2*1.5/Util::REALVERTICEWIDTH));
                     if(lInit < 0)
                     {
                         lInit = 0;

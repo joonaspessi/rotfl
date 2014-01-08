@@ -137,7 +137,8 @@ void MainWindow::setRoombaStatusData(Croi::IRoomba* selectedRoomba)
     temperature_label_->setText( QString::number( ( unsigned char )( selectedRoomba->getTemperature() ) ) );
     chargeLevel_label_->setText( QString::number( (unsigned short)( selectedRoomba->getChargeLevel() ) ) );
     QPointF rmbPosition = selectedRoomba->getLoc();
-    rmbPosition_label_->setText( "(" + QString::number(rmbPosition.x()) + " , " + QString::number(rmbPosition.y()) + ")" );
+    rmbPosition_label_->setText( "(" + QString::number(rmbPosition.x()*Util::COORDCORRECTION) +
+                                 " , " + QString::number(rmbPosition.y()*Util::COORDCORRECTION) + ")" );
 
     //QML
     QVariant returnedValue;
@@ -289,7 +290,7 @@ void MainWindow::createMapTestingDock()
     QLabel *mapScale_label = new QLabel("Zoom factor:");
     mapScale_horizontalSlider_ = new QSlider(Qt::Horizontal);
     mapScale_horizontalSlider_->setMinimum(10);
-    mapScale_horizontalSlider_->setMaximum(100);
+    mapScale_horizontalSlider_->setMaximum(50);
     connect(mapScale_horizontalSlider_,SIGNAL(valueChanged(int)),this,SLOT(mapScale_horizontalSlider_sliderMoved(int)));
     mapScaleValue_label_ = new QLabel("1.0");
     mapScale_layout->addWidget(mapScale_label);
@@ -767,7 +768,8 @@ bool MainWindow::eventFilter(QObject *object, QEvent *event)
         if (event->type() == QEvent::MouseMove || event->type() == QEvent::DragMove)
         {
             QPoint positionToShow = map_->viewport()->mapFromGlobal(QCursor::pos());
-            statusBar()->showMessage("X: " + QString::number(positionToShow.x()) + " Y: "+ QString::number(positionToShow.y()));
+            statusBar()->showMessage("X: " + QString::number(positionToShow.x()*Util::COORDCORRECTION) +
+                                     " Y: "+ QString::number(positionToShow.y()*Util::COORDCORRECTION));
         }
         return false;
     }
