@@ -201,10 +201,11 @@ void IRoomba::updateState()
         QPointF l (Xloc_+cos(tempAngle)*17, Yloc_+sin(tempAngle)*17);
         tempAngle = angle_+40.0*Util::PI/180.0;
         QPointF r (Xloc_+cos(tempAngle)*17, Yloc_+sin(tempAngle)*17);
+        FleetManager *fleetManager = qobject_cast<FleetManager*>(parent());
         WallQGraphicsLineItem* bumbed = new WallQGraphicsLineItem
                                             (l.x(), l.y(), r.x(), r.y());
         map_->scene()->addItem(bumbed);
-        //qobject_cast<FleetManager*>(parent())->addWall(bumbed);
+        fleetManager->addWall(bumbed);
     }
 }
 
