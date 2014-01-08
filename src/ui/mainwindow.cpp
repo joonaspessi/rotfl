@@ -324,7 +324,7 @@ void MainWindow::createToolbar()
 
     QActionGroup *actionGroup = new QActionGroup(this);
 
-    QAction* cursor_action = new QAction("Cursor", actionGroup);
+    QAction* cursor_action = new QAction("Select", actionGroup);
     cursor_action->setIcon(QIcon(":/icons/clear_hand"));
     cursor_action->setCheckable(true);
     cursor_action->setChecked(true);
@@ -332,25 +332,25 @@ void MainWindow::createToolbar()
     connect(cursor_action,SIGNAL(toggled(bool)),this,SLOT(action_Cursor_toggled(bool)));
     toolbar_->addAction(cursor_action);
 
-    QAction* wall_action = new QAction("Wall", actionGroup);
+    QAction* wall_action = new QAction("Add Wall", actionGroup);
     wall_action->setIcon(QIcon(":icons/graphics/wall"));
     wall_action->setCheckable(true);
     connect(wall_action,SIGNAL(toggled(bool)),this,SLOT(action_Wall_toggled(bool)));
     toolbar_->addAction(wall_action);
 
-    QAction* poi_action = new QAction("Poi", actionGroup);
+    QAction* poi_action = new QAction("Add Point of Interest", actionGroup);
     poi_action->setIcon(QIcon(":/icons/poi"));
     poi_action->setCheckable(true);
     connect(poi_action,SIGNAL(toggled(bool)),this,SLOT(action_Poi_toggled(bool)));
     toolbar_->addAction(poi_action);
 
-    QAction* start_action = new QAction("Start", actionGroup);
+    QAction* start_action = new QAction("Add Roomba", actionGroup);
     start_action->setIcon(QIcon(":/icons/roomba_small"));
     start_action->setCheckable(true);
     connect(start_action,SIGNAL(toggled(bool)),this,SLOT(action_Start_toggled(bool)));
     toolbar_->addAction(start_action);
 
-    QAction* startVirtual_action = new QAction("StartVirtual", actionGroup);
+    QAction* startVirtual_action = new QAction("Add virtual Roomba", actionGroup);
     startVirtual_action->setIcon(QIcon(":/icons/roomba_virtual_small"));
     startVirtual_action->setCheckable(true);
     connect(startVirtual_action,SIGNAL(toggled(bool)),this,SLOT(action_StartVirtual_toggled(bool)));
