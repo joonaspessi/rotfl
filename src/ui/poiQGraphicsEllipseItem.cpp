@@ -2,12 +2,14 @@
 #include "mapQGraphicsView.h"
 #include <QDebug>
 #include <QStyleOption>
+#include <QMenu>
 #include <uiUtils.h>
+#include <fleetManager.h>
 
 PoiQGraphicsEllipseItem::PoiQGraphicsEllipseItem
-(qreal x, qreal y, qreal w, qreal h, QGraphicsItem* parent):
-    QGraphicsEllipseItem(x, y, w, h, parent)
-{    
+(FleetManager* fleetManager, qreal x, qreal y, qreal w, qreal h, QGraphicsItem* parent):
+    QGraphicsEllipseItem(x, y, w, h, parent), fleetManager_(fleetManager)
+{
     setZValue(1);
 }
 
@@ -27,6 +29,18 @@ void PoiQGraphicsEllipseItem::paint(QPainter *painter, const QStyleOptionGraphic
 int PoiQGraphicsEllipseItem::type() const
 {
     return Util::POITYPE;
+}
+
+void PoiQGraphicsEllipseItem::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
+{
+    QMenu menu;
+    QAction *removeAction = menu.addAction("Remove");
+    QAction *selectedAction = menu.exec(event->screenPos());
+
+    if (selectedAction == removeAction)
+    {
+        fleetManager_->removePoi(this);
+    }
 }
 
 PoiQGraphicsEllipseItem::~PoiQGraphicsEllipseItem()

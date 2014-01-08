@@ -4,20 +4,23 @@
 #include <QGraphicsEllipseItem>
 #include <QGraphicsSceneMouseEvent>
 
+class FleetManager;
+
 class Q_WIDGETS_EXPORT PoiQGraphicsEllipseItem:
         public QGraphicsEllipseItem
 {
 public:
     explicit PoiQGraphicsEllipseItem
-    (qreal x, qreal y, qreal w, qreal h, QGraphicsItem* parent = 0);
+    (FleetManager *fleetManager, qreal x, qreal y, qreal w, qreal h, QGraphicsItem* parent = 0);
 
     virtual ~PoiQGraphicsEllipseItem();
     //reason for this reimplementation is to have self-defined color (red) on select
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
     int type() const;
+    void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
 
 private:
-
+    FleetManager* fleetManager_;
 };
 
 #endif // POIQGRAPHICSELLIPSEITEM_H

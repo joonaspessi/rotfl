@@ -63,7 +63,7 @@ void MapQGraphicsView::mousePressEvent(QMouseEvent *event)
                 qDebug() << "Draw a poi!";
                 setDragMode(QGraphicsView::NoDrag);
                 PoiQGraphicsEllipseItem* poi = new PoiQGraphicsEllipseItem
-                        (0.0-Util::POIWIDTH/2.0, 0.0-Util::POIWIDTH/2.0, Util::POIWIDTH, Util::POIWIDTH);
+                        (fleetManager_, 0.0-Util::POIWIDTH/2.0, 0.0-Util::POIWIDTH/2.0, Util::POIWIDTH, Util::POIWIDTH);
                 poi->setPos(p);
                 poi->setFlag(QGraphicsItem::ItemIsSelectable,true);
                 poi->setFlag(QGraphicsItem::ItemIsMovable,false); // Disabled so that the mapChanged signal works as expected
@@ -82,7 +82,7 @@ void MapQGraphicsView::mousePressEvent(QMouseEvent *event)
             (*flog.ts) << "Draw a start" << endl;
             setDragMode(QGraphicsView::NoDrag);
             PoiQGraphicsEllipseItem *startPoint = new PoiQGraphicsEllipseItem
-                    (0.0-Util::POIWIDTH*2.0/3.0, 0.0-Util::POIWIDTH*2.0/3.0,
+                    (fleetManager_, 0.0-Util::POIWIDTH*2.0/3.0, 0.0-Util::POIWIDTH*2.0/3.0,
                      Util::POIWIDTH*4.0/3.0, Util::POIWIDTH*4.0/3.0);
             startPoint->setPos(p);
             QBrush brush(Qt::GlobalColor::green);

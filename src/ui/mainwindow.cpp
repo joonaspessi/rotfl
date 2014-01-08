@@ -738,7 +738,7 @@ void MainWindow::openFile(const QString &fileName)
     for (QStringList::iterator it = pois.begin(); it != pois.end(); ++it)
     {
         PoiQGraphicsEllipseItem* poi = new PoiQGraphicsEllipseItem
-                (0.0-Util::POIWIDTH/2.0, 0.0-Util::POIWIDTH/2.0, Util::POIWIDTH, Util::POIWIDTH);
+                (fleetManager_, 0.0-Util::POIWIDTH/2.0, 0.0-Util::POIWIDTH/2.0, Util::POIWIDTH, Util::POIWIDTH);
         poi->setPos((roomba_map.value(*it)).toPointF());
         poi->setFlag(QGraphicsItem::ItemIsSelectable,true);
         poi->setFlag(QGraphicsItem::ItemIsMovable,false);  // Disabled so that the mapChanged signal works as expected
