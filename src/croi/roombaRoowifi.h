@@ -35,8 +35,19 @@ public:
     virtual void goDock();
     virtual float getBatteryLevel();
 
+signals:
+    void connectionEstablished();
+    void connectionFailed();
+
+private slots:
+    void disconnectCallback_timerTimeout();
+    void reconnectCallback_timerTimeout();
+
+
 private:
     RooWifi* roowifi_;
+    std::string ip_;
+    unsigned int reconnectCounter_;
 };
 
 } //namespace Croi

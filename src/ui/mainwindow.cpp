@@ -17,6 +17,9 @@
 #include <QQuickView>
 #include <QtQml>
 #include <QtQuick>
+#include <QTabWidget>
+#include <QGroupBox>
+#include <QGridLayout>
 
 #include <cmath>
 #include <unistd.h>
@@ -39,39 +42,13 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    //    posixserial = new Croi::PosixSerial();
 
-    //    Disabled until Roowifi AutoCapture is used instead
-    //    updateSensorData_ = new QTimer(this);
-    //    connect(updateSensorData_,SIGNAL(timeout()),this,SLOT(sensorUpdateTimerTimeout()));
+    createMenuBar();
+    // TODO: Add better background image for example url(:/widgets/carbon) or color http://www.w3schools.com/cssref/css_colornames.asp
+    setStyleSheet("background-color: floralwhite;");
 
-    //threadReader = new ThreadReader(posixserial, this);
-    //threadReader->start();
-
-    QMenu* fileMenu = menuBar()->addMenu(tr("&File"));
-
-    QAction* openAct = new QAction(tr("&Open"),this);
-    openAct->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_O));
-    connect(openAct, SIGNAL(triggered()),this,SLOT(actionOpen_triggered()));
-    fileMenu->addAction(openAct);
-
-    QAction* saveAct = new QAction(tr("&Save"),this);
-    saveAct->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_S));
-    connect(saveAct, SIGNAL(triggered()),this,SLOT(actionSave_triggered()));
-    fileMenu->addAction(saveAct);
-
-    QAction* saveAsAct = new QAction(tr("S&ave as"),this);
-    saveAsAct->setShortcut(QKeySequence(Qt::SHIFT + Qt::CTRL + Qt::Key_S));
-    connect(saveAsAct, SIGNAL(triggered()),this,SLOT(actionSaveAs_triggered()));
-    fileMenu->addAction(saveAsAct);
-
-    QAction* quitAct = new QAction(tr("&Quit"),this);
-    quitAct->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_Q));
-    connect(quitAct, SIGNAL(triggered()),this,SLOT(close()));
-    fileMenu->addAction(quitAct);
-
-    // TODO: Magic fixed size for mainwindow
-    resize(750,450);
+    // Mainwindow could not be smaller than it's contents
+    setMinimumSize(Util::PIXELMAPWIDTH+Util::TABWIDTH + 5, Util::PIXELMAPWIDTH + 100);
 
     fleetManager_ = new FleetManager(this);
     map_ = new MapQGraphicsView(fleetManager_, this);
@@ -82,210 +59,81 @@ MainWindow::MainWindow(QWidget *parent) :
     centralWidget()->setFixedWidth(Util::PIXELMAPWIDTH+2);
     centralWidget()->setFixedHeight(Util::PIXELMAPWIDTH+2);
 
-    //qDebug() << "children width: " << map_->childrenRect().width();
-    //qDebug() << "children height: " << map_->childrenRect().height();
+    tabWidget_ = new QTabWidget(this);
+    connect(tabWidget_, SIGNAL(currentChanged(int)), this, SLOT(tabChanged_triggered(int)));  // select the corresponding roomba of the tab
+    QDockWidget *dockWidget = new QDockWidget("Control panel", this);
+    dockWidget->setWidget(tabWidget_);
+    dockWidget->setMinimumSize(Util::TABWIDTH, Util::PIXELMAPWIDTH);
+    dockWidget->setFeatures(QDockWidget::NoDockWidgetFeatures); // Tab bar is not movable, floatable or closable
+    addDockWidget(Qt::RightDockWidgetArea, dockWidget);
 
-    createConnectDock();
-    createActionDock();
-    createStatusDock();
-    createMapTestingDock();
-    //QML
-    QQuickView * qmlview = new QQuickView();
-    QWidget *container = QWidget::createWindowContainer(qmlview,this);
-
-    container->setMinimumSize(400,380);
-    container->setMaximumSize(400,380);
-    container->setFocusPolicy(Qt::TabFocus);
-    qmlview->setSource(QUrl("qrc:/widgets/gauges"));
-
-    QDockWidget *widgetti = new QDockWidget(tr("gauges"), this);
-    widgetti->setWidget(container);
-    addDockWidget(Qt::RightDockWidgetArea,widgetti);
-
-     roombaStatus_ = qmlview->rootObject();
-    //End of QML
-    tabifyDockWidget(status_dockWidget_,action_dockWidget_);
-    tabifyDockWidget(action_dockWidget_,mapTesting_dockWidget_);
-    tabifyDockWidget(mapTesting_dockWidget_,connection_dockWidget_);
-    tabifyDockWidget(connection_dockWidget_, widgetti);
+    createFleetManagementTab();
 
     createToolbar();
 
     setCurrentFile("");
 
-    // TODO: Improve this to NOT trigger on start
     connect(map_,SIGNAL(mapChanged()),this,SLOT(mapModified()));
+
     // This event filter is implemented in eventFilter function, keeps mouse coordinates in status bar
     qApp->installEventFilter(this);
 }
 
 MainWindow::~MainWindow()
 {
-    releaseKeyboard();
     delete ui;
     delete fleetManager_;
 }
 
-void MainWindow::setRoombaStatusData(Croi::IRoomba* selectedRoomba)
+void MainWindow::createFleetManagementTab()
 {
-    temperature_label_->setText( QString::number( ( unsigned char )( selectedRoomba->getTemperature() ) ) );
-    chargeLevel_label_->setText( QString::number( (unsigned short)( selectedRoomba->getChargeLevel() ) ) );
-    QPointF rmbPosition = selectedRoomba->getLoc();
-    rmbPosition_label_->setText( "(" + QString::number(rmbPosition.x()*Util::COORDCORRECTION) +
-                                 " , " + QString::number(rmbPosition.y()*Util::COORDCORRECTION) + ")" );
+    QVBoxLayout *fleetManagement_layout = new QVBoxLayout;
 
-    //QML
-    QVariant returnedValue;
-	// TODO: Change getChargeLevel to getBatteryLevel
-    QMetaObject::invokeMethod(roombaStatus_, "setBatteryLevelmAh", Q_RETURN_ARG(QVariant, returnedValue),
-                              Q_ARG(QVariant, selectedRoomba->getChargeLevel()) );
+    // Fleet Management actions groupbox
+    QVBoxLayout *fleetActions_layout = new QVBoxLayout;
+    fleetManagementEnable_pushButton_ = new QPushButton("Start FleetManagement", this);
+    fleetManagementEnable_pushButton_->setDisabled(true);
+    fleetManagementEnable_pushButton_->setProperty("Enabled", QVariant(false));
+    fleetActions_layout->addWidget(fleetManagementEnable_pushButton_);
+    connect(fleetManagementEnable_pushButton_,SIGNAL(clicked()),this,SLOT(pushButton_fleetManagementEnable_clicked()));
 
+    Go2POIs_pushButton_ = new QPushButton("Go 2 POIs", this);
+    Go2POIs_pushButton_->setEnabled(false);
+    fleetActions_layout->addWidget(Go2POIs_pushButton_);
+    connect(Go2POIs_pushButton_,SIGNAL(clicked()),this,SLOT(pushButton_Go2POIs_clicked()));
 
-    QMetaObject::invokeMethod(roombaStatus_, "setSpeed", Q_RETURN_ARG(QVariant, returnedValue),
-                              Q_ARG(QVariant, abs(selectedRoomba->getVelocity())));
+    clean_pushButton_ = new QPushButton("Clean areas", this);
+    clean_pushButton_->setEnabled(false);
+    fleetActions_layout->addWidget(clean_pushButton_);
+    connect(clean_pushButton_,SIGNAL(clicked()),this,SLOT(pushButton_Clean_clicked()));
 
-    QMetaObject::invokeMethod(roombaStatus_, "setDirection", Q_RETURN_ARG(QVariant, returnedValue),
-                              Q_ARG(QVariant, abs(selectedRoomba->getCurrentAngle()*180/Util::PI)));
+    QGroupBox *fleetActions_groupBox = new QGroupBox("Fleet Management actions");
+    fleetActions_groupBox->setLayout(fleetActions_layout);
+    fleetManagement_layout->addWidget(fleetActions_groupBox);
 
-    QMetaObject::invokeMethod(roombaStatus_, "setTemperature", Q_RETURN_ARG(QVariant, returnedValue),
-                              Q_ARG(QVariant, abs(selectedRoomba->getTemperature())));
-
-    QMetaObject::invokeMethod(roombaStatus_, "setDistance", Q_RETURN_ARG(QVariant, returnedValue),
-                              Q_ARG(QVariant, abs(selectedRoomba->getTotalDistance())));
-}
-
-void MainWindow::createConnectDock()
-{
-    QVBoxLayout *connect_layout = new QVBoxLayout;
-
-    QHBoxLayout *ipLineEdit_layout = new QHBoxLayout;
-    ipLineEdit_1_ = new QLineEdit("192");
-    ipLineEdit_2_ = new QLineEdit("168");
-    ipLineEdit_3_ = new QLineEdit("1");
-    ipLineEdit_4_ = new QLineEdit("145");
-    ipLineEdit_layout->addWidget(ipLineEdit_1_);
-    ipLineEdit_layout->addWidget(ipLineEdit_2_);
-    ipLineEdit_layout->addWidget(ipLineEdit_3_);
-    ipLineEdit_layout->addWidget(ipLineEdit_4_);
-
-    QPushButton *connect_pushButton = new QPushButton("&Connect", this);
-    connect(connect_pushButton,SIGNAL(clicked()),this,SLOT(pushButton_Connect_clicked()));
-    QPushButton * disconnect_pushButton = new QPushButton("&Disconnect", this);
-    connect(disconnect_pushButton,SIGNAL(clicked()),this,SLOT(pushButton_Disconnect_clicked()));
-    connect_layout->addWidget(connect_pushButton);
-    connect_layout->addWidget(disconnect_pushButton);
-    connect_layout->addLayout(ipLineEdit_layout);
-
-    connection_dockWidget_ = new QDockWidget(tr("Connection"), this);
-    QWidget *connectionWidget = new QWidget;
-    connectionWidget->setLayout(connect_layout);
-    connection_dockWidget_->setWidget(connectionWidget);
-    addDockWidget(Qt::BottomDockWidgetArea, connection_dockWidget_);
-}
-
-void MainWindow::createActionDock()
-{
-    QVBoxLayout *action_layout = new QVBoxLayout;
-    QPushButton *goDock_pushButton = new QPushButton("GoDock", this);
-    connect(goDock_pushButton,SIGNAL(clicked()),this,SLOT(pushButton_GoDock_clicked()));
-    QPushButton *clean_pushButton = new QPushButton("Cl&ean", this);
-    connect(clean_pushButton,SIGNAL(clicked()),this,SLOT(pushButton_Clean_clicked()));
-    QPushButton *safe_pushButton = new QPushButton("&Safe", this);
-    connect(safe_pushButton,SIGNAL(clicked()),this,SLOT(pushButton_Safe_clicked()));
-    QPushButton *full_pushButton = new QPushButton("F&ull", this);
-    connect(full_pushButton,SIGNAL(clicked()),this,SLOT(pushButton_Full_clicked()));
-    QPushButton *motorsOn_pushButton = new QPushButton("&Motors on", this);
-    connect(motorsOn_pushButton,SIGNAL(clicked()),this,SLOT(pushButton_allMotorsOn_clicked()));
-    QPushButton *motorsOff_pushButton = new QPushButton("Motors &off", this);
-    connect(motorsOff_pushButton,SIGNAL(clicked()),this,SLOT(pushButton_allMotorsOff_clicked()));
-    QPushButton *playSong_pushButton = new QPushButton("&Play song", this);
-    connect(playSong_pushButton,SIGNAL(clicked()),this,SLOT(pushButton_playSong_clicked()));
-    QPushButton *Go2POIs_pushButton = new QPushButton("&Go 2 POIs", this);
-    connect(Go2POIs_pushButton,SIGNAL(clicked()),this,SLOT(pushButton_Go2POIs_clicked()));
-    QPushButton *stopFleet_pushButton = new QPushButton("S&top Fleet", this);
-    connect(stopFleet_pushButton,SIGNAL(clicked()),this,SLOT(pushButton_stopFleet_clicked()));
+    // Roomba Common Settings groupbox
+    QVBoxLayout *roombaCommonSettings_layout = new QVBoxLayout();
+    QLabel *velocity_label = new QLabel("Velocity:");
+    roombaCommonSettings_layout->addWidget(velocity_label);
     velocity_horizontalSlider_ = new QSlider(Qt::Horizontal);
-    velocity_horizontalSlider_->setMaximum(500);
-    velocity_horizontalSlider_->setMinimum(-500);
+    velocity_horizontalSlider_->setMaximum(200);
+    velocity_horizontalSlider_->setMinimum(-200);
     connect(velocity_horizontalSlider_,SIGNAL(valueChanged(int)),this,SLOT(velocity_horizontalSlider_sliderMoved(int)));
+    roombaCommonSettings_layout->addWidget(velocity_horizontalSlider_);
 
-    action_layout->addWidget(goDock_pushButton);
-    action_layout->addWidget(clean_pushButton);
-    action_layout->addWidget(safe_pushButton);
-    action_layout->addWidget(full_pushButton);
-    action_layout->addWidget(motorsOn_pushButton);
-    action_layout->addWidget(motorsOff_pushButton);
-    action_layout->addWidget(playSong_pushButton);
-    action_layout->addWidget(Go2POIs_pushButton);
-    action_layout->addWidget(stopFleet_pushButton);
-    action_layout->addWidget(velocity_horizontalSlider_);
-
-    QWidget *actionWidget = new QWidget;
-    actionWidget->setLayout(action_layout);
-    action_dockWidget_ = new QDockWidget(tr("Action"), this);
-    action_dockWidget_->setWidget(actionWidget);
-    addDockWidget(Qt::BottomDockWidgetArea, action_dockWidget_);
-    //    action_dockWidget->setFeatures(QDockWidget::NoDockWidgetFeatures);
-}
-
-void MainWindow::createStatusDock()
-{
-    QVBoxLayout *status_layout = new QVBoxLayout;
-
-    QHBoxLayout *temperature_layout = new QHBoxLayout;
-    temperature_label_ = new QLabel("0");
-    QLabel *temperatureUnit_label = new QLabel("C");
-    temperature_layout->addWidget(temperature_label_);
-    temperature_layout->addWidget(temperatureUnit_label);
-
-    QHBoxLayout *chargeLevel_layout = new QHBoxLayout;
-    chargeLevel_label_ = new QLabel("0");
-    QLabel *chargeLevelUnit_label = new QLabel("mAh");
-    chargeLevel_layout->addWidget(chargeLevel_label_);
-    chargeLevel_layout->addWidget(chargeLevelUnit_label);
-
-    QHBoxLayout *velocity_layout = new QHBoxLayout;
+    QHBoxLayout *velocityValue_layout = new QHBoxLayout;
     velocityValue_label_ = new QLabel("0");
     QLabel *velocityUnit_label = new QLabel("mm/s");
-    velocity_layout->addWidget(velocityValue_label_);
-    velocity_layout->addWidget(velocityUnit_label);
+    velocityValue_layout->addWidget(velocityValue_label_);
+    velocityValue_layout->addWidget(velocityUnit_label);
+    roombaCommonSettings_layout->addLayout(velocityValue_layout);
 
-    rmbPosition_label_ = new QLabel("(0 , 0)");
+    QGroupBox *roombaCommonSettings_groupBox = new QGroupBox("Roomba Common Settings");
+    roombaCommonSettings_groupBox->setLayout(roombaCommonSettings_layout);
+    fleetManagement_layout->addWidget(roombaCommonSettings_groupBox);
 
-    status_layout->addLayout(temperature_layout);
-    status_layout->addLayout(chargeLevel_layout);
-    status_layout->addLayout(velocity_layout);
-    status_layout->addWidget(rmbPosition_label_);
-
-    status_dockWidget_ = new QDockWidget(tr("Status"), this);
-    QWidget *statusWidget = new QWidget;
-    statusWidget->setLayout(status_layout);
-    status_dockWidget_->setWidget(statusWidget);
-    addDockWidget(Qt::RightDockWidgetArea, status_dockWidget_);
-}
-
-void MainWindow::createMapTestingDock()
-{
-    QVBoxLayout *mapTesting_layout = new QVBoxLayout;
-    QPushButton *removeRedObjects_pushButton = new QPushButton("Remove red objects", this);
-    connect(removeRedObjects_pushButton,SIGNAL(clicked()),this,SLOT(pushButton_removeRedObjects_clicked()));
-    QPushButton *unshowTraces_pushButton = new QPushButton("(Un)show traces", this);
-    connect(unshowTraces_pushButton,SIGNAL(clicked()),this,SLOT(pushButton_unshowTraces_clicked()));
-    QPushButton *resetAngle_pushButton = new QPushButton("Reset angle", this);
-    connect(resetAngle_pushButton,SIGNAL(clicked()),this,SLOT(pushButton_resetAngle_clicked()));
-    QPushButton *correctLeft_pushButton = new QPushButton("Correct location to left by 2 cm", this);
-    connect(correctLeft_pushButton,SIGNAL(clicked()),this,SLOT(pushButton_correctLeft_clicked()));
-    QPushButton *correctRight_pushButton = new QPushButton("Correct location to right by 2 cm", this);
-    connect(correctRight_pushButton,SIGNAL(clicked()),this,SLOT(pushButton_correctRight_clicked()));
-    QPushButton *correctUp_pushButton = new QPushButton("Correct location to up by 2 cm", this);
-    connect(correctUp_pushButton,SIGNAL(clicked()),this,SLOT(pushButton_correctUp_clicked()));
-    QPushButton *correctDown_pushButton = new QPushButton("Correct location to down by 2 cm", this);
-    connect(correctDown_pushButton,SIGNAL(clicked()),this,SLOT(pushButton_correctDown_clicked()));
-    QPushButton *correctCw_pushButton = new QPushButton("Correct angle clockwise by 2 degrees", this);
-    connect(correctCw_pushButton,SIGNAL(clicked()),this,SLOT(pushButton_correctCw_clicked()));
-    QPushButton *correctCcw_pushButton = new QPushButton("Correct angle counterclockwise by 2 degrees", this);
-    connect(correctCcw_pushButton,SIGNAL(clicked()),this,SLOT(pushButton_correctCcw_clicked()));
-
+    // Map actions groupbox
+    QVBoxLayout *map_layout = new QVBoxLayout;
     QHBoxLayout *mapScale_layout = new QHBoxLayout;
     QLabel *mapScale_label = new QLabel("Zoom factor:");
     mapScale_horizontalSlider_ = new QSlider(Qt::Horizontal);
@@ -296,100 +144,332 @@ void MainWindow::createMapTestingDock()
     mapScale_layout->addWidget(mapScale_label);
     mapScale_layout->addWidget(mapScale_horizontalSlider_);
     mapScale_layout->addWidget(mapScaleValue_label_);
+    map_layout->addLayout(mapScale_layout);
 
-    mapTesting_layout->addWidget(removeRedObjects_pushButton);
-    mapTesting_layout->addWidget(unshowTraces_pushButton);
-    mapTesting_layout->addWidget(resetAngle_pushButton);
-    mapTesting_layout->addWidget(correctLeft_pushButton);
-    mapTesting_layout->addWidget(correctRight_pushButton);
-    mapTesting_layout->addWidget(correctUp_pushButton);
-    mapTesting_layout->addWidget(correctDown_pushButton);
-    mapTesting_layout->addWidget(correctCw_pushButton);
-    mapTesting_layout->addWidget(correctCcw_pushButton);
-    mapTesting_layout->addLayout(mapScale_layout);
+    QPushButton *tracesDisable_pushButton = new QPushButton("Hide traces", this);
+    tracesDisable_pushButton->setProperty("Disabled", QVariant(false));
+    map_layout->addWidget(tracesDisable_pushButton);
+    connect(tracesDisable_pushButton,SIGNAL(clicked()),this,SLOT(pushButton_tracesDisable_clicked()));
 
-    QWidget *mapTestingWidget = new QWidget;
-    mapTestingWidget->setLayout(mapTesting_layout);
-    mapTesting_dockWidget_ = new QDockWidget(tr("Map testing"), this);
-    mapTesting_dockWidget_->setWidget(mapTestingWidget);
-    addDockWidget(Qt::RightDockWidgetArea, mapTesting_dockWidget_);
-    //    action_dockWidget->setFeatures(QDockWidget::NoDockWidgetFeatures);
+    QGroupBox *mapActions_groupBox = new QGroupBox("Map actions");
+    mapActions_groupBox->setLayout(map_layout);
+    fleetManagement_layout->addWidget(mapActions_groupBox);
+
+    // Base widget of the tab
+    QWidget *fleetManagement_Widget = new QWidget();
+    fleetManagement_Widget->setLayout(fleetManagement_layout);
+    tabWidget_->addTab(fleetManagement_Widget, "Fleet Management");
+}
+
+void MainWindow::addRoombaTab(Croi::IRoomba* roomba)
+{
+    QVBoxLayout *roombaDashBoard_layout = new QVBoxLayout(); // Layout to fill the whole tab
+
+    QHBoxLayout *status_layout = new QHBoxLayout();  // Layout to show Rooba's Qml-gauges and status information
+    QQuickView * qmlView = new QQuickView();
+    QWidget *qmlContainer = QWidget::createWindowContainer(qmlView,this);
+    qmlContainer->setMinimumSize(400,380);
+    qmlContainer->setMaximumSize(400,380);
+    qmlContainer->setFocusPolicy(Qt::TabFocus);
+    qmlView->setSource(QUrl("qrc:/widgets/gauges"));
+    roombaStatuses_.insert(roomba, qmlView->rootObject());
+    status_layout->addWidget(qmlContainer);
+
+    QVBoxLayout *statusText_layout = new QVBoxLayout();
+
+    QHBoxLayout *temperature_layout = new QHBoxLayout;
+    temperature_labels_.insert(roomba, new QLabel("0"));
+    QLabel *temperatureUnit_label = new QLabel("C");
+    temperature_layout->addWidget(temperature_labels_.value(roomba));
+    temperature_layout->addWidget(temperatureUnit_label);
+    statusText_layout->addLayout(temperature_layout);
+
+    QHBoxLayout *chargeLevel_layout = new QHBoxLayout;
+    chargeLevel_labels_.insert(roomba, new QLabel("0"));
+    QLabel *chargeLevelUnit_label = new QLabel("mAh");
+    chargeLevel_layout->addWidget(chargeLevel_labels_.value(roomba));
+    chargeLevel_layout->addWidget(chargeLevelUnit_label);
+    statusText_layout->addLayout(chargeLevel_layout);
+
+    rmbPosition_labels_.insert(roomba, new QLabel("(0 , 0)"));
+    statusText_layout->addWidget(rmbPosition_labels_.value(roomba));
+
+    // Roomba actions groupbox
+		//TODO FIXME
+		QPushButton *goDock_pushButton = new QPushButton("GoDock", this);
+    connect(goDock_pushButton,SIGNAL(clicked()),this,SLOT(pushButton_GoDock_clicked()));
+
+    QHBoxLayout *action_layout = new QHBoxLayout();
+    allMotors_pushButtons_.insert(roomba, new QPushButton("Motors on", this));
+    allMotors_pushButtons_.value(roomba)->setIcon(QIcon::fromTheme("system-run"));
+    allMotors_pushButtons_.value(roomba)->setProperty("On", QVariant(false));
+    allMotors_pushButtons_.value(roomba)->setDisabled(true);
+    action_layout->addWidget(allMotors_pushButtons_.value(roomba));
+    connect(allMotors_pushButtons_.value(roomba),SIGNAL(clicked()),this,SLOT(pushButton_allMotors_clicked()));
+    playSong_pushButtons_.insert(roomba, new QPushButton("&Play song", this));
+    playSong_pushButtons_.value(roomba)->setIcon(QIcon::fromTheme("media-playback-start"));
+    playSong_pushButtons_.value(roomba)->setDisabled(true);
+    action_layout->addWidget(playSong_pushButtons_.value(roomba));
+    connect(playSong_pushButtons_.value(roomba),SIGNAL(clicked()),this,SLOT(pushButton_playSong_clicked()));
+
+    QGroupBox *action_groupBox = new QGroupBox("Roomba controls");
+    action_groupBox->setLayout(action_layout);
+    statusText_layout->addWidget(action_groupBox);
+
+    status_layout->addLayout(statusText_layout);
+
+    roombaDashBoard_layout->addLayout(status_layout);
+
+    // Roowifi connection groupbox
+    QVBoxLayout *connect_layout = new QVBoxLayout();
+    QHBoxLayout *ipLineEdit_layout = new QHBoxLayout();
+    ip1LineEdits_.insert(roomba, new QLineEdit("192"));
+    ip2LineEdits_.insert(roomba, new QLineEdit("168"));
+    ip3LineEdits_.insert(roomba, new QLineEdit("1"));
+    ip4LineEdits_.insert(roomba, new QLineEdit("145"));
+    roombaNameLineEdits_.insert(roomba, new QLineEdit("Roomba 1"));
+    ipLineEdit_layout->addWidget(roombaNameLineEdits_.value(roomba));
+    ipLineEdit_layout->addWidget(ip1LineEdits_.value(roomba));
+    ipLineEdit_layout->addWidget(ip2LineEdits_.value(roomba));
+    ipLineEdit_layout->addWidget(ip3LineEdits_.value(roomba));
+    ipLineEdit_layout->addWidget(ip4LineEdits_.value(roomba));
+
+    connection_pushButtons_.insert(roomba, new QPushButton("Connect", this));
+    connection_pushButtons_.value(roomba)->setProperty("Connected", QVariant(false));
+    connection_pushButtons_.value(roomba)->setIcon(QIcon::fromTheme("network-wireless"));
+    connect(connection_pushButtons_.value(roomba),SIGNAL(clicked()),this,SLOT(pushButton_Connection_clicked()));
+    ipLineEdit_layout->addWidget(connection_pushButtons_.value(roomba));
+    connect_layout->addLayout(ipLineEdit_layout);
+
+    QGroupBox *connect_groupBox = new QGroupBox("Roowifi connection");
+    connect_groupBox->setLayout(connect_layout);
+    roombaDashBoard_layout->addWidget(connect_groupBox);
+
+    // Layout to moving roomba's location on map
+    QHBoxLayout *moving_layout = new QHBoxLayout();
+    // Manual driving layout
+    QGridLayout *manualDriving_layout = new QGridLayout();
+    turnCcw_pushButtons_.insert(roomba, new QPushButton());
+    turnCcw_pushButtons_.value(roomba)->setIcon(QIcon(":/icons/rotate_left"));
+    turnCcw_pushButtons_.value(roomba)->setCheckable(true);
+    turnCcw_pushButtons_.value(roomba)->setDisabled(true);
+    turnCcw_pushButtons_.value(roomba)->setToolTip("Turn left");
+    manualDriving_layout->addWidget(turnCcw_pushButtons_.value(roomba), 1, 1);
+    connect(turnCcw_pushButtons_.value(roomba),SIGNAL(clicked()),this,SLOT(pushButton_turnCcw_clicked()));
+
+    driveForward_toolButtons_.insert(roomba, new QToolButton());
+    driveForward_toolButtons_.value(roomba)->setArrowType(Qt::UpArrow);
+    driveForward_toolButtons_.value(roomba)->setCheckable(true);
+    driveForward_toolButtons_.value(roomba)->setDisabled(true);
+    driveForward_toolButtons_.value(roomba)->setToolTip("Drive forward");
+    manualDriving_layout->addWidget(driveForward_toolButtons_.value(roomba), 1, 2);
+    connect(driveForward_toolButtons_.value(roomba),SIGNAL(clicked()),this,SLOT(toolButton_driveForward_clicked()));
+
+    turnCw_pushButtons_.insert(roomba, new QPushButton());
+    turnCw_pushButtons_.value(roomba)->setIcon(QIcon(":/icons/rotate_right"));
+    turnCw_pushButtons_.value(roomba)->setCheckable(true);
+    turnCw_pushButtons_.value(roomba)->setDisabled(true);
+    turnCw_pushButtons_.value(roomba)->setToolTip("Turn right");
+    manualDriving_layout->addWidget(turnCw_pushButtons_.value(roomba), 1, 3);
+    connect(turnCw_pushButtons_.value(roomba),SIGNAL(clicked()),this,SLOT(pushButton_turnCw_clicked()));
+
+    driveBackward_toolButtons_.insert(roomba, new QToolButton());
+    driveBackward_toolButtons_.value(roomba)->setArrowType(Qt::DownArrow);
+    driveBackward_toolButtons_.value(roomba)->setCheckable(true);
+    driveBackward_toolButtons_.value(roomba)->setDisabled(true);
+    driveBackward_toolButtons_.value(roomba)->setToolTip("Drive backward");
+    manualDriving_layout->addWidget(driveBackward_toolButtons_.value(roomba), 2, 2);
+    connect(driveBackward_toolButtons_.value(roomba),SIGNAL(clicked()),this,SLOT(toolButton_driveBackward_clicked()));
+
+    QGroupBox *manualDriving_groupBox = new QGroupBox("Manual driving");
+    manualDriving_groupBox->setLayout(manualDriving_layout);
+    // Stylesheet adjusts the size of all buttons in groupbox
+    manualDriving_groupBox->setStyleSheet("QPushButton, QToolButton {width: 16px; height: 16px}");
+    moving_layout->addWidget(manualDriving_groupBox);
+
+    // Manual correction layout
+    QGridLayout *manualCorrection_layout = new QGridLayout();
+    correctCcw_pushButtons_.insert(roomba, new QPushButton());
+    correctCcw_pushButtons_.value(roomba)->setIcon(QIcon(":/icons/rotate_left"));
+    correctCcw_pushButtons_.value(roomba)->setToolTip("Correct angle counterclockwise by 2 degrees");
+    manualCorrection_layout->addWidget(correctCcw_pushButtons_.value(roomba), 1, 1);
+    connect(correctCcw_pushButtons_.value(roomba),SIGNAL(clicked()),this,SLOT(pushButton_correctCcw_clicked()));
+
+    correctUp_toolButtons_.insert(roomba, new QToolButton());
+    correctUp_toolButtons_.value(roomba)->setArrowType(Qt::UpArrow);
+    correctUp_toolButtons_.value(roomba)->setToolTip("Correct location to up by 2 cm");
+    manualCorrection_layout->addWidget(correctUp_toolButtons_.value(roomba), 1, 2);
+    connect(correctUp_toolButtons_.value(roomba),SIGNAL(clicked()),this,SLOT(toolButton_correctUp_clicked()));
+
+    correctCw_pushButtons_.insert(roomba, new QPushButton());
+    correctCw_pushButtons_.value(roomba)->setIcon(QIcon(":/icons/rotate_right"));
+    correctCw_pushButtons_.value(roomba)->setToolTip("Correct angle clockwise by 2 degrees");
+    manualCorrection_layout->addWidget(correctCw_pushButtons_.value(roomba), 1, 3);
+    connect(correctCw_pushButtons_.value(roomba),SIGNAL(clicked()),this,SLOT(pushButton_correctCw_clicked()));
+
+    correctLeft_toolButtons_.insert(roomba, new QToolButton());
+    correctLeft_toolButtons_.value(roomba)->setArrowType(Qt::LeftArrow);
+    correctLeft_toolButtons_.value(roomba)->setToolTip("Correct location to left by 2 cm");
+    manualCorrection_layout->addWidget(correctLeft_toolButtons_.value(roomba), 2, 1);
+    connect(correctLeft_toolButtons_.value(roomba),SIGNAL(clicked()),this,SLOT(toolButton_correctLeft_clicked()));
+
+    correctDown_toolButtons_.insert(roomba, new QToolButton());
+    correctDown_toolButtons_.value(roomba)->setArrowType(Qt::DownArrow);
+    correctDown_toolButtons_.value(roomba)->setToolTip("Correct location to down by 2 cm");
+    manualCorrection_layout->addWidget(correctDown_toolButtons_.value(roomba), 2, 2);
+    connect(correctDown_toolButtons_.value(roomba),SIGNAL(clicked()),this,SLOT(toolButton_correctDown_clicked()));
+
+    correctRight_toolButtons_.insert(roomba, new QToolButton());
+    correctRight_toolButtons_.value(roomba)->setArrowType(Qt::RightArrow);
+    correctRight_toolButtons_.value(roomba)->setToolTip("Correct location to right by 2 cm");
+    manualCorrection_layout->addWidget(correctRight_toolButtons_.value(roomba), 2, 3);
+    connect(correctRight_toolButtons_.value(roomba),SIGNAL(clicked()),this,SLOT(toolButton_correctRight_clicked()));
+
+    resetAngle_pushButtons_.insert(roomba, new QPushButton());
+    resetAngle_pushButtons_.value(roomba)->setIcon(QIcon(":/icons/reset_rotation"));
+    resetAngle_pushButtons_.value(roomba)->setToolTip("Reset angle");
+    manualCorrection_layout->addWidget(resetAngle_pushButtons_.value(roomba), 1, 4);
+    connect(resetAngle_pushButtons_.value(roomba),SIGNAL(clicked()),this,SLOT(pushButton_resetAngle_clicked()));
+
+    QGroupBox *manualCorrection_groupBox = new QGroupBox("Manual location correction");
+    manualCorrection_groupBox->setLayout(manualCorrection_layout);
+    // Stylesheet adjusts the size of all buttons in groupbox
+    manualCorrection_groupBox->setStyleSheet("QPushButton, QToolButton {width: 16px; height: 16px}");
+    moving_layout->addWidget(manualCorrection_groupBox);
+
+    roombaDashBoard_layout->addLayout(moving_layout);
+
+    // Base widget of the tab
+    QWidget *roombaDashBoard_widget = new QWidget(this);
+    roombaDashBoard_widget->setLayout(roombaDashBoard_layout);
+    roomba_Widgets_.append(roombaDashBoard_widget);
+    int currentIndex = tabWidget_->addTab(roombaDashBoard_widget, roombaNameLineEdits_.value(roomba)->text());
+    roombaTabs_.insert(currentIndex, roomba);
+    tabWidget_->setCurrentIndex(currentIndex);
+    tabWidget_->setTabIcon(currentIndex, QIcon::fromTheme("network-offline"));
+    cursor_action_->trigger();  // Change to Cursor after adding a Roomba to prevent accidentially adding too many
+    fleetManagementEnable_pushButton_->setEnabled(true); // Enable starting fleet management when adding first roomba
+}
+
+void MainWindow::setRoombaStatusData(Croi::IRoomba* selectedRoomba)
+{
+    // TODO: Remove double bookkeeping of selected roomba
+    if (selectedRoomba == selectedRoomba_)
+    {
+        temperature_labels_.value(selectedRoomba)->setText( QString::number( ( unsigned char )( selectedRoomba->getTemperature() ) ) );
+        chargeLevel_labels_.value(selectedRoomba)->setText( QString::number( (unsigned short)( selectedRoomba->getChargeLevel() ) ) );
+        QPointF rmbPosition = selectedRoomba->getLoc();
+        rmbPosition_labels_.value(selectedRoomba)->setText( "(" + QString::number(rmbPosition.x()*Util::COORDCORRECTION, 'f', 0) +
+                                     " , " + QString::number(rmbPosition.y()*Util::COORDCORRECTION, 'f', 0) + ")" );
+
+        //QML
+        QVariant returnedValue;
+        QMetaObject::invokeMethod(roombaStatuses_.value(selectedRoomba), "setBatteryLevelmAh", Q_RETURN_ARG(QVariant, returnedValue),
+                                  Q_ARG(QVariant, selectedRoomba->getChargeLevel()) );
+
+        QMetaObject::invokeMethod(roombaStatuses_.value(selectedRoomba), "setSpeed", Q_RETURN_ARG(QVariant, returnedValue),
+                                  Q_ARG(QVariant, abs(selectedRoomba->getVelocity())));
+
+        QMetaObject::invokeMethod(roombaStatuses_.value(selectedRoomba), "setDirection", Q_RETURN_ARG(QVariant, returnedValue),
+                                  Q_ARG(QVariant, abs(selectedRoomba->getCurrentAngle()*180/Util::PI)));
+
+        QMetaObject::invokeMethod(roombaStatuses_.value(selectedRoomba), "setTemperature", Q_RETURN_ARG(QVariant, returnedValue),
+                                  Q_ARG(QVariant, abs(selectedRoomba->getTemperature())));
+
+        QMetaObject::invokeMethod(roombaStatuses_.value(selectedRoomba), "setDistance", Q_RETURN_ARG(QVariant, returnedValue),
+                                  Q_ARG(QVariant, QString::number(selectedRoomba->getTotalDistance() * Util::COORDCORRECTION, 'f', 0)));
+    }
 }
 
 void MainWindow::createToolbar()
 {
-    toolbar_ = new QToolBar(this);
-    toolbar_->setMovable(false);
-    toolbar_->setFloatable(false);
+    ui->mainToolBar->setMovable(false);
+    ui->mainToolBar->setFloatable(false);
+    ui->mainToolBar->setWindowTitle("Toolbar");
 
     QActionGroup *actionGroup = new QActionGroup(this);
 
-    QAction* cursor_action = new QAction("Select", actionGroup);
-    cursor_action->setIcon(QIcon(":/icons/clear_hand"));
-    cursor_action->setCheckable(true);
-    cursor_action->setChecked(true);
+    cursor_action_ = new QAction("Select", actionGroup);
+    cursor_action_->setIcon(QIcon(":/icons/clear_hand"));
+    cursor_action_->setCheckable(true);
+    cursor_action_->setChecked(true);
     map_->setSelectedPaintTool(Util::SelectedPaintTool::CURSOR);
-    connect(cursor_action,SIGNAL(toggled(bool)),this,SLOT(action_Cursor_toggled(bool)));
-    toolbar_->addAction(cursor_action);
+    connect(cursor_action_,SIGNAL(toggled(bool)),this,SLOT(action_Cursor_toggled(bool)));
+    ui->mainToolBar->addAction(cursor_action_);
 
-    QAction* wall_action = new QAction("Add Wall", actionGroup);
-    wall_action->setIcon(QIcon(":icons/graphics/wall"));
-    wall_action->setCheckable(true);
-    connect(wall_action,SIGNAL(toggled(bool)),this,SLOT(action_Wall_toggled(bool)));
-    toolbar_->addAction(wall_action);
+    wall_action_ = new QAction("Add Wall", actionGroup);
+    wall_action_->setIcon(QIcon(":icons/graphics/wall"));
+    wall_action_->setCheckable(true);
+    connect(wall_action_,SIGNAL(toggled(bool)),this,SLOT(action_Wall_toggled(bool)));
+    ui->mainToolBar->addAction(wall_action_);
 
     QAction* poi_action = new QAction("Add Point of Interest", actionGroup);
     poi_action->setIcon(QIcon(":/icons/poi"));
     poi_action->setCheckable(true);
     connect(poi_action,SIGNAL(toggled(bool)),this,SLOT(action_Poi_toggled(bool)));
-    toolbar_->addAction(poi_action);
+    ui->mainToolBar->addAction(poi_action);
 
-	QAction* atc_action = new QAction("Add Area to Clean", actionGroup);
+QAction* atc_action = new QAction("Add Area to Clean", actionGroup);
     atc_action->setIcon(QIcon(":/icons/graphics/atc"));
     atc_action->setCheckable(true);
     connect(atc_action,SIGNAL(toggled(bool)),this,SLOT(action_ATC_toggled(bool)));
-    toolbar_->addAction(atc_action);
+    ui->mainToolBar->addAction(atc_action);
 
-    QAction* start_action = new QAction("Add Roomba", actionGroup);
-    start_action->setIcon(QIcon(":/icons/roomba_small"));
-    start_action->setCheckable(true);
-    connect(start_action,SIGNAL(toggled(bool)),this,SLOT(action_Start_toggled(bool)));
-    toolbar_->addAction(start_action);
-    QAction* startVirtual_action = new QAction("Add virtual Roomba", actionGroup);
-    startVirtual_action->setIcon(QIcon(":/icons/roomba_virtual_small"));
-    startVirtual_action->setCheckable(true);
-    connect(startVirtual_action,SIGNAL(toggled(bool)),this,SLOT(action_StartVirtual_toggled(bool)));
-    toolbar_->addAction(startVirtual_action);
+    start_action_ = new QAction("Add Roomba", actionGroup);
+    start_action_->setIcon(QIcon(":/icons/roomba_small"));
+    start_action_->setCheckable(true);
+    connect(start_action_,SIGNAL(toggled(bool)),this,SLOT(action_Start_toggled(bool)));
+    ui->mainToolBar->addAction(start_action_);
 
-    toolbar_->adjustSize();
-    this->addToolBar(toolbar_);
+    startVirtual_action_ = new QAction("Add virtual Roomba", actionGroup);
+    startVirtual_action_->setIcon(QIcon(":/icons/roomba_virtual_small"));
+    startVirtual_action_->setCheckable(true);
+    connect(startVirtual_action_,SIGNAL(toggled(bool)),this,SLOT(action_StartVirtual_toggled(bool)));
+    ui->mainToolBar->addAction(startVirtual_action_);
+
+    ui->mainToolBar->adjustSize();
 }
 
-void MainWindow::pushButton_removeRedObjects_clicked()
+void MainWindow::handleUIElementsChangeAllTabsState(bool state)
 {
-    fleetManager_->removeRedObjects();
-    (*flog.ts) << "Remove red objects Button pressed." << endl;
+    int currentIndex = tabWidget_->currentIndex();
+    bool enabled = !state;
+    for (int tab = 0; tab < tabWidget_->count(); ++tab)
+    {
+        tabWidget_->setTabEnabled(tab, enabled);
+    }
+    tabWidget_->setCurrentIndex(currentIndex);
 }
 
-void MainWindow::pushButton_Connect_clicked()
+void MainWindow::pushButton_Connection_clicked()
 {
-    QString ip = ipLineEdit_1_->text() + "." + ipLineEdit_2_->text() + "." + ipLineEdit_3_->text()
-            + "." + ipLineEdit_4_->text();
+    if (connection_pushButtons_.value(selectedRoomba_)->property("Connected") == QVariant(false))
+    {
+        QString ip = ip1LineEdits_.value(selectedRoomba_)->text() + "." + ip2LineEdits_.value(selectedRoomba_)->text()
+                + "." + ip3LineEdits_.value(selectedRoomba_)->text() + "." + ip4LineEdits_.value(selectedRoomba_)->text();
     std::string stdip = ip.toStdString();
+        connection_pushButtons_.value(selectedRoomba_)->setText("Connecting...");
+        connection_pushButtons_.value(selectedRoomba_)->setDisabled(true);
+        handleUIElementsConnectionStateChange(true);
+        handleUIElementsChangeAllTabsState(true);
     fleetManager_->connect(stdip);
     (*flog.ts) << "Connect Button pressed." << endl;
 }
 
-void MainWindow::pushButton_Disconnect_clicked()
+    else
 {
-    //    Disabled until Roowifi AutoCapture is used instead
-    //    updateSensorData_->stop();
+        connection_pushButtons_.value(selectedRoomba_)->setProperty("Connected", QVariant(false));
+        connection_pushButtons_.value(selectedRoomba_)->setText("Connect");
+        connection_pushButtons_.value(selectedRoomba_)->setIcon(QIcon::fromTheme("network-wireless"));
     fleetManager_->disconnect();
-    temperature_label_->setText("0");
-    chargeLevel_label_->setText("0");
+        temperature_labels_.value(selectedRoomba_)->setText("0");
+        chargeLevel_labels_.value(selectedRoomba_)->setText("0");
     velocity_horizontalSlider_->setValue(0);
     velocityValue_label_->setText("0");
+        handleUIElementsConnectionStateChange(false);
+        tabWidget_->setTabIcon(tabWidget_->currentIndex(), QIcon::fromTheme("network-offline"));
     (*flog.ts) << "Disconnect Button pressed." << endl;
+}
 }
 
 void MainWindow::pushButton_GoDock_clicked()
@@ -398,36 +478,102 @@ void MainWindow::pushButton_GoDock_clicked()
     (*flog.ts) << "GoDock Button pressed." << endl;
 
 }
+
+void MainWindow::connectionEstablished()
+{
+    connection_pushButtons_.value(selectedRoomba_)->setProperty("Connected", QVariant(true));
+    connection_pushButtons_.value(selectedRoomba_)->setText("Disconnect");
+    connection_pushButtons_.value(selectedRoomba_)->setEnabled(true);
+    connection_pushButtons_.value(selectedRoomba_)->setIcon(QIcon::fromTheme("network-offline"));
+    tabWidget_->setTabText(tabWidget_->currentIndex(), roombaNameLineEdits_.value(selectedRoomba_)->text());
+    tabWidget_->setTabIcon(tabWidget_->currentIndex(), QIcon::fromTheme("network-wireless"));
+    allMotors_pushButtons_.value(selectedRoomba_)->setEnabled(true);
+    playSong_pushButtons_.value(selectedRoomba_)->setEnabled(true);
+    driveForward_toolButtons_.value(selectedRoomba_)->setEnabled(true);
+    driveBackward_toolButtons_.value(selectedRoomba_)->setEnabled(true);
+    turnCcw_pushButtons_.value(selectedRoomba_)->setEnabled(true);
+    turnCw_pushButtons_.value(selectedRoomba_)->setEnabled(true);
+    handleUIElementsChangeAllTabsState(false);
+    (*flog.ts) << "Connection established." << endl;
+}
+
+void MainWindow::connectionFailed()
+{
+    connection_pushButtons_.value(selectedRoomba_)->setText("Connect");
+    connection_pushButtons_.value(selectedRoomba_)->setEnabled(true);
+    handleUIElementsConnectionStateChange(false);
+    handleUIElementsChangeAllTabsState(false);
+    (*flog.ts) << "Connection failed." << endl;
+}
+
+void MainWindow::handleUIElementsConnectionStateChange(bool state)
+{
+    ip1LineEdits_.value(selectedRoomba_)->setDisabled(state);
+    ip2LineEdits_.value(selectedRoomba_)->setDisabled(state);
+    ip3LineEdits_.value(selectedRoomba_)->setDisabled(state);
+    ip4LineEdits_.value(selectedRoomba_)->setDisabled(state);
+    roombaNameLineEdits_.value(selectedRoomba_)->setDisabled(state);
+    driveForward_toolButtons_.value(selectedRoomba_)->setEnabled(state);
+    driveBackward_toolButtons_.value(selectedRoomba_)->setEnabled(state);
+    turnCw_pushButtons_.value(selectedRoomba_)->setEnabled(state);
+    turnCcw_pushButtons_.value(selectedRoomba_)->setEnabled(state);
+}
+
+void MainWindow::handleUIElementsControlModeStateChange(bool state)
+{
+    for (auto roomba : roombaTabs_.values())
+    {
+        ip1LineEdits_.value(roomba)->setDisabled(state);
+        ip2LineEdits_.value(roomba)->setDisabled(state);
+        ip3LineEdits_.value(roomba)->setDisabled(state);
+        ip4LineEdits_.value(roomba)->setDisabled(state);
+        roombaNameLineEdits_.value(roomba)->setDisabled(state);
+        connection_pushButtons_.value(roomba)->setDisabled(state);
+        allMotors_pushButtons_.value(roomba)->setDisabled(state);
+        playSong_pushButtons_.value(roomba)->setDisabled(state);
+        resetAngle_pushButtons_.value(roomba)->setDisabled(state);
+        correctLeft_toolButtons_.value(roomba)->setDisabled(state);
+        correctRight_toolButtons_.value(roomba)->setDisabled(state);
+        correctUp_toolButtons_.value(roomba)->setDisabled(state);
+        correctDown_toolButtons_.value(roomba)->setDisabled(state);
+        correctCw_pushButtons_.value(roomba)->setDisabled(state);
+        correctCcw_pushButtons_.value(roomba)->setDisabled(state);
+        driveForward_toolButtons_.value(roomba)->setDisabled(state);
+        driveBackward_toolButtons_.value(roomba)->setDisabled(state);
+        turnCw_pushButtons_.value(roomba)->setDisabled(state);
+        turnCcw_pushButtons_.value(roomba)->setDisabled(state);
+    }
+    clean_pushButton_->setEnabled(state);
+    Go2POIs_pushButton_->setEnabled(state);
+    wall_action_->setDisabled(state);
+    start_action_->setDisabled(state);
+    startVirtual_action_->setDisabled(state);
+}
+
 void MainWindow::pushButton_Clean_clicked()
 {
     fleetManager_->clean();
     (*flog.ts) << "Clean Button pressed." << endl;
 }
 
-void MainWindow::pushButton_allMotorsOn_clicked()
+void MainWindow::pushButton_allMotors_clicked()
 {
+    if (allMotors_pushButtons_.value(selectedRoomba_)->property("On") == QVariant(false))
+    {
+        allMotors_pushButtons_.value(selectedRoomba_)->setProperty("On", QVariant(true));
+        allMotors_pushButtons_.value(selectedRoomba_)->setText("Motors off");
     fleetManager_->allMotorsOn();
     (*flog.ts) << "Motors on Button pressed." << endl;
 }
 
-void MainWindow::pushButton_allMotorsOff_clicked()
+    else
 {
+        allMotors_pushButtons_.value(selectedRoomba_)->setProperty("On", QVariant(false));
+        allMotors_pushButtons_.value(selectedRoomba_)->setText("Motors on");
     fleetManager_->allMotorsOff();
     (*flog.ts) << "Motors off Button pressed." << endl;
 }
 
-void MainWindow::pushButton_Safe_clicked()
-{
-    grabKeyboard();
-    fleetManager_->safeMode();
-    (*flog.ts) << "Safe Button pressed." << endl;
-}
-
-void MainWindow::pushButton_Full_clicked()
-{
-    grabKeyboard();
-    fleetManager_->fullMode();
-    (*flog.ts) << "Full Button pressed." << endl;
 }
 
 void MainWindow::pushButton_resetAngle_clicked()
@@ -436,22 +582,22 @@ void MainWindow::pushButton_resetAngle_clicked()
     (*flog.ts) << "ResetAngle Button pressed." << endl;
 }
 
-void MainWindow::pushButton_correctLeft_clicked()
+void MainWindow::toolButton_correctLeft_clicked()
 {
     fleetManager_->correctLocation(Util::Direction::W);
 }
 
-void MainWindow::pushButton_correctRight_clicked()
+void MainWindow::toolButton_correctRight_clicked()
 {
     fleetManager_->correctLocation(Util::Direction::E);
 }
 
-void MainWindow::pushButton_correctUp_clicked()
+void MainWindow::toolButton_correctUp_clicked()
 {
     fleetManager_->correctLocation(Util::Direction::N);
 }
 
-void MainWindow::pushButton_correctDown_clicked()
+void MainWindow::toolButton_correctDown_clicked()
 {
     fleetManager_->correctLocation(Util::Direction::S);
 }
@@ -464,6 +610,114 @@ void MainWindow::pushButton_correctCw_clicked()
 void MainWindow::pushButton_correctCcw_clicked()
 {
     fleetManager_->correctAngle(false);
+}
+
+void MainWindow::handleUIElementsDrivingStateChange()
+{
+    driveForward_toolButtons_.value(selectedRoomba_)->setChecked(false);
+    driveBackward_toolButtons_.value(selectedRoomba_)->setChecked(false);
+    turnCcw_pushButtons_.value(selectedRoomba_)->setChecked(false);
+    turnCw_pushButtons_.value(selectedRoomba_)->setChecked(false);
+}
+
+void MainWindow::toolButton_driveForward_clicked()
+{
+    if (velocity_horizontalSlider_->value() < 0)
+    {
+        velocity_horizontalSlider_->setValue(velocity_horizontalSlider_->value()*-1);
+    }
+    else if (velocity_horizontalSlider_->value() == 0)
+    {
+        velocity_horizontalSlider_->setValue(100);
+    }
+    if (driveForward_toolButtons_.value(selectedRoomba_)->isChecked())
+    {
+        handleUIElementsDrivingStateChange();
+        driveForward_toolButtons_.value(selectedRoomba_)->setChecked(true);
+        fleetManager_->drive(velocity_horizontalSlider_->value(), Util::RADSTRAIGHT);
+        (*flog.ts) << "UpArrow" << endl;
+    }
+    else
+    {
+        driveForward_toolButtons_.value(selectedRoomba_)->setChecked(false);
+        fleetManager_->drive(0, Util::RADSTRAIGHT);
+        (*flog.ts) << "Stop" << endl;
+    }
+}
+
+void MainWindow::toolButton_driveBackward_clicked()
+{
+    if (velocity_horizontalSlider_->value() > 0)
+    {
+        velocity_horizontalSlider_->setValue(velocity_horizontalSlider_->value()*-1);
+    }
+    else if (velocity_horizontalSlider_->value() == 0)
+    {
+        velocity_horizontalSlider_->setValue(-100);
+    }
+    if (driveBackward_toolButtons_.value(selectedRoomba_)->isChecked())
+    {
+        handleUIElementsDrivingStateChange();
+        driveBackward_toolButtons_.value(selectedRoomba_)->setChecked(true);
+        fleetManager_->drive(velocity_horizontalSlider_->value(), Util::RADSTRAIGHT);
+        (*flog.ts) << "BackArrow" << endl;
+    }
+    else
+    {
+        driveBackward_toolButtons_.value(selectedRoomba_)->setChecked(false);
+        fleetManager_->drive(0, Util::RADSTRAIGHT);
+        (*flog.ts) << "Stop" << endl;
+    }
+}
+
+void MainWindow::pushButton_turnCw_clicked()
+{
+    if (velocity_horizontalSlider_->value() < 0)
+    {
+        velocity_horizontalSlider_->setValue(velocity_horizontalSlider_->value()*-1);
+    }
+    else if (velocity_horizontalSlider_->value() == 0)
+    {
+        velocity_horizontalSlider_->setValue(100);
+    }
+    if (turnCw_pushButtons_.value(selectedRoomba_)->isChecked())
+    {
+        handleUIElementsDrivingStateChange();
+        turnCw_pushButtons_.value(selectedRoomba_)->setChecked(true);
+        fleetManager_->drive(velocity_horizontalSlider_->value(), Util::RADTURNCW);
+        (*flog.ts) << "Turn clockwise" << endl;
+    }
+    else
+    {
+        turnCw_pushButtons_.value(selectedRoomba_)->setChecked(false);
+        fleetManager_->drive(0, Util::RADSTRAIGHT);
+        (*flog.ts) << "Stop" << endl;
+    }
+}
+
+void MainWindow::pushButton_turnCcw_clicked()
+{
+    if (velocity_horizontalSlider_->value() < 0)
+    {
+        velocity_horizontalSlider_->setValue(velocity_horizontalSlider_->value()*-1);
+    }
+    else if (velocity_horizontalSlider_->value() == 0)
+    {
+        velocity_horizontalSlider_->setValue(100);
+    }
+    if (turnCcw_pushButtons_.value(selectedRoomba_)->isChecked())
+    {
+        handleUIElementsDrivingStateChange();
+        turnCcw_pushButtons_.value(selectedRoomba_)->setChecked(true);
+        fleetManager_->drive(velocity_horizontalSlider_->value(), Util::RADTURNCCW);
+        (*flog.ts) << "Turn counterclockwise" << endl;
+    }
+    else
+    {
+        turnCcw_pushButtons_.value(selectedRoomba_)->setChecked(false);
+        fleetManager_->drive(0, Util::RADSTRAIGHT);
+        (*flog.ts) << "Stop" << endl;
+    }
 }
 
 void MainWindow::keyPressEvent(QKeyEvent* event)
@@ -521,7 +775,6 @@ void MainWindow::keyPressEvent(QKeyEvent* event)
         (*flog.ts) << "BackArrow" << endl;
     }
     else if(event->key() == Qt::Key_Q) {
-        releaseKeyboard();
         fleetManager_->drive(0, Util::RADSTRAIGHT);
         qDebug() << "Stop";
         (*flog.ts) << "Stop" << endl;
@@ -534,10 +787,22 @@ void MainWindow::pushButton_playSong_clicked()
     (*flog.ts) << "playSong 1" << endl;
 }
 
-void MainWindow::pushButton_unshowTraces_clicked()
+void MainWindow::pushButton_tracesDisable_clicked()
 {
+    QPushButton *sender = qobject_cast<QPushButton*>(QObject::sender());
+    if (sender->property("Disabled") == QVariant(false))
+    {
+        sender->setProperty("Disabled", QVariant(true));
+        sender->setText("Show traces");
+        (*flog.ts) << "Hide traces button pressed" << endl;
+    }
+    else
+    {
+        sender->setProperty("Disabled", QVariant(false));
+        sender->setText("Hide traces");
+        (*flog.ts) << "Show traces button pressed" << endl;
+    }
     fleetManager_->ifShowTraces();
-    (*flog.ts) << "unshow/show Button pressed" << endl;
 }
 
 void MainWindow::velocity_horizontalSlider_sliderMoved(int position)
@@ -558,10 +823,26 @@ void MainWindow::pushButton_Go2POIs_clicked()
     (*flog.ts) << "Go2POIs Button pressed." << endl;
 }
 
-void MainWindow::pushButton_stopFleet_clicked()
+void MainWindow::pushButton_fleetManagementEnable_clicked()
 {
-    fleetManager_->stopFleet(false);
+    QPushButton *sender = qobject_cast<QPushButton*>(QObject::sender());
+    if (sender->property("Enabled")  == QVariant(false))
+    {
+        sender->setProperty("Enabled", QVariant(true));
+        sender->setText("Stop Fleet Management");
+        // Set selected paint tool to cursor, so adding new roombas or walls is not possible
+        cursor_action_->trigger();
+        handleUIElementsControlModeStateChange(true);
+    }
+    else
+    {
+        sender->setProperty("Enabled", QVariant(false));
+        sender->setText("Start Fleet Management");
+        handleUIElementsControlModeStateChange(false);
+    		fleetManager_->stopFleet(false);
+		}
 }
+
 
 void MainWindow::action_Cursor_toggled(bool toggleStatus)
 {
@@ -767,6 +1048,46 @@ void MainWindow::openFile(const QString &fileName)
     setCurrentFile(fileName);
 }
 
+void MainWindow::createMenuBar()
+{
+    QMenu* fileMenu = menuBar()->addMenu(tr("&File"));
+
+    QAction* openAct = new QAction(tr("&Open"),this);
+    openAct->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_O));
+    openAct->setIcon(QIcon::fromTheme("document-open"));
+    connect(openAct, SIGNAL(triggered()),this,SLOT(actionOpen_triggered()));
+    fileMenu->addAction(openAct);
+
+    QAction* saveAct = new QAction(tr("&Save"),this);
+    saveAct->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_S));
+    saveAct->setIcon(QIcon::fromTheme("document-save"));
+    connect(saveAct, SIGNAL(triggered()),this,SLOT(actionSave_triggered()));
+    fileMenu->addAction(saveAct);
+
+    QAction* saveAsAct = new QAction(tr("S&ave as"),this);
+    saveAsAct->setShortcut(QKeySequence(Qt::SHIFT + Qt::CTRL + Qt::Key_S));
+    saveAsAct->setIcon(QIcon::fromTheme("document-save-as"));
+    connect(saveAsAct, SIGNAL(triggered()),this,SLOT(actionSaveAs_triggered()));
+    fileMenu->addAction(saveAsAct);
+
+    QAction* quitAct = new QAction(tr("&Quit"),this);
+    quitAct->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_Q));
+    quitAct->setIcon(QIcon::fromTheme("application-exit"));
+    connect(quitAct, SIGNAL(triggered()),this,SLOT(close()));
+    fileMenu->addAction(quitAct);
+
+    QMenu* helpMenu = menuBar()->addMenu(tr("&Help"));
+
+    QAction* aboutQtAct = new QAction(tr("About &Qt"),this);
+    connect(aboutQtAct, SIGNAL(triggered()),this,SLOT(action_AboutQt_triggered()));
+    helpMenu->addAction(aboutQtAct);
+
+    QAction* aboutAct = new QAction(tr("&About"),this);
+    aboutAct->setIcon(QIcon::fromTheme("help-about"));
+    connect(aboutAct, SIGNAL(triggered()),this,SLOT(action_About_triggered()));
+    helpMenu->addAction(aboutAct);
+}
+
 void MainWindow::closeEvent(QCloseEvent *event)
 {
     if(saveUnsavedChanges())
@@ -789,8 +1110,8 @@ bool MainWindow::eventFilter(QObject *object, QEvent *event)
             //about the scene coordinates, not the possibly scaled view of it
             QPoint positionToShow = map_->mapToScene(map_->viewport()->mapFromGlobal(QCursor::pos())).toPoint();
             //Util::COORDCORRECTION has to be used when wanting to output real world coordinates
-            statusBar()->showMessage("X: " + QString::number(positionToShow.x()*Util::COORDCORRECTION) +
-                                     " Y: "+ QString::number(positionToShow.y()*Util::COORDCORRECTION));
+            statusBar()->showMessage("X: " + QString::number(positionToShow.x()*Util::COORDCORRECTION, 'f', 0) +
+                                     " Y: "+ QString::number(positionToShow.y()*Util::COORDCORRECTION, 'f', 0));
         }
         return false;
     }
@@ -799,4 +1120,69 @@ bool MainWindow::eventFilter(QObject *object, QEvent *event)
         statusBar()->clearMessage();
         return QObject::eventFilter(object, event);
     }
+}
+
+void MainWindow::setSelectedRoombaTab(Croi::IRoomba * roomba)
+{
+    stopAllManuallyControlledRoombas();
+    int selectedTab = roombaTabs_.key(roomba, -1);
+    if (selectedTab != -1)
+    {
+        qDebug() << "setSelectedTab: "<< selectedTab << "\n";
+        selectedRoomba_ = roomba;
+        tabWidget_->setCurrentIndex(selectedTab);
+    }
+}
+
+void MainWindow::tabChanged_triggered(int index)
+{
+    stopAllManuallyControlledRoombas();
+    map_->scene()->clearSelection(); // Clear selection even when changing to Fleet Management tab
+    Croi::IRoomba * selectedRoomba = roombaTabs_.value(index, NULL);
+    if (selectedRoomba != NULL)
+    {
+        qDebug() << "tabChanged_triggered" << index << "\n";
+        selectedRoomba_ = selectedRoomba;
+        selectedRoomba->getIcon()->setSelected(true);
+    }
+}
+
+void MainWindow::stopAllManuallyControlledRoombas()
+{
+    for (auto roomba : roombaTabs_.values())
+    {
+        roomba->drive(0, Util::RADSTRAIGHT);
+        driveForward_toolButtons_.value(roomba)->setChecked(false);
+        driveBackward_toolButtons_.value(roomba)->setChecked(false);
+        turnCcw_pushButtons_.value(roomba)->setChecked(false);
+        turnCw_pushButtons_.value(roomba)->setChecked(false);
+    }
+}
+
+void MainWindow::action_About_triggered()
+{
+    const QString aboutDescription =
+            "<b>Version 1.0</b><br>"
+            "<p align='center'>Created for course<br>"
+            "<a href='http://www.cs.tut.fi/~projekti/'>TIE-13100 Project Work on Pervasive Systems</a><br>"
+            "Tampere University of Technology<br><br>"
+            "Credits:<br>"
+            "Ville Jokela<br>"
+            "Juhani Järvinen<br>"
+            "Longchuan Niu<br>"
+            "Joonas Pessi<br>"
+            "Heikki Sarkanen<br>"
+            "Miao Zhao<br><br>"
+            "License: MIT<br><br>"
+            "<a href='https://github.com/joonaspessi/rotfl'>Sources on Github</a></p>";
+    QMessageBox aboutBox(this);
+    aboutBox.setWindowTitle("About Roomba, The Fleet Management");
+    aboutBox.setTextFormat(Qt::RichText);
+    aboutBox.setText(aboutDescription);
+    aboutBox.exec();
+}
+
+void MainWindow::action_AboutQt_triggered()
+{
+    QMessageBox::aboutQt(this, "About Qt");
 }

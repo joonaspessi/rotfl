@@ -24,6 +24,7 @@ enum Direction {N, NE, E, SE, S, SW, W, NW};
 const unsigned int REALVERTICEWIDTH = 10;  //real world width
 const unsigned int PIXELMAPWIDTH = 600;
 const unsigned int REALMAPWIDTH = 800;
+const unsigned int TABWIDTH = 700;
 const double COORDCORRECTION = double(REALMAPWIDTH)/PIXELMAPWIDTH;
 const unsigned int VERTICEWIDTH = ceil(REALVERTICEWIDTH/COORDCORRECTION);  //width in pixels
 const unsigned int REALROOMBAWIDTH = 34;  //real world width in cm

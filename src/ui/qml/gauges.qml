@@ -9,9 +9,9 @@ Item {
         id : backgroundcarbon
         width: 400
         height:380
-        Image {
+        Rectangle {
             anchors.fill: parent
-            source: "carbon"
+            color: "floralwhite"  // TODO: change to better "Image" for example source: "carbon"
         }
     }
 

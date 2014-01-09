@@ -201,6 +201,8 @@ void FleetManager::updateTimerTimeout()
             if (index == -1)  //selected roomba isn't yet in selectedRoombas_
             {
                 selectedRoombas_.append(roombas_.at(i));
+                // Set selected Roomba's tab active
+                mainWindow_->setSelectedRoombaTab(roombas_.at(i));
             }
         }
         else //roomba is not selected
@@ -222,10 +224,15 @@ void FleetManager::createRoomba(PoiQGraphicsEllipseItem *startPoint, bool virtua
     }
     else
     {
-        roomba = new Croi::RoombaRoowifi(startPoint, map_, this);
+        Croi::RoombaRoowifi *roombaRoowifi;
+        roombaRoowifi = new Croi::RoombaRoowifi(startPoint, map_, this);
+        roomba = roombaRoowifi;
+        QObject::connect(roombaRoowifi,SIGNAL(connectionEstablished()), mainWindow_, SLOT(connectionEstablished()));
+        QObject::connect(roombaRoowifi,SIGNAL(connectionFailed()), mainWindow_, SLOT(connectionFailed()));
     }
     //Croi::RoombaSerial* roomba = new Croi::RoombaSerial(startPoint, map_, this);
 
+    mainWindow_->addRoombaTab(roomba);
     roombas_.append(roomba);
     selectedRoombas_.append(roomba);
     QObject::connect(roomba, SIGNAL(areaCleaned()), this, SLOT(clean()));
@@ -314,56 +321,6 @@ QVector<PoiQGraphicsEllipseItem *> FleetManager::getPOIs()
 std::set<AtcQGraphicsRectItem *> FleetManager::getATCs()
 {
     return atcs_;
-}
-
-void FleetManager::removeRedObjects()
-{
-    for (int i = 0; i < pois_.size(); ++i)
-    {
-        if (pois_.at(i)->pen().color() == Qt::GlobalColor::red)
-        {
-            map_->scene()->removeItem(pois_.at(i));
-            delete pois_.at(i);
-            pois_.remove(i);
-        }
-    }
-    for (std::set<WallQGraphicsLineItem*>::iterator i = walls_.begin();
-         i != walls_.end(); ++i)
-    {
-        if ((*i)->pen().color() == Qt::GlobalColor::red)
-        {
-            removeWall(*i);
-        }
-    }
-
-	for (std::set<AtcQGraphicsRectItem*>::iterator i = atcs_.begin();
-         i != atcs_.end(); ++i)
-    {
-        if ((*i)->pen().color() == Qt::GlobalColor::red)
-        {
-            map_->scene()->removeItem(*i);
-            delete *i;
-            atcs_.erase(i);
-        }
-    }
-
-    //THE STARTING POINT CAN'T BE REMOVED NOW (TEMPORARY CHANGE)
-    //all tracking and tracing is taken away if startPoint_ is removed
-    //    if (startPoint_ != NULL && startPoint_->pen().color() == Qt::GlobalColor::red)
-    //    {
-    //        delete startPoint_;
-    //        startPoint_ = NULL;
-    //        removeTraces();
-    //        scene()->removeItem(curPoint_);
-    //        delete curPoint_;
-    //        curPoint_ = NULL;
-    //        scene()->removeItem(curSpeed_);
-    //        delete curSpeed_;
-    //        curSpeed_ = NULL;
-    //        initX_= 0.0;
-    //        initY_= 0.0;
-
-    //    }
 }
 
 void FleetManager::removeAllObjects()

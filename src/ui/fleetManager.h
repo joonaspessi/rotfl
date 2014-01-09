@@ -32,13 +32,13 @@ public:
     //because map is created later (needs this class).
     void setMap(MapQGraphicsView* map);
     void addPoi(PoiQGraphicsEllipseItem* poi);
-	void addAtc(AtcQGraphicsRectItem* atc);
+    void addAtc(AtcQGraphicsRectItem* atc);
     //adds the wall and removes POIs too close to the new wall
     //It's currently slow and should be optimized
     void addWall(WallQGraphicsLineItem* wall);
     std::set<WallQGraphicsLineItem*> getWalls();
     QVector<PoiQGraphicsEllipseItem *> getPOIs();
-	std::set<AtcQGraphicsRectItem *> getATCs();
+    std::set<AtcQGraphicsRectItem *> getATCs();
     void removePoi(PoiQGraphicsEllipseItem* poi);
     //removes the wall and updates vertices booleans hasWall and isBlocked
     //and takes into account situation with several walls near or intersecting

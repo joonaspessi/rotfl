@@ -6,7 +6,7 @@ namespace Croi {
 
 RoombaRoowifi::RoombaRoowifi(PoiQGraphicsEllipseItem *startPoint,
                              MapQGraphicsView* map, FleetManager *parent):
-    IRoomba(startPoint, map, parent)
+    IRoomba(startPoint, map, parent), reconnectCounter_(0), ip_("")
 {
     roowifi_ = new RooWifi(this);
     //TODO: implement own timer
@@ -22,13 +22,47 @@ RoombaRoowifi::~RoombaRoowifi()
 
 int RoombaRoowifi::rmb_connect(std::string ip)
 {
+    if (reconnectCounter_ > 2)
+    {
+        reconnectCounter_ = 0;
+        emit connectionFailed();
+        return -1;
+    }
+    ip_ = ip;
     QString qip = QString::fromStdString(ip);
     qDebug() << "set ip to:" << qip;
     roowifi_->SetIP(qip);
     roowifi_->Connect();
-    //TODO: implement own timer
     roowifi_->SetAutoCaptureTime(500);
     roowifi_->StartAutoCapture();
+    //Check after one second if the connection was established
+    QTimer::singleShot(2000, this, SLOT(reconnectCallback_timerTimeout()));
+}
+
+void RoombaRoowifi::reconnectCallback_timerTimeout()
+{
+    qDebug() << "reconnectCallback_timerTimeout";
+    //TODO: Better way needed, Checking charge rate is a hack to ensure that Roomba has waken up from sleep mode
+    if (roowifi_->IsConnected() && roowifi_->Sensors.Charge > 0)
+    {
+        safeMode(); // Switch to safe mode automatically in connect
+        reconnectCounter_ = 0;
+        emit connectionEstablished();
+    }
+    else
+    {
+        ++reconnectCounter_;
+        this->disconnect();
+        // Try connecting again after 2 seconds
+        QTimer::singleShot(2000, this, SLOT(disconnectCallback_timerTimeout()));
+        qDebug() << "Trying to connect for: " << reconnectCounter_ << " time";
+    }
+}
+
+void RoombaRoowifi::disconnectCallback_timerTimeout()
+{
+    qDebug() << "disconnectCallback_timerTimeout";
+    rmb_connect(ip_);
 }
 
 int RoombaRoowifi::disconnect()
