@@ -63,6 +63,11 @@ void IRoomba::setStartPoint(PoiQGraphicsEllipseItem* startPoint)
     startPoint_= startPoint;
 }
 
+PoiQGraphicsEllipseItem* IRoomba::getDestPoi()
+{
+    return destPoi_;
+}
+
 void IRoomba::resetAngle()
 {
     angle_ = 0.0;
@@ -394,6 +399,7 @@ void IRoomba::sensorUpdateTimerTimeout()
     {
         prevPReached_ = false;
         followingPath_ = false;
+        isReady_ = true;
 
         for(unsigned int i = 0; i < pathLines_.size(); ++i)
         {
@@ -402,8 +408,12 @@ void IRoomba::sensorUpdateTimerTimeout()
         }
         pathLines_.clear();
 
-        qobject_cast<FleetManager*>(parent())->removePoi(destPoi_);
-        destPoi_ = NULL;
+        if(destPoi_ != NULL)
+        {
+            PoiQGraphicsEllipseItem* tempPoi = destPoi_;
+            destPoi_ = NULL;
+            qobject_cast<FleetManager*>(parent())->poiCollected(this, tempPoi);
+        }
     }
     else
     {
@@ -654,6 +664,7 @@ void IRoomba::compNeigh(Util::Vertice *curV, Util::Direction direction,
 void IRoomba::usePath()
 {
     followingPath_ = true;
+    isReady_ = false;
     for(unsigned int i = 0; i < pathLines_.size(); ++i)
     {
         map_->scene()->addItem(pathLines_.at(i));
@@ -677,6 +688,7 @@ void IRoomba::stop()
 {
     followingPath_ = false;
     prevPReached_ = false;
+    isReady_ = true;
     drive(0, Util::RADSTRAIGHT);
 
     path_.clear();

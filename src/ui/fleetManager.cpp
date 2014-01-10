@@ -10,7 +10,7 @@
 #include "croi/roombaVirtual.h"
 
 FleetManager::FleetManager(MainWindow* mainWindow, QObject *parent):
-    QObject(parent), mainWindow_(mainWindow), map_(NULL)
+    QObject(parent), mainWindow_(mainWindow), map_(NULL), go2PoisOn_(false)
 {
     updateTimer_ = new QTimer(this);
     QObject::connect(updateTimer_, SIGNAL(timeout()), this, SLOT(updateTimerTimeout()));
@@ -30,9 +30,9 @@ void FleetManager::setMap(MapQGraphicsView* map)
 
     //creating vertices (with all values set to zero)
     QVector<Util::Vertice*> verticeRow;
-    for(int i = 0; i < int(ceil(double(Util::MAPWIDTH)/Util::VERTICEWIDTH)); ++i)
+    for(int i = 0; i < int(ceil(double(Util::PIXELMAPWIDTH)/Util::VERTICEWIDTH)); ++i)
     {
-        for(int j = 0; j < int(ceil(double(Util::MAPWIDTH)/Util::VERTICEWIDTH)); ++j)
+        for(int j = 0; j < int(ceil(double(Util::PIXELMAPWIDTH)/Util::VERTICEWIDTH)); ++j)
         {
             verticeRow.append(new Util::Vertice());
         }
@@ -231,7 +231,7 @@ void FleetManager::createRoomba(PoiQGraphicsEllipseItem *startPoint, bool virtua
 
 void FleetManager::addPoi(PoiQGraphicsEllipseItem* poi)
 {
-    pois_.insert(poi);
+    pois_.append(poi);
 }
 
 void FleetManager::addWall(WallQGraphicsLineItem* wall)
@@ -298,19 +298,20 @@ std::set<WallQGraphicsLineItem *> FleetManager::getWalls()
     return walls_;
 }
 
-std::set<PoiQGraphicsEllipseItem *> FleetManager::getPOIs()
+QVector<PoiQGraphicsEllipseItem *> FleetManager::getPOIs()
 {
     return pois_;
 }
 
 void FleetManager::removeRedObjects()
 {
-    for (std::set<PoiQGraphicsEllipseItem*>::iterator i = pois_.begin();
-         i != pois_.end(); ++i)
+    for (int i = 0; i < pois_.size(); ++i)
     {
-        if ((*i)->pen().color() == Qt::GlobalColor::red)
+        if (pois_.at(i)->pen().color() == Qt::GlobalColor::red)
         {
-            removePoi(*i);
+            map_->scene()->removeItem(pois_.at(i));
+            delete pois_.at(i);
+            pois_.remove(i);
         }
     }
     for (std::set<WallQGraphicsLineItem*>::iterator i = walls_.begin();
@@ -325,7 +326,7 @@ void FleetManager::removeRedObjects()
 
 void FleetManager::removeAllObjects()
 {
-    for (std::set<PoiQGraphicsEllipseItem*>::iterator i = pois_.begin();
+    for (QVector<PoiQGraphicsEllipseItem*>::iterator i = pois_.begin();
          i != pois_.end(); ++i)
     {
         removePoi(*i);
@@ -339,8 +340,14 @@ void FleetManager::removeAllObjects()
 
 void FleetManager::removePoi(PoiQGraphicsEllipseItem* poi)
 {
+    int index = pois_.indexOf(poi);
+    if(index == -1)
+    {
+        return;
+    }
+
     map_->scene()->removeItem(poi);
-    pois_.erase(poi);
+    pois_.remove(pois_.indexOf(poi));
     delete poi;
 }
 
@@ -456,36 +463,36 @@ void FleetManager::removeTraces()
 
 void FleetManager::go2Pois()
 {
-    if (pois_.empty())
+    if(go2PoisOn_)
+    {
+        QMessageBox::warning
+        (mainWindow_, "", tr("Old go2Pois command is still active!"));
+        return;
+    }
+
+    if(pois_.empty())
     {
         QMessageBox::warning
         (mainWindow_, "", tr("Please make a POI!"));
     }
-    else if (selectedRoombas_.empty())
+    else if(roombas_.empty())
     {
         QMessageBox::warning
-        (mainWindow_, "", tr("Please select a Roomba!"));
+        (mainWindow_, "", tr("Please make a Roomba!"));
     }
     else
     {
-        managedRoombas_ = selectedRoombas_;
+        managedRoombas_ = roombas_;
 
-        for (std::set<PoiQGraphicsEllipseItem*>::iterator i = pois_.begin();
-             i != pois_.end(); ++i)
+        for (int i = 0; i < pois_.size() && !managedRoombas_.empty(); ++i)
         {
-            if(!go2Poi(*i))
+            if(!go2Poi(pois_.at(i)))
             {
-                if(i == pois_.begin())
+                if(i == 0)
                 {
                     QMessageBox::warning
                             (mainWindow_, "", tr("No selected Roomba is ready"));
                 }
-                else
-                {
-                    QMessageBox::warning
-                            (mainWindow_, "", tr("TODO: Roombas to have a task list for collecting unlimited amount of POIs"));
-                }
-
                 return;
             }
         }
@@ -522,6 +529,7 @@ bool FleetManager::go2Poi(PoiQGraphicsEllipseItem *poi)
         if(managedRoombas_.at(i) == selectedRoomba)
         {
             managedRoombas_.remove(i);
+            --i;    //removing makes new roomba to be at i
         }
         else
         {
@@ -543,6 +551,8 @@ bool FleetManager::go2Poi(PoiQGraphicsEllipseItem *poi)
     }
     else
     {
+        poi->setGettingCollected(true);
+        go2PoisOn_ = true;
         selectedRoomba->usePath();  //selectedRoomba will go to Poi
         return true;
     }
@@ -550,9 +560,69 @@ bool FleetManager::go2Poi(PoiQGraphicsEllipseItem *poi)
 
 void FleetManager::stopFleet()
 {
+    go2PoisOn_ = false;
     for(unsigned int i = 0; i < roombas_.size(); ++i)
     {
         roombas_.at(i)->stop();
+    }
+}
+
+void FleetManager::poiCollected(Croi::IRoomba* collector, PoiQGraphicsEllipseItem *poi)
+{
+    removePoi(poi);
+    if(pois_.empty())
+    {
+        QMessageBox::information
+        (mainWindow_, "", tr("All points collected!"));
+        go2PoisOn_ = false;
+        return;
+    }
+
+    //find the next nearest poi
+    double newDistance = std::numeric_limits<double>::max();
+    double bestDistance = std::numeric_limits<double>::max();
+    PoiQGraphicsEllipseItem* nearestPoi = NULL;
+    for(QVector<PoiQGraphicsEllipseItem*>::iterator i = pois_.begin();
+        i != pois_.end(); ++i)
+    {
+        if(!(*i)->getGettingCollected())
+        {
+            newDistance = collector->calcPath(vertices_, *i);
+            //if poi is unreachable to this roomba
+            if(newDistance < bestDistance)
+            {
+                nearestPoi = *i;
+                collector->ignorePath();  //old path must be ignored
+                //the best path will be recalculated. This is not very
+                //stylish here (works nicer in go2poi)
+            }
+
+        }
+    }
+
+    if(nearestPoi != NULL) //
+    {
+        collector->calcPath(vertices_, nearestPoi);  //recalculating best path
+        collector->getDestPoi()->setGettingCollected(true);
+        collector->usePath();
+        return;
+    }
+
+    //if this code is executed, pois_ isn't empty and there is a poi unreachable by
+    //one of the roombas. If all roombas have stopped (their destPoi is NULL), then
+    //there exists an unreachable poi
+    bool unreachableExists = true;
+    for(int i = 0; i < roombas_.size(); ++i)
+    {
+        if(roombas_.at(i)->getDestPoi() != NULL)
+        {
+            unreachableExists = false;
+        }
+    }
+    if(unreachableExists)
+    {
+        QMessageBox::warning
+        (mainWindow_, "", tr("Rest of the points are unreachable!"));
     }
 }
 
@@ -576,7 +646,7 @@ bool FleetManager::isBlocked(QPointF* point)
 bool FleetManager::removeBlockedPois()
 {
     bool blockedPoiFound = false;
-    for (std::set<PoiQGraphicsEllipseItem*>::iterator i = pois_.begin();
+    for (QVector<PoiQGraphicsEllipseItem*>::iterator i = pois_.begin();
          i != pois_.end(); ++i)
     {
         QPointF point = (*i)->pos();

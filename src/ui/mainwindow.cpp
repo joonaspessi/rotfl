@@ -75,12 +75,12 @@ MainWindow::MainWindow(QWidget *parent) :
 
     fleetManager_ = new FleetManager(this);
     map_ = new MapQGraphicsView(fleetManager_, this);
-    map_->setScene(new QGraphicsScene(QRect(0,0,Util::MAPWIDTH,Util::MAPWIDTH), this));
+    map_->setScene(new QGraphicsScene(QRect(0,0,Util::PIXELMAPWIDTH,Util::PIXELMAPWIDTH), this));
     map_->centerOn(0,0);
     fleetManager_->setMap(map_);
     setCentralWidget(map_);
-    centralWidget()->setFixedWidth(Util::MAPWIDTH+2);
-    centralWidget()->setFixedHeight(Util::MAPWIDTH+2);
+    centralWidget()->setFixedWidth(Util::PIXELMAPWIDTH+2);
+    centralWidget()->setFixedHeight(Util::PIXELMAPWIDTH+2);
 
     //qDebug() << "children width: " << map_->childrenRect().width();
     //qDebug() << "children height: " << map_->childrenRect().height();
@@ -695,9 +695,9 @@ void MainWindow::saveToFile(QString &fileName)
     roomba_map.endGroup();
 
     roomba_map.beginGroup("POIs");
-    std::set<PoiQGraphicsEllipseItem *> pois = fleetManager_->getPOIs();
+    QVector<PoiQGraphicsEllipseItem *> pois = fleetManager_->getPOIs();
     index = 0;
-    for (std::set<PoiQGraphicsEllipseItem*>::iterator it = pois.begin();
+    for (QVector<PoiQGraphicsEllipseItem*>::iterator it = pois.begin();
          it != pois.end(); ++it)
     {
         QPointF point = (*it)->pos();

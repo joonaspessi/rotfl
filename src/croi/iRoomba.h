@@ -65,6 +65,7 @@ public:
     void updateState();
     PoiQGraphicsEllipseItem* getStartPoint();
     void setStartPoint(PoiQGraphicsEllipseItem* startPoint);
+    PoiQGraphicsEllipseItem* getDestPoi();
     //TODO: changed when implementing new roomba icon
     QGraphicsPixmapItem *getIcon();
     //calling this will show/unshow traces depending on whether

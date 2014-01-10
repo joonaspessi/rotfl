@@ -12,6 +12,8 @@ RoombaVirtual::RoombaVirtual(PoiQGraphicsEllipseItem *startPoint,
 {
     statusTimer_ = new QTimer(this);
     IRoomba::updateState(); //call needed to have no null pointer in icon_
+    rmb_connect("");  //ip is irrelevant
+    IRoomba::safeMode();
 }
 
 RoombaVirtual::~RoombaVirtual()

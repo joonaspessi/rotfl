@@ -18,9 +18,12 @@ public:
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
     int type() const;
     void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
+    bool getGettingCollected();
+    void setGettingCollected(bool gettingCollected);
 
 private:
     FleetManager* fleetManager_;
+    bool gettingCollected_;
 };
 
 #endif // POIQGRAPHICSELLIPSEITEM_H

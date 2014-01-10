@@ -8,7 +8,8 @@
 
 PoiQGraphicsEllipseItem::PoiQGraphicsEllipseItem
 (FleetManager* fleetManager, qreal x, qreal y, qreal w, qreal h, QGraphicsItem* parent):
-    QGraphicsEllipseItem(x, y, w, h, parent), fleetManager_(fleetManager)
+    QGraphicsEllipseItem(x, y, w, h, parent), fleetManager_(fleetManager),
+    gettingCollected_(false)
 {
     setZValue(1);
 }
@@ -41,6 +42,16 @@ void PoiQGraphicsEllipseItem::contextMenuEvent(QGraphicsSceneContextMenuEvent *e
     {
         fleetManager_->removePoi(this);
     }
+}
+
+bool PoiQGraphicsEllipseItem::getGettingCollected()
+{
+    return gettingCollected_;
+}
+
+void PoiQGraphicsEllipseItem::setGettingCollected(bool gettingCollected)
+{
+    gettingCollected_ = gettingCollected;
 }
 
 PoiQGraphicsEllipseItem::~PoiQGraphicsEllipseItem()

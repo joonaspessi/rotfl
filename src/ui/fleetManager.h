@@ -9,6 +9,7 @@
 #include "poiQGraphicsEllipseItem.h"
 #include <set>
 #include <string>
+#include <QVector>
 #include <QTimer>
 #include <limits>
 #include "uiUtils.h"
@@ -32,7 +33,7 @@ public:
     void addPoi(PoiQGraphicsEllipseItem* poi);
     void addWall(WallQGraphicsLineItem* wall);
     std::set<WallQGraphicsLineItem*> getWalls();
-    std::set<PoiQGraphicsEllipseItem *> getPOIs();
+    QVector<PoiQGraphicsEllipseItem *> getPOIs();
     void removePoi(PoiQGraphicsEllipseItem* poi);
     void removeWall(WallQGraphicsLineItem* wall);
     //removes all selected objects except roombas and startPoints
@@ -42,6 +43,7 @@ public:
     void removeTraces();
     void go2Pois();
     void stopFleet();
+    void poiCollected(Croi::IRoomba *collector, PoiQGraphicsEllipseItem *poi);
 
     //these functions work for selectedRoombas_
 
@@ -83,10 +85,11 @@ private:
     QVector<Croi::IRoomba*> managedRoombas_;
     QVector<Croi::IRoomba*> roombas_;
     std::set<WallQGraphicsLineItem*> walls_;
-    std::set<PoiQGraphicsEllipseItem*> pois_;
+    QVector<PoiQGraphicsEllipseItem*> pois_;
     MapQGraphicsView* map_;
     QVector<QVector<Util::Vertice*>> vertices_;
     QTimer* updateTimer_;
+    bool go2PoisOn_;
 };
 
 #endif // FLEETMANAGER_H
