@@ -485,16 +485,16 @@ double IRoomba::calcPath(QVector<QVector<Util::Vertice *> > &vertices, QPointF p
     Util::Vertice* startV = NULL;
     Util::Vertice* curV = NULL;
     Util::Vertice* goalV = NULL;
-    for(unsigned int i = 0; i < vertices.size(); ++i)
+    for(int i = 0; i < vertices.size(); ++i)
     {
-        for(unsigned int j = 0; j < vertices.at(i).size(); ++j)
+        for(int j = 0; j < vertices.at(0).size(); ++j)
         {
 //            qDebug() << "verticeX: " << vertices.at(i).at(j)->topLeftX << " "
 //                     << "verticeY: " << vertices.at(i).at(j)->topLeftY;
-            if(Xloc_ >= vertices.at(i).at(j)->topLeftX &&
-               Xloc_ <= vertices.at(i).at(j)->topLeftX+Util::VERTICEWIDTH-1 &&
-               Yloc_ >= vertices.at(i).at(j)->topLeftY &&
-               Yloc_ <= vertices.at(i).at(j)->topLeftY+Util::VERTICEWIDTH-1)
+            if(Xloc_ >= double(vertices.at(i).at(j)->topLeftX) &&
+               Xloc_ <= double(vertices.at(i).at(j)->topLeftX+Util::VERTICEWIDTH-1) &&
+               Yloc_ >= double(vertices.at(i).at(j)->topLeftY) &&
+               Yloc_ <= double(vertices.at(i).at(j)->topLeftY+Util::VERTICEWIDTH-1))
             {
                 startV = vertices.at(i).at(j);
             }

@@ -24,7 +24,7 @@ int RoombaVirtual::rmb_connect(std::string ip)
 {
     connect(statusTimer_, SIGNAL(timeout()), this, SLOT(statusTimerTimeout()));
     statusTimer_->setSingleShot(false);
-    statusTimer_->start(30);
+    statusTimer_->start(100);
 }
 
 int RoombaVirtual::disconnect()
