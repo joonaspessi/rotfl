@@ -18,7 +18,7 @@ IRoomba::IRoomba(PoiQGraphicsEllipseItem *startPoint, MapQGraphicsView *map,
     Yloc_(startPoint->y()), angle_(0.0), radius_(Util::RADSTRAIGHT),
     velocity_(0), traceShown_(true), isReady_(false), driveTime_(0),
     followingPath_(false), prevPReached_(false), destPoi_(NULL), totalDistance_(0),
-	cleaning_(false)
+    cleaning_(false), destAtc_(NULL)
 {
     drawTraceTimer = new QTimer(this);
     QObject::connect(drawTraceTimer, SIGNAL(timeout()), this, SLOT(drawTraceTimerTimeout()));
@@ -142,59 +142,16 @@ MapQGraphicsView* IRoomba::getMap()
 ///// TODO: Add the function calls from branch merge_fleetMngmt!
 void IRoomba::updateState()
 {
-    //subclass handles the retrieval of sensor information
-    double distance = getDistance()/Util::COORDCORRECTION;
-    totalDistance_ += distance;
-
-    double angle = getAngle();
     bool leftBump = getLeftBumb();
     bool rightBump = getRightBumb();
 
-    //angle for distance calculation
-    double angleForDist = angle_-angle*Util::PI*ANGLECORRECTION/180.0;
-    //distance changed to cm
-    double dist = -distance/10.0*DISTANCECORRECTION;
-    //special radiuses mean no adaptation needed
-    if (radius_ != 32768 && radius_ != 32767 && radius_ != -1 && radius_ != 1)
-    {
-        //corrected distance (and change to cm)
-        dist = -2.0*(static_cast<double>(radius_))*
-                sin(distance/radius_/2)/10.0*DISTANCECORRECTION;
-        //corrected angle in radians for distance calculation
-        //angleForDist = angle*PI/180.0*ANGLECORRECTION/2.0;
-        //other version
-        angleForDist = angle_-distance/radius_/2.0;
-    }
-    //real angle (always used for roomba's angle)
-    angle_ -= angle*Util::PI*ANGLECORRECTION/180.0;
-    //qDebug() << "Roomba's angle in degrees: " << angle_*(180/PI);
-    angle_ = fmod(angle_, 2.0*Util::PI);
-    if (angle_ < 0)
-    {
-        angle_ = 2*Util::PI+angle_;
-    }
-    //qDebug() << "Roomba's angle in degrees after correction: " << angle_*(180/PI);
-
-    //coordinates are updated
-    double x = Xloc_+cos(angleForDist)*dist;
-    double y = Yloc_+sin(angleForDist)*dist;
+    QPointF p = calcLoc();
+    double x = p.x();
+    double y = p.y();
 
     if(round(Xloc_) != round(x) || round(Yloc_) != round(y))
     {
-        //new piece of trace is created
-        QGraphicsLineItem* traceL = new QGraphicsLineItem
-                (Xloc_, Yloc_, x, y);
-        QPen linePen(Qt::GlobalColor::gray);
-        linePen.setWidth(Util::TRACEWIDTH);
-        traceL->setPen(linePen);
-        //opacity, so we get the idea which parts are cleaned well
-        traceL->setOpacity(0.25);
-        traces_.append(traceL);
-        if (!traceShown_) //if traces are currently hidden
-        {
-            traceL->setVisible(false);
-        }
-        map_->scene()->addItem(traceL);
+        drawTrace(x, y, Qt::GlobalColor::gray);
     }
 
     Xloc_ = x;
@@ -271,36 +228,38 @@ void IRoomba::removeTraces()
 
 void IRoomba::drawTrace(double x, double y, Qt::GlobalColor color)
 {
-
     //new piece of trace is created (polygon_ set as parent)
-    QGraphicsLineItem* traceL = new QGraphicsLineItem
-            (Xloc_, Yloc_, x, y);
-
-    QGraphicsLineItem* ctraceL = new QGraphicsLineItem
-            (Xloc_, Yloc_, x, y);
-
-    QPen linePen(color);
-    QPen clinePen(color);
-
-    linePen.setWidth(TRACEWIDTH);
-    traceL->setPen(linePen);
-    //opacity, so we get the idea which parts are cleaned well
-    traceL->setOpacity(0.25);
-    traces_.append(traceL);
-    if (color == 8) //8 is green
+    if (color == Qt::GlobalColor::green)
     {
-        clinePen.setWidth(CTRACEWIDTH);
+        QGraphicsLineItem* ctraceL = new QGraphicsLineItem
+                                        (Xloc_, Yloc_, x, y);
+        QPen clinePen(color);
+        clinePen.setWidth(Util::PIXELCLEANWIDTH);
         ctraceL->setPen(clinePen);
-        ctraceL->setOpacity(0.1);
+        ctraceL->setOpacity(0.25);
+        ctraceL->setZValue(2);
         ctraces_.append(ctraceL);
+        map_->scene()->addItem(ctraceL);
     }
-
-    if (!traceShown_) //if traces are currently hidden
+    else
     {
-        traceL->setVisible(false);
+        QGraphicsLineItem* traceL = new QGraphicsLineItem
+                                        (Xloc_, Yloc_, x, y);
+        QPen linePen(color);
+
+        linePen.setWidth(Util::TRACEWIDTH);
+        traceL->setPen(linePen);
+        //opacity, so we get the idea which parts are cleaned well
+        traceL->setOpacity(0.25);
+        traces_.append(traceL);
+
+        if (!traceShown_) //if traces are currently hidden
+        {
+            traceL->setVisible(false);
+        }
+
+        map_->scene()->addItem(traceL);
     }
-    map_->scene()->addItem(traceL);
-    map_->scene()->addItem(ctraceL);
 }
 
 
@@ -308,27 +267,35 @@ void IRoomba::drawTrace(double x, double y, Qt::GlobalColor color)
 QPointF IRoomba::calcLoc()
 {
     //subclass handles the retrieval of sensor information
-    int distance = getDistance();
-    int angle = getAngle();
+    double distance = getDistance()/Util::COORDCORRECTION;
+    totalDistance_ += distance;
+
+    double angle = getAngle();
 
     //angle for distance calculation
-    double angleForDist = angle_-static_cast<double>(angle)*PI*ANGLECORRECTION/180.0;
+    double angleForDist = angle_-angle*Util::PI*ANGLECORRECTION/180.0;
     //distance changed to cm
-    double dist = -static_cast<double>(distance)/10.0*DISTANCECORRECTION;
+    double dist = -distance/10.0*DISTANCECORRECTION;
     //special radiuses mean no adaptation needed
     if (radius_ != 32768 && radius_ != 32767 && radius_ != -1 && radius_ != 1)
     {
         //corrected distance (and change to cm)
         dist = -2.0*(static_cast<double>(radius_))*
-                sin(static_cast<double>(distance)/radius_/2)/10.0*DISTANCECORRECTION;
+                sin(distance/radius_/2)/10.0*DISTANCECORRECTION;
         //corrected angle in radians for distance calculation
-        //angleForDist = static_cast<double>(angle)*PI/180.0*ANGLECORRECTION/2.0;
-        //other version that doesn't work curently
-        angleForDist = angle_-static_cast<double>(distance)/radius_/2.0;
+        //angleForDist = angle*PI/180.0*ANGLECORRECTION/2.0;
+        //other version
+        angleForDist = angle_-distance/radius_/2.0;
     }
     //real angle (always used for roomba's angle)
-    angle_ -= static_cast<double>(angle)*PI*ANGLECORRECTION/180.0;
-    angle_ = fmod(angle_,2.0*PI);  //full circles are taken out -> range 0..2*PI
+    angle_ -= angle*Util::PI*ANGLECORRECTION/180.0;
+    //qDebug() << "Roomba's angle in degrees: " << angle_*(180/PI);
+    angle_ = fmod(angle_, 2.0*Util::PI);
+    if (angle_ < 0)
+    {
+        angle_ = 2*Util::PI+angle_;
+    }
+    //qDebug() << "Roomba's angle in degrees after correction: " << angle_*(180/PI);
 
     //coordinates are updated
     double x = Xloc_+cos(angleForDist)*dist;
@@ -450,13 +417,13 @@ void IRoomba::go2Point(QPointF point)
     if (turningAngle > 0) //Turn clockwise
     {
         this->drive(100,Util::RADTURNCW);
-		turnDirection_= RADTURNCW;
+        turnDirection_= Util::RADTURNCW;
 
     }
     else
     {
         this->drive(100,Util::RADTURNCCW);
-		turnDirection_= RADTURNCCW;
+        turnDirection_= Util::RADTURNCCW;
     }
     QTimer::singleShot(turnTime, this, SLOT(turnTimerTimeout()));
 }
@@ -512,7 +479,7 @@ void IRoomba::driveTimerTimeout()
 	if (cleaning_)
 	{
 	    drawTraceTimerStart();
-   		calc4square(m_sy);
+        calc4square(m_sy);
     	squareStart();  //rectangle size, height and width is decided here.
 	}
 	else 
@@ -533,33 +500,29 @@ void IRoomba::squareStart() //after reaching to the starting point, turn angle h
 
     float time=(abs(angle_*(180/PI)))*18055/1000;
     qDebug() << "5. squareStart time=turnTime: " << time;
-    if (turnDirection_== RADTURNCW)
-        turnDirection_= RADTURNCCW;
+    if (turnDirection_== Util::RADTURNCW)
+        turnDirection_= Util::RADTURNCCW;
     else
-        turnDirection_= RADTURNCW;
+        turnDirection_= Util::RADTURNCW;
 
     drive(100, turnDirection_);
     QTimer::singleShot(time,this,SLOT(rotateEnded()));
     qDebug() << "6. squarestart singleShot time: " << time;
 
 }
-void IRoomba::rotateEnded2()
-{
-    resetRoombaAngle(&IRoomba::rotateEnded);
-}
 
 void IRoomba::rotateEnded()     //turning ended, start to drive straight, distance the width-tracewidth/2
 {
     drive(0, turnDirection_);
-    drive(100, RADSTRAIGHT);
-    QTimer::singleShot((m_sx-CTRACEWIDTH/2)*100,this, SLOT(squareTurn()));
+    drive(100, Util::RADSTRAIGHT);
+    QTimer::singleShot(m_sx*100,this, SLOT(squareTurn()));
 
 }
 
 void IRoomba::squareTurn()    //1st line end, stop and turn 90 degree
 {
-    drive(0, RADSTRAIGHT);
-    drive(100, RADTURNCW);
+    drive(0, Util::RADSTRAIGHT);
+    drive(100, Util::RADTURNCW);
 
     int turnTime = abs(90 /**(180/PI)*/) * 18055 / 1000;
 
@@ -569,8 +532,8 @@ void IRoomba::squareTurn()    //1st line end, stop and turn 90 degree
 
 void IRoomba::squareMoveOneLine() //move 1st line to 2nd line with distance height/5, here is 10
 {
-    drive(0, RADTURNCW);
-    drive(100, RADSTRAIGHT);
+    drive(0, Util::RADTURNCW);
+    drive(100, Util::RADSTRAIGHT);
 
     QTimer::singleShot(ld*100, this, SLOT(squareTurn2()));
 
@@ -578,8 +541,8 @@ void IRoomba::squareMoveOneLine() //move 1st line to 2nd line with distance heig
 
 void IRoomba::squareTurn2() //stop and turn 90 degree in the beginning of 2nd line
 {
-    drive(0, RADSTRAIGHT);
-    drive(100, RADTURNCW);
+    drive(0, Util::RADSTRAIGHT);
+    drive(100, Util::RADTURNCW);
 
     int turnTime = abs(90/**(180/PI)*/) * 18055 / 1000;
 
@@ -589,16 +552,16 @@ void IRoomba::squareTurn2() //stop and turn 90 degree in the beginning of 2nd li
 
 void IRoomba::squareMoveLong()
 {
-    drive(100, RADSTRAIGHT);
-    QTimer::singleShot((m_sx-CTRACEWIDTH)*100,this, SLOT(squareTurn3()));
+    drive(100, Util::RADSTRAIGHT);
+    QTimer::singleShot(m_sx*100,this, SLOT(squareTurn3()));
 }
 
 
 
 void IRoomba::squareTurn3()
 {
-    drive(0, RADSTRAIGHT);
-    drive(100, RADTURNCCW);
+    drive(0, Util::RADSTRAIGHT);
+    drive(100, Util::RADTURNCCW);
 
     int turnTime = abs(90/**(180/PI)*/) * 18055 / 1000;
 
@@ -608,9 +571,9 @@ void IRoomba::squareTurn3()
 
 void IRoomba::squareMoveOneLine2() //move outside of the square,
 {
-    drive(0, RADTURNCW);
+    drive(0, Util::RADTURNCW);
 
-    drive(100, RADSTRAIGHT);
+    drive(100, Util::RADSTRAIGHT);
 
     QTimer::singleShot(ld*100, this, SLOT(squareTurn4()));
 
@@ -618,8 +581,8 @@ void IRoomba::squareMoveOneLine2() //move outside of the square,
 
 void IRoomba::squareTurn4()   //at outside of the square, stop, turn 90 degree anti-clock
 {
-    drive(0, RADSTRAIGHT);
-    drive(100, RADTURNCCW);
+    drive(0, Util::RADSTRAIGHT);
+    drive(100, Util::RADTURNCCW);
 
     int turnTime = abs(90/**(180/PI)*/) * 18055 / 1000;
 
@@ -632,20 +595,18 @@ void IRoomba::squareStart2()
 {
   m_count++;
   if (m_count < nOfRound) {  //how many round to try,1 round is 2 lines
-      updateState();
-      drive(100, RADSTRAIGHT);
-      QTimer::singleShot((m_sx-CTRACEWIDTH)*100,this, SLOT(squareTurn()));
+      //updateState(); //PROPABLY NOT NEEDED
+      drive(100, Util::RADSTRAIGHT);
+      QTimer::singleShot(m_sx*100,this, SLOT(squareTurn()));
   }
   else
   {
-      drive(0, RADTURNCCW);
+      drive(0, Util::RADTURNCCW);
 
       drawTraceTimerStop();
       allMotorsOff();
-//      vacuum_Off();
-
-
-//      resetAngle();
+      cleaning_ = false;
+      qobject_cast<FleetManager*>(parent())->removeAtc(destAtc_);
       emit areaCleaned();
       qDebug() << "area cleaned, check next angle to move to new POI ";
   }
@@ -665,7 +626,7 @@ void IRoomba::drawTraceTimerStop(){
 void IRoomba::drawTraceTimerTimeout()
 {
 
-   if (cleaning_ == true) {
+   if (cleaning_) {
 
        QPointF locC = getLoc();
        double xC=locC.x();
@@ -680,42 +641,18 @@ void IRoomba::drawTraceTimerTimeout()
     drawTraceTimer->start(500);
 }
 
-void IRoomba::resetRoombaAngle(void (IRoomba::*fptr)())
-{
-    m_fptr = fptr;
-    if (angle_ > 0) //
-    {
-        drive(100, RADTURNCCW);
-//        drive(100, RADTURNCW);
-
-    }
-    else {
-        drive(100, RADTURNCW);
-//        drive(100, RADTURNCCW);
-
-    }
-
-    int turnTime5=(abs(angle_*(180/PI)))*18055/1000;
-    QTimer::singleShot(turnTime5, this, SLOT(angleresetfinished()));
-
-}
-void IRoomba::angleresetfinished()
-{
-    drive(0,RADTURNCW);
-    (this->*m_fptr)();
-}
-
 void IRoomba::calc4square(int h)
 {
-       //always even num of trace width, 1 round is 2 ctracewidths, ctracewidth is 20, ld=line distances
+       //always even num of trace width, 1 round is 2 Util::PIXELCLEANWIDTH,
+       //ld=line distances
 
     if (h>0 && h<=1000) {
-        nOfRound = h/(2*CTRACEWIDTH)+1;  //or this, nOfRound = (h>>3)/5+1
+        nOfRound = h*Util::COORDCORRECTION/(2*Util::REALCLEANWIDTH)+1;  //or this, nOfRound = (h>>3)/5+1
     } else {
        qDebug() <<"too big";
     }
 
-    ld = h/(2*nOfRound);
+    ld = h*Util::COORDCORRECTION/(2*nOfRound);
 
     qDebug()<<"m_sx is "<<m_sx;
     qDebug()<<"m_sy is "<<m_sy;
@@ -1006,6 +943,11 @@ QGraphicsPixmapItem* IRoomba::setIcon()
     icon->setFlag(QGraphicsItem::ItemIsMovable,false);
     icon->setScale(1.0/Util::COORDCORRECTION);
     return icon;
+}
+
+void IRoomba::setDestAtc(AtcQGraphicsRectItem* atc)
+{
+    destAtc_ = atc;
 }
 
 //function for comparing vertices

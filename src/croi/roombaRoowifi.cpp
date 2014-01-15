@@ -86,16 +86,6 @@ void RoombaRoowifi::clean()
     IRoomba::clean();
 }
 
-void RoombaRoowifi::vacuum_On()
-{
-    roowifi_->Vacuum_On();
-}
-
-void RoombaRoowifi::vacuum_Off()
-{
-    roowifi_->Vacuum_Off();
-}
-
 void RoombaRoowifi::goDock()
 {
     roowifi_->GoDock();

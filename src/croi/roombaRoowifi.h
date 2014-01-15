@@ -34,8 +34,7 @@ public:
 
     virtual void goDock();
     virtual float getBatteryLevel();
-public slots:
-    void testSlot();
+
 private:
     RooWifi* roowifi_;
 };

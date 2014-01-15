@@ -28,6 +28,8 @@ const double COORDCORRECTION = double(REALMAPWIDTH)/PIXELMAPWIDTH;
 const unsigned int VERTICEWIDTH = ceil(REALVERTICEWIDTH/COORDCORRECTION);  //width in pixels
 const unsigned int REALROOMBAWIDTH = 34;  //real world width in cm
 const unsigned int ROOMBAWIDTH = round(REALROOMBAWIDTH/COORDCORRECTION);  //width in pixels
+const unsigned int REALCLEANWIDTH = 20;  //real world width in cm
+const unsigned int PIXELCLEANWIDTH = round(REALCLEANWIDTH/COORDCORRECTION);  //width in pixels
 
 const int POITYPE = QGraphicsItem::UserType;
 const int WALLTYPE = QGraphicsItem::UserType+1;

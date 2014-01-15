@@ -10,6 +10,7 @@
 #include "poiQGraphicsEllipseItem.h"
 #include "uiUtils.h"
 #include <queue>
+#include "atcQGraphicsRectItem.h"
 
 class MapQGraphicsView;
 class FleetManager;
@@ -57,7 +58,6 @@ public:
     void correctLocation(Util::Direction direction);
     void correctAngle(bool clockWise);
     QPointF getLoc();  //location IN PIXELS is given as a point
-	QPointF calcLoc();  //X and Y coordinates are updated
     double getCurrentAngle();
     int getRadius();
     int getVelocity();
@@ -80,6 +80,8 @@ public:
     //calculates the nearest path to point and returns it's distance
     double calcPath(QVector<QVector<Util::Vertice *> > &vertices, QPointF point);
     double calcPath(QVector<QVector<Util::Vertice *> > &vertices, PoiQGraphicsEllipseItem *poi);
+    //this is a function for going straight to a point. Used by usePath
+    void go2Point(QPointF point);
     //this makes the IRoomba to follow the path_ calculated by calcPath. This
     //must be called once and only once after calcPath if ignorePath isn't
     //called
@@ -92,6 +94,7 @@ public:
     void stop();
 
 	void setSquare(int squareWidth, int squareHeight);
+    void setDestAtc(AtcQGraphicsRectItem* atc);
 
 signals:
     void stateUpdate();
@@ -118,14 +121,11 @@ private slots:
     void squareMoveOneLine2();
     void squareTurn4();
     void squareStart2();
-    void angleresetfinished();
-    void rotateEnded2();
 
 private:
+    QPointF calcLoc();  //X and Y coordinates are updated
     //function for comparing vertices
     static bool verticeCompare(Util::Vertice* first, Util::Vertice* second);
-    //this is a function for going straight to a point. Used by usePath
-    void go2Point(QPointF point);
     //function for dealing with vertice's neighbour in Dijkstra's algorithm
     void compNeigh(Util::Vertice *curV, Util::Direction direction,
                    std::priority_queue<Util::Vertice *,
@@ -161,6 +161,7 @@ private:
     bool followingPath_; //true when path_ is followed
     bool prevPReached_; //true briefly as last point in path is reached
     PoiQGraphicsEllipseItem *destPoi_;
+    AtcQGraphicsRectItem* destAtc_;
 
     double totalDistance_;
 

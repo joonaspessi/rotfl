@@ -392,6 +392,13 @@ void FleetManager::removePoi(PoiQGraphicsEllipseItem* poi)
     delete poi;
 }
 
+void FleetManager::removeAtc(AtcQGraphicsRectItem* atc)
+{
+    map_->scene()->removeItem(atc);
+    atcs_.erase(atc);
+    delete atc;
+}
+
 void FleetManager::removeWall(WallQGraphicsLineItem* wall)
 {
     //renewing verticeconnections
@@ -632,10 +639,11 @@ void FleetManager::poiCollected(Croi::IRoomba* collector, PoiQGraphicsEllipseIte
             if(newDistance < bestDistance)
             {
                 nearestPoi = *i;
-                collector->ignorePath();  //old path must be ignored
+               //old path must be ignored
                 //the best path will be recalculated. This is not very
                 //stylish here (works nicer in go2poi)
             }
+            collector->ignorePath();
 
         }
     }
@@ -754,14 +762,15 @@ void FleetManager::goDock()
     {
         for (int i = 0; i < selectedRoombas_.size(); ++i)
         {
-			// TODO: Add correct dock position here, now using hard coded (50,50)
-            selectedRoombas_.at(i)->go2Point(QPointF(50,50));
+            // TODO: Add correct dock position here
+            //selectedRoombas_.at(i)->go2Point(QPointF(50,50));
             selectedRoombas_.at(i)->goDock();
         }
     }
 }
 void FleetManager::clean()
 {
+
     if (selectedRoombas_.empty())
     {
         QMessageBox::warning
@@ -932,6 +941,16 @@ int FleetManager::findNearestPoint(QPointF roombaPos)
     for (std::set<AtcQGraphicsRectItem*>::iterator ii=atcs_.begin(); ii != atcs_.end();++ii)
     {
         AtcQGraphicsRectItem * p = *ii;
+        if (p->isGettingCleaned())
+        {
+            std::set<AtcQGraphicsRectItem*>::iterator testI = ii;
+            ++testI;
+            if(testI == atcs_.end())
+            {
+                return -1;
+            }
+            continue;
+        }
         QPointF point = p->boundingRect().topLeft();
         float deltaX = point.x()-roombaPos.x();
         float deltaY = roombaPos.y() - point.y();
@@ -999,22 +1018,27 @@ void FleetManager::MoveRobotToNearestArea(int j) {
     std::set<AtcQGraphicsRectItem*>::const_iterator ii = atcs_.begin();
     std::advance(ii,i);
     //AtcQGraphicsRectItem *ik; ik->boundingRect().height()
+    (*ii)->setGettingCleaned();
+    selectedRoombas_.at(j)->setDestAtc(*ii);
     QPointF actPos = (*ii)->boundingRect().topLeft();
 
     selectedRoombas_.at(j)->setSquare((*ii)->boundingRect().width(),(*ii)->boundingRect().height());
 
     qDebug() << "actPos X: " + QString::number(actPos.rx()) + " actPos Y: " +  QString::number(actPos.ry());
 
-    actPos.ry() += (CTRACEWIDTH+3)/2;
-    actPos.rx() += (CTRACEWIDTH+3)/2;
+    //these functions return a reference
+    actPos.ry() += (Util::PIXELCLEANWIDTH+3)/2;
+    actPos.rx() += (Util::PIXELCLEANWIDTH+3)/2;
 
     qDebug() << "Square actual start X: actPos.rx() += CTRACEWIDTH/2" + QString::number(actPos.rx()) + " Y: " +  QString::number(actPos.ry());
+
+
 
     selectedRoombas_.at(j)->go2Point(actPos);
     //ATC2Start_.remove(i);
 //    map_->scene()->removeItem(*ii);
 //    delete *ii;
-    atcs_.erase(ii);
+    //atcs_.erase(ii);
 
 }
 

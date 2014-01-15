@@ -32,6 +32,8 @@ public:
     virtual bool getLeftBumb();
     virtual bool getRightBumb();
     virtual QGraphicsPixmapItem* setIcon();
+    virtual void goDock();
+    virtual float getBatteryLevel();
 
 signals:
 

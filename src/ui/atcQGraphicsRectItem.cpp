@@ -4,7 +4,7 @@
 
 AtcQGraphicsRectItem::AtcQGraphicsRectItem
 (qreal x, qreal y, qreal w, qreal h, QGraphicsItem *parent):
-    QGraphicsRectItem(x, y, w, h, parent)
+    QGraphicsRectItem(x, y, w, h, parent), gettingCleaned_(false)
 {
     setZValue(1);
 }
@@ -32,6 +32,16 @@ void AtcQGraphicsRectItem::paint(QPainter *painter, const QStyleOptionGraphicsIt
     }
     this->setPen(pen);
     QGraphicsRectItem::paint(painter, &myoption, widget);
+}
+
+bool AtcQGraphicsRectItem::isGettingCleaned()
+{
+    return gettingCleaned_;
+}
+
+void AtcQGraphicsRectItem::setGettingCleaned()
+{
+    gettingCleaned_ = true;
 }
 
 AtcQGraphicsRectItem::~AtcQGraphicsRectItem()

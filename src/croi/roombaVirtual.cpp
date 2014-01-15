@@ -43,6 +43,7 @@ void RoombaVirtual::allMotorsOff()
 
 void RoombaVirtual::clean()
 {
+    IRoomba::clean();
 }
 
 char RoombaVirtual::getTemperature()
@@ -178,6 +179,16 @@ QGraphicsPixmapItem* RoombaVirtual::setIcon()
     icon->setFlag(QGraphicsItem::ItemIsMovable,false);
     icon->setScale(1.0/Util::COORDCORRECTION);
     return icon;
+}
+
+void RoombaVirtual::goDock()
+{
+//TODO: go to starting point
+}
+
+float RoombaVirtual::getBatteryLevel()
+{
+    return 0.0;
 }
 
 } //namespace Croi

@@ -39,6 +39,7 @@ public:
 	std::set<AtcQGraphicsRectItem *> getATCs();
     void removePoi(PoiQGraphicsEllipseItem* poi);
     void removeWall(WallQGraphicsLineItem* wall);
+    void removeAtc(AtcQGraphicsRectItem* atc);
     //removes all selected objects except roombas and startPoints
     void removeRedObjects();
     void removeAllObjects();
