@@ -71,7 +71,8 @@ public:
     void correctLocation(Util::Direction direction);
     void correctAngle(bool clockWise);
     int findNearestPoint(QPointF roombaPos);
-    void MoveRobotToNearestArea(int i);
+    //returns false if there is no ATC left
+    bool MoveRobotToNearestArea(int i);
 
     ~FleetManager();
 

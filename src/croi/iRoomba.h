@@ -108,10 +108,6 @@ private slots:
 
     void turnTimerTimeout();
     void driveTimerTimeout();
-    void drawTraceTimerStart();
-    void drawTraceTimerStop();
-    void drawTraceTimerTimeout();
-    void toStopDrawGreen();
     void squareTurn();
     void rotateEnded();
     void squareMoveOneLine();

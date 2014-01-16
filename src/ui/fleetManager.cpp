@@ -778,10 +778,12 @@ void FleetManager::clean()
     }
     else
     {
-        for (int i = 0; i < selectedRoombas_.size(); ++i)
+        for (int i = 0; i < roombas_.size(); ++i)
         {
-            selectedRoombas_.at(i)->clean();
-			MoveRobotToNearestArea(i);
+            if(MoveRobotToNearestArea(i))
+            {
+                roombas_.at(i)->clean();
+            }
         }
     }
 }
@@ -941,16 +943,16 @@ int FleetManager::findNearestPoint(QPointF roombaPos)
     for (std::set<AtcQGraphicsRectItem*>::iterator ii=atcs_.begin(); ii != atcs_.end();++ii)
     {
         AtcQGraphicsRectItem * p = *ii;
-        if (p->isGettingCleaned())
-        {
-            std::set<AtcQGraphicsRectItem*>::iterator testI = ii;
-            ++testI;
-            if(testI == atcs_.end())
-            {
-                return -1;
-            }
-            continue;
-        }
+//        if (p->isGettingCleaned())
+//        {
+//            std::set<AtcQGraphicsRectItem*>::iterator testI = ii;
+//            ++testI;
+//            if(testI == atcs_.end())
+//            {
+//                return -1;
+//            }
+//            continue;
+//        }
         QPointF point = p->boundingRect().topLeft();
         float deltaX = point.x()-roombaPos.x();
         float deltaY = roombaPos.y() - point.y();
@@ -1008,10 +1010,10 @@ void FleetManager::correctAngle(bool clockWise)
 }
 
 // TODO: Check if this is similar to Juhani's logic!
-void FleetManager::MoveRobotToNearestArea(int j) {
+bool FleetManager::MoveRobotToNearestArea(int j) {
     QPointF roombaPos = selectedRoombas_.at(j)->getLoc();
     int i = findNearestPoint(roombaPos);
-    if (i==-1) { return; }
+    if (i==-1) { return false; }
     // go2Point currently works only with selected robot
 
     //QPointF actPos=ATC2Start_.at(i).atcPos;
@@ -1038,8 +1040,8 @@ void FleetManager::MoveRobotToNearestArea(int j) {
     //ATC2Start_.remove(i);
 //    map_->scene()->removeItem(*ii);
 //    delete *ii;
-    //atcs_.erase(ii);
-
+    atcs_.erase(ii);
+    return true;
 }
 
 

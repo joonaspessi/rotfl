@@ -20,9 +20,6 @@ IRoomba::IRoomba(PoiQGraphicsEllipseItem *startPoint, MapQGraphicsView *map,
     followingPath_(false), prevPReached_(false), destPoi_(NULL), totalDistance_(0),
     cleaning_(false), destAtc_(NULL)
 {
-    drawTraceTimer = new QTimer(this);
-    QObject::connect(drawTraceTimer, SIGNAL(timeout()), this, SLOT(drawTraceTimerTimeout()));
-    drawTraceTimer->setSingleShot(false);
 }
 
 int IRoomba::disconnect()
@@ -42,6 +39,7 @@ void IRoomba::fullMode()
 
 void IRoomba::clean()
 {
+    followingPath_ = true;
     cleaning_ = true;
 }
 
@@ -151,7 +149,14 @@ void IRoomba::updateState()
 
     if(round(Xloc_) != round(x) || round(Yloc_) != round(y))
     {
-        drawTrace(x, y, Qt::GlobalColor::gray);
+        if(cleaning_ && !followingPath_)
+        {
+            drawTrace(x, y, Qt::GlobalColor::green);
+        }
+        else
+        {
+            drawTrace(x, y, Qt::GlobalColor::gray);
+        }
     }
 
     Xloc_ = x;
@@ -466,19 +471,19 @@ void IRoomba::sensorUpdateTimerTimeout()
 
 void IRoomba::turnTimerTimeout()
 {
-    this->drive(0,32767);
-    this->drive(100, Util::RADSTRAIGHT);
+    drive(0,32767);
+    drive(100, Util::RADSTRAIGHT);
     QTimer::singleShot(driveTime_, this, SLOT(driveTimerTimeout()));
 
 }
 
 void IRoomba::driveTimerTimeout()
 {
-    this->drive(0,32767);
+    drive(0,32767);
 
-	if (cleaning_)
+    if (cleaning_ && followingPath_)
 	{
-	    drawTraceTimerStart();
+        followingPath_ = false;
         calc4square(m_sy);
     	squareStart();  //rectangle size, height and width is decided here.
 	}
@@ -486,12 +491,6 @@ void IRoomba::driveTimerTimeout()
 	{
 		prevPReached_ = true;
 	}
-}
-
-void IRoomba::toStopDrawGreen()
-{
-    drawTraceTimerStop();
-
 }
 
 void IRoomba::squareStart() //after reaching to the starting point, turn angle horizontally.
@@ -603,42 +602,13 @@ void IRoomba::squareStart2()
   {
       drive(0, Util::RADTURNCCW);
 
-      drawTraceTimerStop();
       allMotorsOff();
       cleaning_ = false;
-      qobject_cast<FleetManager*>(parent())->removeAtc(destAtc_);
+      //qobject_cast<FleetManager*>(parent())->removeAtc(destAtc_);
       emit areaCleaned();
       qDebug() << "area cleaned, check next angle to move to new POI ";
   }
 
-}
-
-
-void IRoomba::drawTraceTimerStart(){
-     drawTraceTimer->start(500);
-}
-
-void IRoomba::drawTraceTimerStop(){
-    drawTraceTimer->stop();
-}
-
-
-void IRoomba::drawTraceTimerTimeout()
-{
-
-   if (cleaning_) {
-
-       QPointF locC = getLoc();
-       double xC=locC.x();
-       double yC=locC.y();
-
-//       qDebug() << "drawTrace xC: " << xC
-//                << " yC: " << yC;
-
-       drawTrace(xC, yC, Qt::GlobalColor::green);
-    }
-
-    drawTraceTimer->start(500);
 }
 
 void IRoomba::calc4square(int h)
