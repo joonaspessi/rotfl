@@ -97,6 +97,7 @@ private:
     QVector<QVector<Util::Vertice*>> vertices_;
     QTimer* updateTimer_;
     bool go2PoisOn_;
+    bool cleaningAtcsOn_;
 };
 
 #endif // FLEETMANAGER_H

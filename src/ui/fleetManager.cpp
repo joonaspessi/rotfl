@@ -10,7 +10,8 @@
 #include "croi/roombaVirtual.h"
 
 FleetManager::FleetManager(MainWindow* mainWindow, QObject *parent):
-    QObject(parent), mainWindow_(mainWindow), map_(NULL), go2PoisOn_(false)
+    QObject(parent), mainWindow_(mainWindow), map_(NULL), go2PoisOn_(false),
+    cleaningAtcsOn_(false)
 {
     updateTimer_ = new QTimer(this);
     QObject::connect(updateTimer_, SIGNAL(timeout()), this, SLOT(updateTimerTimeout()));
@@ -771,10 +772,10 @@ void FleetManager::goDock()
 void FleetManager::clean()
 {
 
-    if (selectedRoombas_.empty())
+    if (roombas_.empty())
     {
         QMessageBox::warning
-        (mainWindow_, "", tr("Please select a Roomba!"));
+        (mainWindow_, "", tr("Please connect a Roomba!"));
     }
     else
     {
@@ -782,7 +783,23 @@ void FleetManager::clean()
         {
             if(MoveRobotToNearestArea(i))
             {
+                cleaningAtcsOn_ = true;
                 roombas_.at(i)->clean();
+            }
+            else
+            {
+                if(cleaningAtcsOn_)
+                {
+//                   cleaningAtcsOn_ = false;
+//                    QMessageBox::information
+//                        (mainWindow_, "", tr("All areas cleaned"));
+                }
+                else
+                {
+                    QMessageBox::warning
+                    (mainWindow_, "", tr("No areas to clean!"));
+                }
+                return;
             }
         }
     }
@@ -1011,7 +1028,7 @@ void FleetManager::correctAngle(bool clockWise)
 
 // TODO: Check if this is similar to Juhani's logic!
 bool FleetManager::MoveRobotToNearestArea(int j) {
-    QPointF roombaPos = selectedRoombas_.at(j)->getLoc();
+    QPointF roombaPos = roombas_.at(j)->getLoc();
     int i = findNearestPoint(roombaPos);
     if (i==-1) { return false; }
     // go2Point currently works only with selected robot
@@ -1021,10 +1038,10 @@ bool FleetManager::MoveRobotToNearestArea(int j) {
     std::advance(ii,i);
     //AtcQGraphicsRectItem *ik; ik->boundingRect().height()
     (*ii)->setGettingCleaned();
-    selectedRoombas_.at(j)->setDestAtc(*ii);
+    roombas_.at(j)->setDestAtc(*ii);
     QPointF actPos = (*ii)->boundingRect().topLeft();
 
-    selectedRoombas_.at(j)->setSquare((*ii)->boundingRect().width(),(*ii)->boundingRect().height());
+    roombas_.at(j)->setSquare((*ii)->boundingRect().width(),(*ii)->boundingRect().height());
 
     qDebug() << "actPos X: " + QString::number(actPos.rx()) + " actPos Y: " +  QString::number(actPos.ry());
 
@@ -1036,7 +1053,7 @@ bool FleetManager::MoveRobotToNearestArea(int j) {
 
 
 
-    selectedRoombas_.at(j)->go2Point(actPos);
+    roombas_.at(j)->go2Point(actPos);
     //ATC2Start_.remove(i);
 //    map_->scene()->removeItem(*ii);
 //    delete *ii;

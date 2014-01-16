@@ -242,7 +242,6 @@ void IRoomba::drawTrace(double x, double y, Qt::GlobalColor color)
         clinePen.setWidth(Util::PIXELCLEANWIDTH);
         ctraceL->setPen(clinePen);
         ctraceL->setOpacity(0.25);
-        ctraceL->setZValue(2);
         ctraces_.append(ctraceL);
         map_->scene()->addItem(ctraceL);
     }
