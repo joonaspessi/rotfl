@@ -60,6 +60,7 @@ double IRoomba::getTotalDistance()
 {
     return totalDistance_/100;
 }
+
 PoiQGraphicsEllipseItem* IRoomba::getStartPoint()
 {
     return startPoint_;
@@ -111,6 +112,7 @@ void IRoomba::correctAngle(bool clockWise)
         angle_ -= Util::ONTHEFLYCORRECTION*PI/180.0;
     }
 }
+
 QPointF IRoomba::getLoc()
 {
     QPointF point(Xloc_, Yloc_);
@@ -138,9 +140,13 @@ MapQGraphicsView* IRoomba::getMap()
     return map_;
 }
 
-///// TODO: Add the function calls from branch merge_fleetMngmt!
 void IRoomba::updateState()
 {
+    //subclass handles the retrieval of sensor information
+    double distance = getDistance()/Util::COORDCORRECTION;
+    totalDistance_ += distance;
+
+    double angle = getAngle();
     bool leftBump = getLeftBumb();
     bool rightBump = getRightBumb();
 
@@ -418,7 +424,7 @@ void IRoomba::go2Point(QPointF point)
     float tabs = abs(turningAngle*(180.0/Util::PI));
     float distance = sqrt(pow(deltaX,2.0)+pow(deltaY,2.0))*Util::COORDCORRECTION;
     int turnTime = round(tabs*TURNTIMEINUSFORDEG/1000.0);
-    driveTime_= round(distance*100.0);
+    driveTime_= round(distance*100.0*100.0/FWSPEED);
 
     qDebug() << "turningAngle: " << tabs << "ttime: " << turnTime;
     qDebug() << "distance: " << distance << "dtime: " << driveTime_;
@@ -440,11 +446,14 @@ void IRoomba::go2Point(QPointF point)
 
     }
     QTimer::singleShot(turnTime, this, SLOT(turnTimerTimeout()));
+
+
 }
 
 void IRoomba::sensorUpdateTimerTimeout()
 {
     updateState();
+
     //nothing needs to be done atm if either one of these is false
     if(!followingPath_ || !prevPReached_)
     {
@@ -481,7 +490,7 @@ void IRoomba::sensorUpdateTimerTimeout()
 void IRoomba::turnTimerTimeout()
 {
     drive(0,32767);
-    drive(100, Util::RADSTRAIGHT);
+    drive(FWSPEED, Util::RADSTRAIGHT);
     QTimer::singleShot(driveTime_, this, SLOT(driveTimerTimeout()));
 
 }
