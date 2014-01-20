@@ -606,12 +606,18 @@ bool FleetManager::go2Poi(PoiQGraphicsEllipseItem *poi)
     }
 }
 
-void FleetManager::stopFleet()
+void FleetManager::stopFleet(bool wallHit)
 {
     go2PoisOn_ = false;
     for(unsigned int i = 0; i < roombas_.size(); ++i)
     {
         roombas_.at(i)->stop();
+    }
+
+    if(wallHit)
+    {
+        QMessageBox::warning
+        (mainWindow_, "", tr("Roomba has hit an unidentified object. Fleet management operation terminated."));
     }
 }
 

@@ -46,7 +46,7 @@ public:
     void ifShowTraces();
     void removeTraces();
     void go2Pois();
-    void stopFleet();
+    void stopFleet(bool wallHit);
     void poiCollected(Croi::IRoomba *collector, PoiQGraphicsEllipseItem *poi);
 
     //these functions work for selectedRoombas_

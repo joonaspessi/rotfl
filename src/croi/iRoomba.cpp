@@ -8,6 +8,7 @@
 #include <cmath>
 #include <limits>
 #include "croiUtil.h"
+#include <QMessageBox>
 
 namespace Croi {
 
@@ -178,16 +179,24 @@ void IRoomba::updateState()
     //add new wall if bumb has happened
     if (leftBump || rightBump)
     {
-        qDebug() << "Roomba has collided with unknown object!";
-        double tempAngle = angle_-40.0*Util::PI/180.0;
-        QPointF l (Xloc_+cos(tempAngle)*17, Yloc_+sin(tempAngle)*17);
-        tempAngle = angle_+40.0*Util::PI/180.0;
-        QPointF r (Xloc_+cos(tempAngle)*17, Yloc_+sin(tempAngle)*17);
         FleetManager *fleetManager = qobject_cast<FleetManager*>(parent());
-        WallQGraphicsLineItem* bumbed = new WallQGraphicsLineItem
-                                            (fleetManager, l.x(), l.y(), r.x(), r.y());
-        map_->scene()->addItem(bumbed);
-        fleetManager->addWall(bumbed);
+
+        if(destPoi_ != NULL)
+        {
+            fleetManager->stopFleet(true);
+        }
+        else
+        {
+            double tempAngle = angle_-40.0*Util::PI/180.0;
+            QPointF l (Xloc_+cos(tempAngle)*17, Yloc_+sin(tempAngle)*17);
+            tempAngle = angle_+40.0*Util::PI/180.0;
+            QPointF r (Xloc_+cos(tempAngle)*17, Yloc_+sin(tempAngle)*17);
+            WallQGraphicsLineItem* bumbed = new WallQGraphicsLineItem
+                                                (fleetManager, l.x(), l.y(), r.x(), r.y());
+            map_->scene()->addItem(bumbed);
+            fleetManager->addWall(bumbed);
+        }
+
     }
 }
 

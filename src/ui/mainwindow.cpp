@@ -560,7 +560,7 @@ void MainWindow::pushButton_Go2POIs_clicked()
 
 void MainWindow::pushButton_stopFleet_clicked()
 {
-    fleetManager_->stopFleet();
+    fleetManager_->stopFleet(false);
 }
 
 void MainWindow::action_Cursor_toggled(bool toggleStatus)
