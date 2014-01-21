@@ -389,7 +389,7 @@ void FleetManager::removePoi(PoiQGraphicsEllipseItem* poi)
         return;
     }
     map_->scene()->removeItem(poi);
-    pois_.remove(pois_.indexOf(poi));
+    pois_.remove(index);
     delete poi;
 }
 
@@ -701,14 +701,14 @@ bool FleetManager::isBlocked(QPointF* point)
 bool FleetManager::removeBlockedPois()
 {
     bool blockedPoiFound = false;
-    for (QVector<PoiQGraphicsEllipseItem*>::iterator i = pois_.begin();
-         i != pois_.end(); ++i)
+    for (unsigned int i = 0; i < pois_.size(); ++i)
     {
-        QPointF point = (*i)->pos();
+        QPointF point = pois_.at(i)->pos();
         if (isBlocked(&point))
         {
             blockedPoiFound = true;
-            removePoi(*i);
+            removePoi(pois_.at(i));
+            --i; //this fixes the indexing change
         }
         //TODO: check issue #3 on Github, implementation is missing
         //bool isTrace = false;
