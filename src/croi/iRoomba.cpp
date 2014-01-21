@@ -724,17 +724,17 @@ double IRoomba::calcPath(QVector<QVector<Util::Vertice *> > &vertices, QPointF p
         {
 //            qDebug() << "verticeX: " << vertices.at(i).at(j)->topLeftX << " "
 //                     << "verticeY: " << vertices.at(i).at(j)->topLeftY;
-            if(Xloc_ >= double(vertices.at(i).at(j)->topLeftX) &&
-               Xloc_ <= double(vertices.at(i).at(j)->topLeftX+Util::VERTICEWIDTH-1) &&
-               Yloc_ >= double(vertices.at(i).at(j)->topLeftY) &&
-               Yloc_ <= double(vertices.at(i).at(j)->topLeftY+Util::VERTICEWIDTH-1))
+            if(unsigned(floor(Xloc_)) >= vertices.at(i).at(j)->topLeftX &&
+               unsigned(floor(Xloc_)) <= vertices.at(i).at(j)->topLeftX+Util::VERTICEWIDTH-1 &&
+               unsigned(floor(Yloc_)) >= vertices.at(i).at(j)->topLeftY &&
+               unsigned(floor(Yloc_)) <= vertices.at(i).at(j)->topLeftY+Util::VERTICEWIDTH-1)
             {
                 startV = vertices.at(i).at(j);
             }
-            if(point.x() >= vertices.at(i).at(j)->topLeftX &&
-               point.x() <= vertices.at(i).at(j)->topLeftX+Util::VERTICEWIDTH-1 &&
-               point.y() >= vertices.at(i).at(j)->topLeftY &&
-               point.y() <= vertices.at(i).at(j)->topLeftY+Util::VERTICEWIDTH-1)
+            if(unsigned(floor(point.x())) >= vertices.at(i).at(j)->topLeftX &&
+               unsigned(floor(point.x())) <= vertices.at(i).at(j)->topLeftX+Util::VERTICEWIDTH-1 &&
+               unsigned(floor(point.y())) >= vertices.at(i).at(j)->topLeftY &&
+               unsigned(floor(point.y())) <= vertices.at(i).at(j)->topLeftY+Util::VERTICEWIDTH-1)
             {
                 goalV = vertices.at(i).at(j);
             }
@@ -750,6 +750,11 @@ double IRoomba::calcPath(QVector<QVector<Util::Vertice *> > &vertices, QPointF p
             priQ(&IRoomba::verticeCompare);
 
     //Dijkstra's algorithm
+    if(startV == NULL)
+    {
+        qDebug() << "Crash Xloc_: " << Xloc_
+                 << "Crash Yloc_: " << Yloc_;
+    }
     startV->dist = 0.0;
     priQ.push(startV);
     while(!priQ.empty())
