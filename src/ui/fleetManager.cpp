@@ -918,7 +918,7 @@ void FleetManager::drive( int velocity)
     }
 }
 // TODO: Check to work like go2POIs
-int FleetManager::findNearestPoint(QPointF roombaPos)
+int FleetManager::findNearestPoint(Croi::IRoomba *roomba)
 {
     float shortestdistance = 99999.99f;
     int val = -1;
@@ -937,15 +937,15 @@ int FleetManager::findNearestPoint(QPointF roombaPos)
 //            continue;
 //        }
         QPointF point = p->boundingRect().topLeft();
-        float deltaX = point.x()-roombaPos.x();
-        float deltaY = roombaPos.y() - point.y();
-        float distance = sqrt(pow(deltaX,2)+pow(deltaY,2) );
-        if (distance < shortestdistance) { shortestdistance = distance; val =i; }
+        float distance = roomba->calcPath(vertices_, point);
+        roomba->ignorePath();
+        if (distance < shortestdistance)
+        {
+            shortestdistance = distance;
+            val = i;
+        }
         ++i;
     }
-
-    qDebug() << "val is: " << val;
-
 
     return val;
 }
@@ -994,8 +994,8 @@ void FleetManager::correctAngle(bool clockWise)
 
 // TODO: Check if this is similar to Juhani's logic!
 bool FleetManager::MoveRobotToNearestArea(int j) {
-    QPointF roombaPos = roombas_.at(j)->getLoc();
-    int i = findNearestPoint(roombaPos);
+    //QPointF roombaPos = roombas_.at(j)->getLoc();
+    int i = findNearestPoint(roombas_.at(j));
     if (i==-1) { return false; }
     // go2Point currently works only with selected robot
 
@@ -1018,8 +1018,9 @@ bool FleetManager::MoveRobotToNearestArea(int j) {
     qDebug() << "Square actual start X: actPos.rx() += CTRACEWIDTH/2" + QString::number(actPos.rx()) + " Y: " +  QString::number(actPos.ry());
 
 
-
-    roombas_.at(j)->go2Point(actPos);
+      roombas_.at(j)->calcPath(vertices_, actPos);
+      roombas_.at(j)->usePath();
+    //roombas_.at(j)->go2Point(actPos);
     //ATC2Start_.remove(i);
 //    map_->scene()->removeItem(*ii);
 //    delete *ii;

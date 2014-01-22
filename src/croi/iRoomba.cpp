@@ -193,7 +193,7 @@ void IRoomba::updateState()
             tempAngle = angle_+40.0*Util::PI/180.0;
             QPointF r (Xloc_+cos(tempAngle)*17, Yloc_+sin(tempAngle)*17);
             WallQGraphicsLineItem* bumbed = new WallQGraphicsLineItem
-                    (fleetManager, l.x(), l.y(), r.x(), r.y());
+                                                (fleetManager, l.x(), l.y(), r.x(), r.y());
             map_->scene()->addItem(bumbed);
             fleetManager->addWall(bumbed);
         }
@@ -473,6 +473,11 @@ void IRoomba::sensorUpdateTimerTimeout()
             destPoi_ = NULL;
             qobject_cast<FleetManager*>(parent())->poiCollected(this, tempPoi);
         }
+        else if(cleaning_)
+        {
+            calc4square(m_sy);
+            squareStart();  //rectangle size, height and width is decided here.
+        }
     }
     else
     {
@@ -492,17 +497,7 @@ void IRoomba::turnTimerTimeout()
 void IRoomba::driveTimerTimeout()
 {
     drive(0,32767);
-
-    if (cleaning_ && followingPath_)
-    {
-        followingPath_ = false;
-        calc4square(m_sy);
-        squareStart();  //rectangle size, height and width is decided here.
-    }
-    else
-    {
-        prevPReached_ = true;
-    }
+    prevPReached_ = true;
 }
 
 void IRoomba::squareStart() //after reaching to the starting point, turn angle horizontally.

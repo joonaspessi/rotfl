@@ -76,7 +76,7 @@ public:
     void drive( int velocity);
     void correctLocation(Util::Direction direction);
     void correctAngle(bool clockWise);
-    int findNearestPoint(QPointF roombaPos);
+    int findNearestPoint(Croi::IRoomba *roomba);
     //returns false if there is no ATC left
     bool MoveRobotToNearestArea(int i);
 
