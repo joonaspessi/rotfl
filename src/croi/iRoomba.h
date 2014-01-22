@@ -44,11 +44,16 @@ public:
     virtual void playSong( int songNumber ) = 0;
     virtual char getTemperature() = 0;
     virtual unsigned short getChargeLevel() = 0;
+    //this should only be called in updateState, because it only has new
+    //value when updateState is called in sensorUpdateTimerTimeout
     virtual double getDistance() = 0;
     virtual double getTotalDistance();
+    //this should only be called in updateState, because it only has new
+    //value when updateState is called in sensorUpdateTimerTimeout
     virtual double getAngle() = 0;
     virtual bool getLeftBumb() = 0;
     virtual bool getRightBumb() = 0;
+    //the basic implementation sets a real roomba icon
     virtual QGraphicsPixmapItem* setIcon();
     virtual void  goDock() = 0;
     virtual float getBatteryLevel()=0;
@@ -58,8 +63,8 @@ public:
     void correctLocation(Util::Direction direction);
     void correctAngle(bool clockWise);
     QPointF getLoc();  //location IN PIXELS is given as a point
-    double getCurrentAngle();
-    int getRadius();
+    double getCurrentAngle();  //gives angle_
+    int getRadius();  //gives radius_
     int getVelocity();
     MapQGraphicsView* getMap();
     //this function updates the class variables to represent actual roomba.
@@ -104,6 +109,7 @@ public slots:
     //updateState is now called. Also, if IRoomba is following a path, it
     //gives new go2Point() calls and updates bools as necessary
     void sensorUpdateTimerTimeout();
+
 private slots:
 
     void turnTimerTimeout();
@@ -127,16 +133,12 @@ private:
                    std::priority_queue<Util::Vertice *,
                                        std::vector<Util::Vertice*>,
                                        bool (*)(Util::Vertice*, Util::Vertice*)> &priQ);
-    PoiQGraphicsEllipseItem* startPoint_;
-    MapQGraphicsView* map_;
-    //roombas triangle is stored in this.
-    //TODO: make better icon
-    QGraphicsPolygonItem* polygon_;
-    //ICON
-    QGraphicsPixmapItem * icon_;
 
-    //roomba's speedvector
-    QGraphicsLineItem* curSpeed_;
+    PoiQGraphicsEllipseItem *startPoint_;
+    MapQGraphicsView *map_;
+    //ICON
+    QGraphicsPixmapItem *icon_;
+
     //roombas traces are shown here
     QVector<QGraphicsLineItem*> traces_;
     QVector<QGraphicsLineItem*> ctraces_;  //cleaned traces

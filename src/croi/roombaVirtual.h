@@ -31,6 +31,7 @@ public:
     virtual double getAngle();
     virtual bool getLeftBumb();
     virtual bool getRightBumb();
+    //sets a virtual roomba icon
     virtual QGraphicsPixmapItem* setIcon();
     virtual void goDock();
     virtual float getBatteryLevel();

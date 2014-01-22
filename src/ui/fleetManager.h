@@ -32,21 +32,27 @@ public:
     //because map is created later (needs this class).
     void setMap(MapQGraphicsView* map);
     void addPoi(PoiQGraphicsEllipseItem* poi);
-    void addAtc(AtcQGraphicsRectItem* atc);
+	void addAtc(AtcQGraphicsRectItem* atc);
+    //adds the wall and removes POIs too close to the new wall
+    //It's currently slow and should be optimized
     void addWall(WallQGraphicsLineItem* wall);
     std::set<WallQGraphicsLineItem*> getWalls();
     QVector<PoiQGraphicsEllipseItem *> getPOIs();
 	std::set<AtcQGraphicsRectItem *> getATCs();
     void removePoi(PoiQGraphicsEllipseItem* poi);
+    //removes the wall and updates vertices booleans hasWall and isBlocked
+    //and takes into account situation with several walls near or intersecting
     void removeWall(WallQGraphicsLineItem* wall);
     void removeAtc(AtcQGraphicsRectItem* atc);
     //removes all selected objects except roombas and startPoints
     void removeRedObjects();
     void removeAllObjects();
-    void ifShowTraces();
+    void ifShowTraces();  //tells the roombas to change the visibility of their trace
     void removeTraces();
-    void go2Pois();
-    void stopFleet(bool wallHit);
+    void go2Pois();  //roombas will collect all POIs that are possible
+    void stopFleet(bool wallHit);  //stops all fleet management. wallHit == true outputs a warning message
+    //called when IRoomba reaches a POI. Calculates the nearest POI for the roomba or ends the collecting
+    //of POIs if all are collected or the rest are unreachable.
     void poiCollected(Croi::IRoomba *collector, PoiQGraphicsEllipseItem *poi);
 
     //these functions work for selectedRoombas_
@@ -83,9 +89,11 @@ public slots:
     void clean();
 
 private:
+
     //returns false is no roomba is ready to
     //go to a POI
     bool go2Poi(PoiQGraphicsEllipseItem *poi);
+
     MainWindow* mainWindow_;
     QVector<Croi::IRoomba*> selectedRoombas_;
     QVector<Croi::IRoomba*> managedRoombas_;
