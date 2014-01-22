@@ -166,8 +166,8 @@ private:
 
     //for Square size
     void squareStart();
-    int m_sx; //the length of one line
-    int m_sy;  //long move, ie. the Width of the rectangle.
+    int m_sx; //the length of one line in real world coordinates
+    int m_sy;  //long move, ie. the Width of the rectangle in real world coordinates.
     int m_count;
     int nOfRound; // num of round, Height of rectangel is nOfRound*2*m_sx
     float ld;   //distance between lines in squares

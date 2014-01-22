@@ -428,6 +428,7 @@ void IRoomba::go2Point(QPointF point)
     {
         this->drive(100,Util::RADTURNCCW);
         turnDirection_= Util::RADTURNCCW;
+
     }
     QTimer::singleShot(turnTime, this, SLOT(turnTimerTimeout()));
 }
@@ -496,13 +497,19 @@ void IRoomba::squareStart() //after reaching to the starting point, turn angle h
 {
     m_count=0;
 
-    float time=(abs(angle_*(180/PI)))*18055/1000;
-    qDebug() << "5. squareStart time=turnTime: " << time;
-    if (turnDirection_== Util::RADTURNCW)
-        turnDirection_= Util::RADTURNCCW;
-    else
-        turnDirection_= Util::RADTURNCW;
+//    float time=(abs(angle_*(180/PI)))*18055/1000;
 
+    float time=(fabs(angle_*(180.0/PI)))*18055/1000;
+    qDebug() << "5. squareStart time=turnTime: " << time;
+    if (turnDirection_== Util::RADTURNCW){
+        turnDirection_= Util::RADTURNCCW;
+        qDebug()<<"RADTURNCW 1, angle_ is "<<angle_;
+
+    } else {
+        turnDirection_= Util::RADTURNCW;
+        qDebug()<<"RADTURNCCW 2, angle_ is"<<angle_;
+        time=(fabs((2*PI-angle_)*(180.0/PI)))*18055/1000;
+    }
     drive(100, turnDirection_);
     QTimer::singleShot(time,this,SLOT(rotateEnded()));
     qDebug() << "6. squarestart singleShot time: " << time;
@@ -513,7 +520,7 @@ void IRoomba::rotateEnded()     //turning ended, start to drive straight, distan
 {
     drive(0, turnDirection_);
     drive(100, Util::RADSTRAIGHT);
-    QTimer::singleShot(m_sx*100,this, SLOT(squareTurn()));
+    QTimer::singleShot((m_sx-Util::REALCLEANWIDTH)*100,this, SLOT(squareTurn()));
 
 }
 
@@ -551,7 +558,7 @@ void IRoomba::squareTurn2() //stop and turn 90 degree in the beginning of 2nd li
 void IRoomba::squareMoveLong()
 {
     drive(100, Util::RADSTRAIGHT);
-    QTimer::singleShot(m_sx*100,this, SLOT(squareTurn3()));
+    QTimer::singleShot((m_sx-Util::REALCLEANWIDTH)*100,this, SLOT(squareTurn3()));
 }
 
 
@@ -595,7 +602,7 @@ void IRoomba::squareStart2()
   if (m_count < nOfRound) {  //how many round to try,1 round is 2 lines
       //updateState(); //PROPABLY NOT NEEDED
       drive(100, Util::RADSTRAIGHT);
-      QTimer::singleShot(m_sx*100,this, SLOT(squareTurn()));
+      QTimer::singleShot((m_sx-Util::REALCLEANWIDTH)*100,this, SLOT(squareTurn()));
   }
   else
   {
@@ -616,13 +623,22 @@ void IRoomba::calc4square(int h)
        //ld=line distances
 
     if (h>0 && h<=1000) {
-        nOfRound = h*Util::COORDCORRECTION/(2*Util::REALCLEANWIDTH)+1;  //or this, nOfRound = (h>>3)/5+1
+        nOfRound = h/(2*Util::REALCLEANWIDTH)+1;  //or this, nOfRound = (h>>3)/5+1
+        if (h%(2*Util::REALCLEANWIDTH)==0)
+            nOfRound = h/(2*Util::REALCLEANWIDTH);
     } else {
        qDebug() <<"too big";
     }
 
-    ld = h*Util::COORDCORRECTION/(2*nOfRound);
+//    ld = (abs(h-Util::REALCLEANWIDTH/2))/(2*nOfRound);
+//    ld = h/(2*nOfRound);
+      if (h> 2*Util::REALCLEANWIDTH)
+            ld = (h-Util::REALCLEANWIDTH)/(2.0*nOfRound-1.0);
 
+      else if ((h>Util::REALCLEANWIDTH) && (h<=2*Util::REALCLEANWIDTH))
+            ld = h-Util::REALCLEANWIDTH;
+      else
+            ld = 0;
     qDebug()<<"m_sx is "<<m_sx;
     qDebug()<<"m_sy is "<<m_sy;
     qDebug()<<"h is "<<h;
@@ -631,8 +647,8 @@ void IRoomba::calc4square(int h)
 }
 
 void IRoomba::setSquare(int w, int h) {
-    m_sx = w;
-    m_sy = h;
+    m_sx = w*Util::COORDCORRECTION;
+    m_sy = h*Util::COORDCORRECTION;
 }
 
 double IRoomba::calcPath(QVector<QVector<Util::Vertice *> > &vertices, QPointF point)

@@ -64,7 +64,8 @@ void MapQGraphicsView::mousePressEvent(QMouseEvent *event)
         scene()->addItem(atcToBeAdded_);
 
         // Add textual coordinates to the Top Left corner point of the Rectangle
-        atcToBeAddedStartPointText_ = new QGraphicsSimpleTextItem("X: " + QString::number(p.x()) + " Y: " +  QString::number(p.y()));
+        atcToBeAddedStartPointText_ = new QGraphicsSimpleTextItem("X: " + QString::number(p.x()*Util::COORDCORRECTION) +
+                                                                  " Y: " +  QString::number(p.y()*Util::COORDCORRECTION));
         atcToBeAddedStartPointText_->setPos(p);
         atcToBeAddedStartPointText_->setZValue(5);
         QBrush atcToBeAddedStartPointBrush(Qt::GlobalColor::blue);
@@ -216,9 +217,9 @@ void MapQGraphicsView::mouseMoveEvent(QMouseEvent *event)
         {
 
             atcToBeAddedEndPointText_->setPos(p);
-            atcToBeAddedEndPointText_->setText("X: " + QString::number(p.x()) + " Y: " +  QString::number(p.y())
-                                               + "\nW " + QString::number(abs(atcToBeAdded_->rect().width())+3)
-                                              + " H " + QString::number(abs(atcToBeAdded_->rect().height())+3)  );
+            atcToBeAddedEndPointText_->setText("X: " + QString::number(p.x()*Util::COORDCORRECTION) + " Y: " +  QString::number(p.y()*Util::COORDCORRECTION)
+                                               + "\nW " + QString::number((abs(atcToBeAdded_->rect().width())+3)*Util::COORDCORRECTION)
+                                              + " H " + QString::number((abs(atcToBeAdded_->rect().height())+3)*Util::COORDCORRECTION) );
         }
     }
     // Call the base class implementation to deliver the event for QGraphicsScene
