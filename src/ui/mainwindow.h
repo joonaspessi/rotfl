@@ -49,8 +49,6 @@ private slots:
 
     void pushButton_Connection_clicked();
 
-    void pushButton_GoDock_clicked();
-
     void pushButton_Clean_clicked();
 
     void pushButton_allMotors_clicked();

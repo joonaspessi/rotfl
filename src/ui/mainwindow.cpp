@@ -195,10 +195,6 @@ void MainWindow::addRoombaTab(Croi::IRoomba* roomba)
     statusText_layout->addWidget(rmbPosition_labels_.value(roomba));
 
     // Roomba actions groupbox
-		//TODO FIXME
-		QPushButton *goDock_pushButton = new QPushButton("GoDock", this);
-    connect(goDock_pushButton,SIGNAL(clicked()),this,SLOT(pushButton_GoDock_clicked()));
-
     QHBoxLayout *action_layout = new QHBoxLayout();
     allMotors_pushButtons_.insert(roomba, new QPushButton("Motors on", this));
     allMotors_pushButtons_.value(roomba)->setIcon(QIcon::fromTheme("system-run"));
@@ -360,7 +356,7 @@ void MainWindow::setRoombaStatusData(Croi::IRoomba* selectedRoomba)
         chargeLevel_labels_.value(selectedRoomba)->setText( QString::number( (unsigned short)( selectedRoomba->getChargeLevel() ) ) );
         QPointF rmbPosition = selectedRoomba->getLoc();
         rmbPosition_labels_.value(selectedRoomba)->setText( "(" + QString::number(rmbPosition.x()*Util::COORDCORRECTION, 'f', 0) +
-                                     " , " + QString::number(rmbPosition.y()*Util::COORDCORRECTION, 'f', 0) + ")" );
+                                                            " , " + QString::number(rmbPosition.y()*Util::COORDCORRECTION, 'f', 0) + ")" );
 
         //QML
         QVariant returnedValue;
@@ -409,7 +405,7 @@ void MainWindow::createToolbar()
     connect(poi_action,SIGNAL(toggled(bool)),this,SLOT(action_Poi_toggled(bool)));
     ui->mainToolBar->addAction(poi_action);
 
-QAction* atc_action = new QAction("Add Area to Clean", actionGroup);
+    QAction* atc_action = new QAction("Add Area to Clean", actionGroup);
     atc_action->setIcon(QIcon(":/icons/graphics/atc"));
     atc_action->setCheckable(true);
     connect(atc_action,SIGNAL(toggled(bool)),this,SLOT(action_ATC_toggled(bool)));
@@ -447,36 +443,29 @@ void MainWindow::pushButton_Connection_clicked()
     {
         QString ip = ip1LineEdits_.value(selectedRoomba_)->text() + "." + ip2LineEdits_.value(selectedRoomba_)->text()
                 + "." + ip3LineEdits_.value(selectedRoomba_)->text() + "." + ip4LineEdits_.value(selectedRoomba_)->text();
-    std::string stdip = ip.toStdString();
+        std::string stdip = ip.toStdString();
         connection_pushButtons_.value(selectedRoomba_)->setText("Connecting...");
         connection_pushButtons_.value(selectedRoomba_)->setDisabled(true);
         handleUIElementsConnectionStateChange(true);
         handleUIElementsChangeAllTabsState(true);
-    fleetManager_->connect(stdip);
-    (*flog.ts) << "Connect Button pressed." << endl;
-}
+        fleetManager_->connect(stdip);
+        (*flog.ts) << "Connect Button pressed." << endl;
+    }
 
     else
-{
+    {
         connection_pushButtons_.value(selectedRoomba_)->setProperty("Connected", QVariant(false));
         connection_pushButtons_.value(selectedRoomba_)->setText("Connect");
         connection_pushButtons_.value(selectedRoomba_)->setIcon(QIcon::fromTheme("network-wireless"));
-    fleetManager_->disconnect();
+        fleetManager_->disconnect();
         temperature_labels_.value(selectedRoomba_)->setText("0");
         chargeLevel_labels_.value(selectedRoomba_)->setText("0");
-    velocity_horizontalSlider_->setValue(0);
-    velocityValue_label_->setText("0");
+        velocity_horizontalSlider_->setValue(0);
+        velocityValue_label_->setText("0");
         handleUIElementsConnectionStateChange(false);
         tabWidget_->setTabIcon(tabWidget_->currentIndex(), QIcon::fromTheme("network-offline"));
-    (*flog.ts) << "Disconnect Button pressed." << endl;
-}
-}
-
-void MainWindow::pushButton_GoDock_clicked()
-{
-    fleetManager_->goDock();
-    (*flog.ts) << "GoDock Button pressed." << endl;
-
+        (*flog.ts) << "Disconnect Button pressed." << endl;
+    }
 }
 
 void MainWindow::connectionEstablished()
@@ -562,17 +551,17 @@ void MainWindow::pushButton_allMotors_clicked()
     {
         allMotors_pushButtons_.value(selectedRoomba_)->setProperty("On", QVariant(true));
         allMotors_pushButtons_.value(selectedRoomba_)->setText("Motors off");
-    fleetManager_->allMotorsOn();
-    (*flog.ts) << "Motors on Button pressed." << endl;
-}
+        fleetManager_->allMotorsOn();
+        (*flog.ts) << "Motors on Button pressed." << endl;
+    }
 
     else
-{
+    {
         allMotors_pushButtons_.value(selectedRoomba_)->setProperty("On", QVariant(false));
         allMotors_pushButtons_.value(selectedRoomba_)->setText("Motors on");
-    fleetManager_->allMotorsOff();
-    (*flog.ts) << "Motors off Button pressed." << endl;
-}
+        fleetManager_->allMotorsOff();
+        (*flog.ts) << "Motors off Button pressed." << endl;
+    }
 
 }
 
@@ -839,8 +828,8 @@ void MainWindow::pushButton_fleetManagementEnable_clicked()
         sender->setProperty("Enabled", QVariant(false));
         sender->setText("Start Fleet Management");
         handleUIElementsControlModeStateChange(false);
-    		fleetManager_->stopFleet(false);
-		}
+        fleetManager_->stopFleet(false);
+    }
 }
 
 
