@@ -785,7 +785,10 @@ bool MainWindow::eventFilter(QObject *object, QEvent *event)
     {
         if (event->type() == QEvent::MouseMove || event->type() == QEvent::DragMove)
         {
-            QPoint positionToShow = map_->viewport()->mapFromGlobal(QCursor::pos());
+            //the QCursor::pos() has to be mapped to the map_ and then to the scene since we are interested
+            //about the scene coordinates, not the possibly scaled view of it
+            QPoint positionToShow = map_->mapToScene(map_->viewport()->mapFromGlobal(QCursor::pos())).toPoint();
+            //Util::COORDCORRECTION has to be used when wanting to output real world coordinates
             statusBar()->showMessage("X: " + QString::number(positionToShow.x()*Util::COORDCORRECTION) +
                                      " Y: "+ QString::number(positionToShow.y()*Util::COORDCORRECTION));
         }

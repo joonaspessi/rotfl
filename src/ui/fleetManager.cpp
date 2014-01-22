@@ -137,30 +137,30 @@ void FleetManager::setMap(MapQGraphicsView* map)
         }
     }
 
-    //drawing all vertices
-    QPen pen(Qt::GlobalColor::gray);
-    pen.setWidth(1);
-    for(unsigned int i = 0; i < vertices_.size(); ++i)
-    {
-        QVector<Util::Vertice*> verticeRow;
-        for(unsigned int j = 0; j < vertices_.at(0).size(); ++j)
-        {
-            map_->scene()->addLine(vertices_.at(i).at(j)->topLeftX, vertices_.at(i).at(j)->topLeftY,
-                                   vertices_.at(i).at(j)->topLeftX+Util::VERTICEWIDTH-1,
-                                   vertices_.at(i).at(j)->topLeftY, pen);
-            map_->scene()->addLine(vertices_.at(i).at(j)->topLeftX, vertices_.at(i).at(j)->topLeftY,
-                                   vertices_.at(i).at(j)->topLeftX,
-                                   vertices_.at(i).at(j)->topLeftY+Util::VERTICEWIDTH-1, pen);
-            map_->scene()->addLine(vertices_.at(i).at(j)->topLeftX+Util::VERTICEWIDTH-1,
-                                   vertices_.at(i).at(j)->topLeftY,
-                                   vertices_.at(i).at(j)->topLeftX+Util::VERTICEWIDTH-1,
-                                   vertices_.at(i).at(j)->topLeftY+Util::VERTICEWIDTH-1, pen);
-            map_->scene()->addLine(vertices_.at(i).at(j)->topLeftX,
-                                   vertices_.at(i).at(j)->topLeftY+Util::VERTICEWIDTH-1,
-                                   vertices_.at(i).at(j)->topLeftX+Util::VERTICEWIDTH-1,
-                                   vertices_.at(i).at(j)->topLeftY+Util::VERTICEWIDTH-1, pen);
-        }
-    }
+//    //DEBUG-FUNCTIONALITY. drawing all vertices
+//    QPen pen(Qt::GlobalColor::gray);
+//    pen.setWidth(1);
+//    for(unsigned int i = 0; i < vertices_.size(); ++i)
+//    {
+//        QVector<Util::Vertice*> verticeRow;
+//        for(unsigned int j = 0; j < vertices_.at(0).size(); ++j)
+//        {
+//            map_->scene()->addLine(vertices_.at(i).at(j)->topLeftX, vertices_.at(i).at(j)->topLeftY,
+//                                   vertices_.at(i).at(j)->topLeftX+Util::VERTICEWIDTH-1,
+//                                   vertices_.at(i).at(j)->topLeftY, pen);
+//            map_->scene()->addLine(vertices_.at(i).at(j)->topLeftX, vertices_.at(i).at(j)->topLeftY,
+//                                   vertices_.at(i).at(j)->topLeftX,
+//                                   vertices_.at(i).at(j)->topLeftY+Util::VERTICEWIDTH-1, pen);
+//            map_->scene()->addLine(vertices_.at(i).at(j)->topLeftX+Util::VERTICEWIDTH-1,
+//                                   vertices_.at(i).at(j)->topLeftY,
+//                                   vertices_.at(i).at(j)->topLeftX+Util::VERTICEWIDTH-1,
+//                                   vertices_.at(i).at(j)->topLeftY+Util::VERTICEWIDTH-1, pen);
+//            map_->scene()->addLine(vertices_.at(i).at(j)->topLeftX,
+//                                   vertices_.at(i).at(j)->topLeftY+Util::VERTICEWIDTH-1,
+//                                   vertices_.at(i).at(j)->topLeftX+Util::VERTICEWIDTH-1,
+//                                   vertices_.at(i).at(j)->topLeftY+Util::VERTICEWIDTH-1, pen);
+//        }
+//    }
 
 
 //    //DEBUG DRAWING FOR SHOWING THE CONNECTIONS FROM VERTICE at a,b
