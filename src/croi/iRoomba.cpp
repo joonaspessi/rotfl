@@ -926,6 +926,14 @@ void IRoomba::stop()
     }
     pathLines_.clear();
     destPoi_ = NULL;
+    destAtc_ = NULL;
+    cleaning_ = false;
+
+    m_sx = 0;
+    m_sy = 0;
+    m_count = 0;
+    nOfRound = 0;
+    ld = 0.0;
 }
 
 QGraphicsPixmapItem* IRoomba::setIcon()
