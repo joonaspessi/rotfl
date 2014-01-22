@@ -142,11 +142,6 @@ MapQGraphicsView* IRoomba::getMap()
 
 void IRoomba::updateState()
 {
-    //subclass handles the retrieval of sensor information
-    double distance = getDistance()/Util::COORDCORRECTION;
-    totalDistance_ += distance;
-
-    double angle = getAngle();
     bool leftBump = getLeftBumb();
     bool rightBump = getRightBumb();
 
@@ -618,7 +613,6 @@ void IRoomba::squareStart2()
 {
   m_count++;
   if (m_count < nOfRound) {  //how many round to try,1 round is 2 lines
-      //updateState(); //PROPABLY NOT NEEDED
       drive(100, Util::RADSTRAIGHT);
       QTimer::singleShot((m_sx-Util::REALCLEANWIDTH)*100,this, SLOT(squareTurn()));
   }
