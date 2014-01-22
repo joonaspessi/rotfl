@@ -182,6 +182,7 @@ void FleetManager::setMap(MapQGraphicsView* map)
 //                           vertices_.at(a).at(b)->w->pos.x(),vertices_.at(a).at(b)->w->pos.y());
 //    map_->scene()->addLine(vertices_.at(a).at(b)->pos.x(),vertices_.at(a).at(b)->pos.y(),
 //                           vertices_.at(a).at(b)->nw->pos.x(),vertices_.at(a).at(b)->nw->pos.y());
+
 }
 
 void FleetManager::updateTimerTimeout()
@@ -224,6 +225,7 @@ void FleetManager::createRoomba(PoiQGraphicsEllipseItem *startPoint, bool virtua
         roomba = new Croi::RoombaRoowifi(startPoint, map_, this);
     }
     //Croi::RoombaSerial* roomba = new Croi::RoombaSerial(startPoint, map_, this);
+
     roombas_.append(roomba);
     selectedRoombas_.append(roomba);
     QObject::connect(roomba, SIGNAL(areaCleaned()), this, SLOT(clean()));
@@ -242,6 +244,7 @@ void FleetManager::addAtc(AtcQGraphicsRectItem* atc)
 void FleetManager::addWall(WallQGraphicsLineItem* wall)
 {
     walls_.insert(wall);
+
     //breaking verticeconnections to vertices where there are
     //walls
     for(unsigned int i = 0; i < vertices_.size(); ++i)
@@ -249,9 +252,10 @@ void FleetManager::addWall(WallQGraphicsLineItem* wall)
         for(unsigned int j = 0; j < vertices_.at(0).size(); ++j)
         {
             QList<QGraphicsItem*> items =
-                map_->items(vertices_.at(i).at(j)->topLeftX,
+                map_->scene()->items(vertices_.at(i).at(j)->topLeftX,
                             vertices_.at(i).at(j)->topLeftY,
-                            Util::VERTICEWIDTH, Util::VERTICEWIDTH);
+                            Util::VERTICEWIDTH, Util::VERTICEWIDTH,
+                            Qt::IntersectsItemShape, Qt::AscendingOrder);
             for(QList<QGraphicsItem*>::Iterator k = items.begin();
                 k != items.end(); ++k)
             {
@@ -268,7 +272,7 @@ void FleetManager::addWall(WallQGraphicsLineItem* wall)
                     if(lInit < 0)
                     {
                         lInit = 0;
-}
+                    }
                     if (mInit < 0)
                     {
                         mInit = 0;
@@ -294,6 +298,8 @@ void FleetManager::addWall(WallQGraphicsLineItem* wall)
         }
     }
 }
+
+
 
 std::set<WallQGraphicsLineItem *> FleetManager::getWalls()
 {
@@ -388,6 +394,7 @@ void FleetManager::removePoi(PoiQGraphicsEllipseItem* poi)
     {
         return;
     }
+
     map_->scene()->removeItem(poi);
     pois_.remove(index);
     delete poi;
@@ -408,9 +415,10 @@ void FleetManager::removeWall(WallQGraphicsLineItem* wall)
         for(unsigned int j = 0; j < vertices_.at(0).size(); ++j)
         {
             QList<QGraphicsItem*> items =
-                map_->items(vertices_.at(i).at(j)->topLeftX,
+                map_->scene()->items(vertices_.at(i).at(j)->topLeftX,
                             vertices_.at(i).at(j)->topLeftY,
-                            Util::VERTICEWIDTH, Util::VERTICEWIDTH);
+                            Util::VERTICEWIDTH, Util::VERTICEWIDTH,
+                            Qt::IntersectsItemShape, Qt::AscendingOrder);
 
             //to renew verticeconnections vertice must have the wall
             //we're removing but no other wall inside its area
@@ -586,6 +594,7 @@ bool FleetManager::go2Poi(PoiQGraphicsEllipseItem *poi)
         }
     }
 
+
     if(!isReadyFound) //if none of selectedRoombas_ is ready
     {
         return false;
@@ -637,20 +646,21 @@ void FleetManager::poiCollected(Croi::IRoomba* collector, PoiQGraphicsEllipseIte
     double bestDistance = std::numeric_limits<double>::max();
     PoiQGraphicsEllipseItem* nearestPoi = NULL;
     for(QVector<PoiQGraphicsEllipseItem*>::iterator i = pois_.begin();
-         i != pois_.end(); ++i)
+        i != pois_.end(); ++i)
     {
         if(!(*i)->getGettingCollected())
         {
             newDistance = collector->calcPath(vertices_, *i);
+            //old path must be ignored. The best path will be recalculated.
+            //This is not very stylish here (works nicer in go2poi)
+            collector->ignorePath();
+
             //if poi is unreachable to this roomba
             if(newDistance < bestDistance)
             {
+                bestDistance = newDistance;
                 nearestPoi = *i;
-               //old path must be ignored
-                //the best path will be recalculated. This is not very
-                //stylish here (works nicer in go2poi)
             }
-            collector->ignorePath();
 
         }
     }
@@ -678,6 +688,7 @@ void FleetManager::poiCollected(Croi::IRoomba* collector, PoiQGraphicsEllipseIte
     {
         QMessageBox::warning
         (mainWindow_, "", tr("Rest of the points are unreachable!"));
+        go2PoisOn_ = false;
     }
 }
 
@@ -710,14 +721,6 @@ bool FleetManager::removeBlockedPois()
             removePoi(pois_.at(i));
             --i; //this fixes the indexing change
         }
-        //TODO: check issue #3 on Github, implementation is missing
-        //bool isTrace = false;
-        //goes through collidingItems and removes POI if it
-        //finds an item that isn't a trace
-        //while (!collidingItems.empty())
-        //{
-        //  collidingItems.pop_front();
-        //}
     }
     return blockedPoiFound;
 }
