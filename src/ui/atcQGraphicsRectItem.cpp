@@ -1,13 +1,13 @@
 #include "atcQGraphicsRectItem.h"
 #include "mapQGraphicsView.h"
+#include "fleetManager.h"
+#include "uiUtils.h"
 #include <QStyleOption>
 #include <QMenu>
-#include <uiUtils.h>
-#include <fleetManager.h>
 
 AtcQGraphicsRectItem::AtcQGraphicsRectItem
 (FleetManager* fleetManager, qreal x, qreal y, qreal w, qreal h, QGraphicsItem *parent):
-    QGraphicsRectItem(x, y, w, h, parent), fleetManager_(fleetManager)
+    QGraphicsRectItem(x, y, w, h, parent), gettingCleaned_(false), fleetManager_(fleetManager)
 {
     setZValue(1);
 }
@@ -37,8 +37,6 @@ void AtcQGraphicsRectItem::setGettingCleaned()
 {
     gettingCleaned_ = true;
 }
-
-
 int AtcQGraphicsRectItem::type() const
 {
     return Util::ATCTYPE;
@@ -55,8 +53,6 @@ void AtcQGraphicsRectItem::contextMenuEvent(QGraphicsSceneContextMenuEvent *even
         fleetManager_->removeAtc(this);
     }
 }
-
-
 
 AtcQGraphicsRectItem::~AtcQGraphicsRectItem()
 {

@@ -17,7 +17,7 @@ public:
     virtual ~AtcQGraphicsRectItem();
     //reason for this reimplementation is to have self-defined color (red) on select
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
-	int type() const;
+  int type() const;
 	void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
 
 private:
