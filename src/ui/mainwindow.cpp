@@ -817,6 +817,7 @@ void MainWindow::pushButton_fleetManagementEnable_clicked()
     QPushButton *sender = qobject_cast<QPushButton*>(QObject::sender());
     if (sender->property("Enabled")  == QVariant(false))
     {
+        map_->setContextMenuPolicy(Qt::NoContextMenu); // Disable removing of items from context menu
         sender->setProperty("Enabled", QVariant(true));
         sender->setText("Stop Fleet Management");
         // Set selected paint tool to cursor, so adding new roombas or walls is not possible
@@ -825,6 +826,7 @@ void MainWindow::pushButton_fleetManagementEnable_clicked()
     }
     else
     {
+        map_->setContextMenuPolicy(Qt::DefaultContextMenu); // Enable removing of items from context menu
         sender->setProperty("Enabled", QVariant(false));
         sender->setText("Start Fleet Management");
         handleUIElementsControlModeStateChange(false);
