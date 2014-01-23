@@ -95,6 +95,7 @@ private:
     bool go2Poi(PoiQGraphicsEllipseItem *poi);
 
     MainWindow* mainWindow_;
+    //currently this has at most one roomba
     QVector<Croi::IRoomba*> selectedRoombas_;
     QVector<Croi::IRoomba*> managedRoombas_;
     QVector<Croi::IRoomba*> roombas_;
