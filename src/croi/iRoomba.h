@@ -173,6 +173,7 @@ private:
     int m_count;
     int nOfRound; // num of round, Height of rectangel is nOfRound*2*m_sx
     float ld;   //distance between lines in squares
+    int countDown; //counting down number of round left
 
     double turnTime_;      //delta time from go2point, needed by cleaningATC.
     int turnDirection_; //directions that go2point used.

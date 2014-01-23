@@ -54,7 +54,7 @@ public:
     //called when IRoomba reaches a POI. Calculates the nearest POI for the roomba or ends the collecting
     //of POIs if all are collected or the rest are unreachable.
     void poiCollected(Croi::IRoomba *collector, PoiQGraphicsEllipseItem *poi);
-
+    void atcCleaned(Croi::IRoomba *roomba);
     //these functions work for selectedRoombas_
 
     //returns true if vertice at point is too close to a wall

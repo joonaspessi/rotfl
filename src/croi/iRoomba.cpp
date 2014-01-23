@@ -508,6 +508,7 @@ void IRoomba::squareStart() //after reaching to the starting point, turn angle h
 
     float time=(fabs(angle_*(180.0/PI)))*18055/1000;
     qDebug() << "5. squareStart time=turnTime: " << time;
+    /*
     if (turnDirection_== Util::RADTURNCW){
         turnDirection_= Util::RADTURNCCW;
         qDebug()<<"RADTURNCW 1, angle_ is "<<angle_;
@@ -517,8 +518,21 @@ void IRoomba::squareStart() //after reaching to the starting point, turn angle h
         qDebug()<<"RADTURNCCW 2, angle_ is"<<angle_;
         time=(fabs((2*PI-angle_)*(180.0/PI)))*18055/1000;
     }
+    */
+    if (angle_<= PI) {
+        turnDirection_= Util::RADTURNCCW;
+        qDebug()<<"RADTURNCW 1, angle_ is "<<angle_;
+
+    } else {
+        turnDirection_= Util::RADTURNCW;
+        qDebug()<<"RADTURNCCW 2, angle_ is"<<angle_;
+        time=(fabs((2*PI-angle_)*(180.0/PI)))*18055/1000;
+
+    }
+
     drive(100, turnDirection_);
     QTimer::singleShot(time,this,SLOT(rotateEnded()));
+    allMotorsOn();
     qDebug() << "6. squarestart singleShot time: " << time;
 
 }
@@ -577,8 +591,22 @@ void IRoomba::squareTurn3()
 
     int turnTime = abs(90/**(180/PI)*/) * 18055 / 1000;
 
-    QTimer::singleShot(turnTime, this, SLOT(squareMoveOneLine2()));
+    if ((--countDown)== 0) {
+        cleaning_=false;
+        qDebug() << "area cleaned, check next angle to move to new POI ";
+        drive(0, Util::RADSTRAIGHT);
+        allMotorsOff();
 
+        int turnTime = abs(180/**(180/PI)*/) * 18055 / 1000;
+
+        QTimer::singleShot(turnTime, this, SLOT(squareStart2()));
+
+
+    }
+    else {
+        QTimer::singleShot(turnTime, this, SLOT(squareMoveOneLine2()));
+    }
+    qDebug()<<"countDown is "<<countDown;
 }
 
 void IRoomba::squareMoveOneLine2() //move outside of the square,
@@ -612,13 +640,14 @@ void IRoomba::squareStart2()
   }
   else
   {
-      drive(0, Util::RADTURNCCW);
+      //drive(0, Util::RADTURNCCW);
 
-      allMotorsOff();
-      cleaning_ = false;
+      //allMotorsOff();
+      //cleaning_ = false;
       //qobject_cast<FleetManager*>(parent())->removeAtc(destAtc_);
-      emit areaCleaned();
-      qDebug() << "area cleaned, check next angle to move to new POI ";
+      qobject_cast<FleetManager*>(parent())->atcCleaned(this);
+      // emit areaCleaned();
+      //qDebug() << "area cleaned, check next angle to move to new POI ";
   }
 
 }
@@ -645,11 +674,16 @@ void IRoomba::calc4square(int h)
             ld = h-Util::REALCLEANWIDTH;
       else
             ld = 0;
+
+      countDown= nOfRound;
+
     qDebug()<<"m_sx is "<<m_sx;
     qDebug()<<"m_sy is "<<m_sy;
     qDebug()<<"h is "<<h;
     qDebug()<<"nOfRound is "<<nOfRound;
     qDebug()<<"ld is "<<ld;
+    qDebug()<<"countDown is"<<countDown;
+
 }
 
 void IRoomba::setSquare(int w, int h) {

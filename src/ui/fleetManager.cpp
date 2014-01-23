@@ -16,7 +16,7 @@ FleetManager::FleetManager(MainWindow* mainWindow, QObject *parent):
     updateTimer_ = new QTimer(this);
     QObject::connect(updateTimer_, SIGNAL(timeout()), this, SLOT(updateTimerTimeout()));
     updateTimer_->setSingleShot(false);
-    updateTimer_->start(100);
+    updateTimer_->start(300);
 }
 
 
@@ -235,7 +235,7 @@ void FleetManager::createRoomba(PoiQGraphicsEllipseItem *startPoint, bool virtua
     mainWindow_->addRoombaTab(roomba);
     roombas_.append(roomba);
     selectedRoombas_.append(roomba);
-    QObject::connect(roomba, SIGNAL(areaCleaned()), this, SLOT(clean()));
+//    QObject::connect(roomba, SIGNAL(areaCleaned()), this, SLOT(clean()));
 }
 
 void FleetManager::addPoi(PoiQGraphicsEllipseItem* poi)
@@ -754,13 +754,7 @@ void FleetManager::clean()
             }
             else
             {
-                if(cleaningAtcsOn_)
-                {
-//                   cleaningAtcsOn_ = false;
-//                    QMessageBox::information
-//                        (mainWindow_, "", tr("All areas cleaned"));
-                }
-                else
+                if(!cleaningAtcsOn_)
                 {
                     QMessageBox::warning
                     (mainWindow_, "", tr("No areas to clean!"));
@@ -770,6 +764,15 @@ void FleetManager::clean()
         }
     }
 }
+
+void FleetManager::atcCleaned(Croi::IRoomba *roomba)
+{
+    if(MoveRobotToNearestArea(roombas_.indexOf(roomba)))
+    {
+        roomba->clean();
+    }
+}
+
 
 void FleetManager::allMotorsOn()
 {
