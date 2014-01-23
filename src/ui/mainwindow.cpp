@@ -458,10 +458,7 @@ void MainWindow::pushButton_Connection_clicked()
         connection_pushButtons_.value(selectedRoomba_)->setText("Connect");
         connection_pushButtons_.value(selectedRoomba_)->setIcon(QIcon::fromTheme("network-wireless"));
         fleetManager_->disconnect();
-        temperature_labels_.value(selectedRoomba_)->setText("0");
-        chargeLevel_labels_.value(selectedRoomba_)->setText("0");
-        velocity_horizontalSlider_->setValue(0);
-        velocityValue_label_->setText("0");
+        resetRoombaStatusInfo();
         handleUIElementsConnectionStateChange(false);
         tabWidget_->setTabIcon(tabWidget_->currentIndex(), QIcon::fromTheme("network-offline"));
         (*flog.ts) << "Disconnect Button pressed." << endl;
@@ -1148,6 +1145,32 @@ void MainWindow::stopAllManuallyControlledRoombas()
         turnCcw_pushButtons_.value(roomba)->setChecked(false);
         turnCw_pushButtons_.value(roomba)->setChecked(false);
     }
+}
+
+void MainWindow::resetRoombaStatusInfo()
+{
+    temperature_labels_.value(selectedRoomba_)->setText( QString::number( ( unsigned char )( 0 ) ) );
+    chargeLevel_labels_.value(selectedRoomba_)->setText( QString::number( (unsigned short)( 0 ) ) );
+    QPointF rmbPosition = selectedRoomba_->getLoc();
+    rmbPosition_labels_.value(selectedRoomba_)->setText( "(" + QString::number(rmbPosition.x()*Util::COORDCORRECTION, 'f', 0) +
+                                                        " , " + QString::number(rmbPosition.y()*Util::COORDCORRECTION, 'f', 0) + ")" );
+
+    //QML
+    QVariant returnedValue;
+    QMetaObject::invokeMethod(roombaStatuses_.value(selectedRoomba_), "setBatteryLevelmAh", Q_RETURN_ARG(QVariant, returnedValue),
+                              Q_ARG(QVariant, 0) );
+
+    QMetaObject::invokeMethod(roombaStatuses_.value(selectedRoomba_), "setSpeed", Q_RETURN_ARG(QVariant, returnedValue),
+                              Q_ARG(QVariant, 0));
+
+    QMetaObject::invokeMethod(roombaStatuses_.value(selectedRoomba_), "setDirection", Q_RETURN_ARG(QVariant, returnedValue),
+                              Q_ARG(QVariant, abs(selectedRoomba_->getCurrentAngle()*180/Util::PI)));
+
+    QMetaObject::invokeMethod(roombaStatuses_.value(selectedRoomba_), "setTemperature", Q_RETURN_ARG(QVariant, returnedValue),
+                              Q_ARG(QVariant, 0));
+
+    QMetaObject::invokeMethod(roombaStatuses_.value(selectedRoomba_), "setDistance", Q_RETURN_ARG(QVariant, returnedValue),
+                              Q_ARG(QVariant, 0));
 }
 
 void MainWindow::action_About_triggered()

@@ -128,6 +128,7 @@ private:
     // Disables or enables UI elements on state change, state is true if changing to connecting state
     void handleUIElementsChangeAllTabsState(bool state);
     void stopAllManuallyControlledRoombas();
+    void resetRoombaStatusInfo();
     QVBoxLayout *connect_layout_;
     QLabel *velocityValue_label_;
     QLabel *mapScaleValue_label_;
