@@ -361,7 +361,7 @@ void MainWindow::setRoombaStatusData(Croi::IRoomba* selectedRoomba)
         //QML
         QVariant returnedValue;
         QMetaObject::invokeMethod(roombaStatuses_.value(selectedRoomba), "setBatteryLevelmAh", Q_RETURN_ARG(QVariant, returnedValue),
-                                  Q_ARG(QVariant, selectedRoomba->getChargeLevel()) );
+                                  Q_ARG(QVariant, selectedRoomba->getChargeLevel()), Q_ARG(QVariant, selectedRoomba->getBatteryLevel()) );
 
         QMetaObject::invokeMethod(roombaStatuses_.value(selectedRoomba), "setSpeed", Q_RETURN_ARG(QVariant, returnedValue),
                                   Q_ARG(QVariant, abs(selectedRoomba->getVelocity())));
