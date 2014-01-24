@@ -586,7 +586,7 @@ void MainWindow::pushButton_allMotors_clicked()
     {
         allMotors_pushButtons_.value(selectedRoomba_)->setProperty("On", QVariant(true));
         allMotors_pushButtons_.value(selectedRoomba_)->setText("Motors off");
-        fleetManager_->allMotorsOn();
+        selectedRoomba_->allMotorsOn();
         (*flog.ts) << "Motors on Button pressed." << endl;
     }
 
@@ -594,7 +594,7 @@ void MainWindow::pushButton_allMotors_clicked()
     {
         allMotors_pushButtons_.value(selectedRoomba_)->setProperty("On", QVariant(false));
         allMotors_pushButtons_.value(selectedRoomba_)->setText("Motors on");
-        fleetManager_->allMotorsOff();
+        selectedRoomba_->allMotorsOff();
         (*flog.ts) << "Motors off Button pressed." << endl;
     }
 
@@ -602,38 +602,38 @@ void MainWindow::pushButton_allMotors_clicked()
 
 void MainWindow::pushButton_resetAngle_clicked()
 {
-    fleetManager_->resetAngle();
+    selectedRoomba_->resetAngle();
     (*flog.ts) << "ResetAngle Button pressed." << endl;
 }
 
 void MainWindow::toolButton_correctLeft_clicked()
 {
-    fleetManager_->correctLocation(Util::Direction::W);
+    selectedRoomba_->correctLocation(Util::Direction::W);
 }
 
 void MainWindow::toolButton_correctRight_clicked()
 {
-    fleetManager_->correctLocation(Util::Direction::E);
+    selectedRoomba_->correctLocation(Util::Direction::E);
 }
 
 void MainWindow::toolButton_correctUp_clicked()
 {
-    fleetManager_->correctLocation(Util::Direction::N);
+    selectedRoomba_->correctLocation(Util::Direction::N);
 }
 
 void MainWindow::toolButton_correctDown_clicked()
 {
-    fleetManager_->correctLocation(Util::Direction::S);
+    selectedRoomba_->correctLocation(Util::Direction::S);
 }
 
 void MainWindow::pushButton_correctCw_clicked()
 {
-    fleetManager_->correctAngle(true);
+    selectedRoomba_->correctAngle(true);
 }
 
 void MainWindow::pushButton_correctCcw_clicked()
 {
-    fleetManager_->correctAngle(false);
+    selectedRoomba_->correctAngle(false);
 }
 
 void MainWindow::handleUIElementsDrivingStateChange()
@@ -658,13 +658,13 @@ void MainWindow::toolButton_driveForward_clicked()
     {
         handleUIElementsDrivingStateChange();
         driveForward_toolButtons_.value(selectedRoomba_)->setChecked(true);
-        fleetManager_->drive(velocity_horizontalSlider_->value(), Util::RADSTRAIGHT);
+        selectedRoomba_->drive(velocity_horizontalSlider_->value(), Util::RADSTRAIGHT);
         (*flog.ts) << "UpArrow" << endl;
     }
     else
     {
         driveForward_toolButtons_.value(selectedRoomba_)->setChecked(false);
-        fleetManager_->drive(0, Util::RADSTRAIGHT);
+        selectedRoomba_->drive(0, Util::RADSTRAIGHT);
         (*flog.ts) << "Stop" << endl;
     }
 }
@@ -683,13 +683,13 @@ void MainWindow::toolButton_driveBackward_clicked()
     {
         handleUIElementsDrivingStateChange();
         driveBackward_toolButtons_.value(selectedRoomba_)->setChecked(true);
-        fleetManager_->drive(velocity_horizontalSlider_->value(), Util::RADSTRAIGHT);
+        selectedRoomba_->drive(velocity_horizontalSlider_->value(), Util::RADSTRAIGHT);
         (*flog.ts) << "BackArrow" << endl;
     }
     else
     {
         driveBackward_toolButtons_.value(selectedRoomba_)->setChecked(false);
-        fleetManager_->drive(0, Util::RADSTRAIGHT);
+        selectedRoomba_->drive(0, Util::RADSTRAIGHT);
         (*flog.ts) << "Stop" << endl;
     }
 }
@@ -708,13 +708,13 @@ void MainWindow::pushButton_turnCw_clicked()
     {
         handleUIElementsDrivingStateChange();
         turnCw_pushButtons_.value(selectedRoomba_)->setChecked(true);
-        fleetManager_->drive(velocity_horizontalSlider_->value(), Util::RADTURNCW);
+        selectedRoomba_->drive(velocity_horizontalSlider_->value(), Util::RADTURNCW);
         (*flog.ts) << "Turn clockwise" << endl;
     }
     else
     {
         turnCw_pushButtons_.value(selectedRoomba_)->setChecked(false);
-        fleetManager_->drive(0, Util::RADSTRAIGHT);
+        selectedRoomba_->drive(0, Util::RADSTRAIGHT);
         (*flog.ts) << "Stop" << endl;
     }
 }
@@ -733,13 +733,13 @@ void MainWindow::pushButton_turnCcw_clicked()
     {
         handleUIElementsDrivingStateChange();
         turnCcw_pushButtons_.value(selectedRoomba_)->setChecked(true);
-        fleetManager_->drive(velocity_horizontalSlider_->value(), Util::RADTURNCCW);
+        selectedRoomba_->drive(velocity_horizontalSlider_->value(), Util::RADTURNCCW);
         (*flog.ts) << "Turn counterclockwise" << endl;
     }
     else
     {
         turnCcw_pushButtons_.value(selectedRoomba_)->setChecked(false);
-        fleetManager_->drive(0, Util::RADSTRAIGHT);
+        selectedRoomba_->drive(0, Util::RADSTRAIGHT);
         (*flog.ts) << "Stop" << endl;
     }
 }
@@ -757,28 +757,28 @@ void MainWindow::keyPressEvent(QKeyEvent* event)
         }
         else
         {
-            fleetManager_->drive(velocity_horizontalSlider_->value(), Util::RADSTRAIGHT);
+            selectedRoomba_->drive(velocity_horizontalSlider_->value(), Util::RADSTRAIGHT);
         }
         qDebug() << "UpArrow";
         (*flog.ts) << "UpArrow" << endl;
     }
     else if(event->key() == Qt::Key_A) {
-        fleetManager_->drive(velocity_horizontalSlider_->value(), Util::RADTURNCCW);
+        selectedRoomba_->drive(velocity_horizontalSlider_->value(), Util::RADTURNCCW);
         qDebug() << "Turn counterclockwise";
         (*flog.ts) << "Turn counterclockwise" << endl;
     }
     else if(event->key() == Qt::Key_D) {
-        fleetManager_->drive(velocity_horizontalSlider_->value(), Util::RADTURNCW);
+        selectedRoomba_->drive(velocity_horizontalSlider_->value(), Util::RADTURNCW);
         qDebug() << "Turn clockwise";
         (*flog.ts) << "Turn clockwise" << endl;
     }
     else if(event->key() == Qt::Key_E) {
-        fleetManager_->drive(velocity_horizontalSlider_->value(),200);
+        selectedRoomba_->drive(velocity_horizontalSlider_->value(),200);
         qDebug() << "RightArrow";
         (*flog.ts) << "RightArrow" << endl;
     }
     else if(event->key() == Qt::Key_R) {
-        fleetManager_->drive(velocity_horizontalSlider_->value(),-200);
+        selectedRoomba_->drive(velocity_horizontalSlider_->value(),-200);
         qDebug() << "LeftArrow";
         (*flog.ts) << "LeftArrow" << endl;
     }
@@ -793,13 +793,13 @@ void MainWindow::keyPressEvent(QKeyEvent* event)
         }
         else
         {
-            fleetManager_->drive(velocity_horizontalSlider_->value(),Util::RADSTRAIGHT);
+            selectedRoomba_->drive(velocity_horizontalSlider_->value(),Util::RADSTRAIGHT);
         }
         qDebug() << "BackArrow";
         (*flog.ts) << "BackArrow" << endl;
     }
     else if(event->key() == Qt::Key_Q) {
-        fleetManager_->drive(0, Util::RADSTRAIGHT);
+        selectedRoomba_->drive(0, Util::RADSTRAIGHT);
         qDebug() << "Stop";
         (*flog.ts) << "Stop" << endl;
     }
@@ -807,7 +807,7 @@ void MainWindow::keyPressEvent(QKeyEvent* event)
 
 void MainWindow::pushButton_playSong_clicked()
 {
-    fleetManager_->playSong(1);
+    selectedRoomba_->playSong(1);
     (*flog.ts) << "playSong 1" << endl;
 }
 

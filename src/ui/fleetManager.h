@@ -44,8 +44,6 @@ public:
     //and takes into account situation with several walls near or intersecting
     void removeWall(WallQGraphicsLineItem* wall);
     void removeAtc(AtcQGraphicsRectItem* atc);
-    //removes all selected objects except roombas and startPoints
-    void removeRedObjects();
     void removeAllObjects();
     void ifShowTraces();  //tells the roombas to change the visibility of their trace
     void removeTraces();
@@ -55,27 +53,12 @@ public:
     //of POIs if all are collected or the rest are unreachable.
     void poiCollected(Croi::IRoomba *collector, PoiQGraphicsEllipseItem *poi);
     void atcCleaned(Croi::IRoomba *roomba);
-    //these functions work for selectedRoombas_
-
     //returns true if vertice at point is too close to a wall
     bool isBlocked(QPointF* point);
     //removes all blocked POIs and returns true if there was any.
     //This is called when creating a new wall
     bool removeBlockedPois();
-    void connect(std::string stdip);
-    void disconnect();
-    void goDock();
-    void allMotorsOn();
-    void allMotorsOff();
-    void safeMode();
-    void fullMode();
-    void resetAngle();
-    void playSong(unsigned int songNum);
     void setVelocity(int velocity);
-    void drive( int velocity, int radius );
-    void drive( int velocity);
-    void correctLocation(Util::Direction direction);
-    void correctAngle(bool clockWise);
     int findNearestPoint(Croi::IRoomba *roomba);
     //returns false if there is no ATC left
     bool MoveRobotToNearestArea(int i);
@@ -85,7 +68,6 @@ public:
 signals:
 
 public slots:
-    void updateTimerTimeout();
     void clean();
 
 private:
@@ -95,8 +77,6 @@ private:
     bool go2Poi(PoiQGraphicsEllipseItem *poi);
 
     MainWindow* mainWindow_;
-    //currently this has at most one roomba
-    QVector<Croi::IRoomba*> selectedRoombas_;
     QVector<Croi::IRoomba*> managedRoombas_;
     QVector<Croi::IRoomba*> roombas_;
     std::set<WallQGraphicsLineItem*> walls_;
@@ -104,7 +84,6 @@ private:
 	std::set<AtcQGraphicsRectItem*> atcs_;
     MapQGraphicsView* map_;
     QVector<QVector<Util::Vertice*>> vertices_;
-    QTimer* updateTimer_;
     bool go2PoisOn_;
     bool cleaningAtcsOn_;
 };

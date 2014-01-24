@@ -12,12 +12,7 @@
 FleetManager::FleetManager(MainWindow* mainWindow, QObject *parent):
     QObject(parent), mainWindow_(mainWindow), map_(NULL), go2PoisOn_(false),
     cleaningAtcsOn_(false)
-{
-    updateTimer_ = new QTimer(this);
-    QObject::connect(updateTimer_, SIGNAL(timeout()), this, SLOT(updateTimerTimeout()));
-    updateTimer_->setSingleShot(false);
-    updateTimer_->start(300);
-}
+{}
 
 
 //map_ cannot be set in constructor because map_ is constructed after
@@ -185,35 +180,6 @@ void FleetManager::setMap(MapQGraphicsView* map)
 
 }
 
-void FleetManager::updateTimerTimeout()
-{
-    for (int i = 0; i < roombas_.size(); ++i)
-    {
-        int index = selectedRoombas_.indexOf(roombas_.at(i));
-        //roomba is selected
-        if(roombas_.at(i)->getIcon()->isSelected() ||
-                roombas_.at(i)->getStartPoint()->isSelected())
-        {
-            //both the roomba and it's startPoint are selected for clarity
-            roombas_.at(i)->getIcon()->setSelected(true);
-            roombas_.at(i)->getStartPoint()->setSelected(true);
-            if (index == -1)  //selected roomba isn't yet in selectedRoombas_
-            {
-                selectedRoombas_.append(roombas_.at(i));
-                // Set selected Roomba's tab active
-//                mainWindow_->setSelectedRoombaTab(roombas_.at(i));
-            }
-        }
-        else //roomba is not selected
-        {
-            if (index != -1)  //unselected roomba is in selectedRoombas_
-            {
-                selectedRoombas_.remove(index);
-            }
-        }
-    }
-}
-
 void FleetManager::createRoomba(PoiQGraphicsEllipseItem *startPoint, bool virtualRoomba)
 {
     Croi::IRoomba *roomba;
@@ -233,7 +199,6 @@ void FleetManager::createRoomba(PoiQGraphicsEllipseItem *startPoint, bool virtua
 
     mainWindow_->addRoombaTab(roomba);
     roombas_.append(roomba);
-    selectedRoombas_.append(roomba);
 //    QObject::connect(roomba, SIGNAL(areaCleaned()), this, SLOT(clean()));
 }
 
@@ -465,15 +430,6 @@ void FleetManager::ifShowTraces()
     }
 }
 
-//removes selectedRoombas traces
-void FleetManager::removeTraces()
-{
-    for (int i = 0; i < selectedRoombas_.size(); ++i)
-    {
-        selectedRoombas_.at(i)->removeTraces();
-    }
-}
-
 void FleetManager::go2Pois()
 {
     if(go2PoisOn_)
@@ -551,7 +507,7 @@ bool FleetManager::go2Poi(PoiQGraphicsEllipseItem *poi)
     }
 
 
-    if(!isReadyFound) //if none of selectedRoombas_ is ready
+    if(!isReadyFound) //if none of roombas_ is ready
     {
         return false;
     }
@@ -681,59 +637,6 @@ bool FleetManager::removeBlockedPois()
     return blockedPoiFound;
 }
 
-void FleetManager::connect(std::string stdip)
-{
-    if (selectedRoombas_.empty())
-    {
-        QMessageBox::warning
-        (mainWindow_, "", tr("Please select one Roomba!"));
-    }
-    else if(selectedRoombas_.size() > 1)
-    {
-        QMessageBox::warning
-        (mainWindow_, "", tr("Please select only one Roomba!"));
-    }
-    else
-    {
-       selectedRoombas_.at(0)->rmb_connect(stdip);
-    }
-}
-
-void FleetManager::disconnect()
-{
-    if (selectedRoombas_.empty())
-    {
-        QMessageBox::warning
-        (mainWindow_, "", tr("Please select one Roomba!"));
-    }
-    else if(selectedRoombas_.size() > 1)
-    {
-        QMessageBox::warning
-        (mainWindow_, "", tr("Please select only one Roomba!"));
-    }
-    else
-    {
-       selectedRoombas_.at(0)->disconnect();
-    }
-}
-
-void FleetManager::goDock()
-{
-    if (selectedRoombas_.empty())
-    {
-        QMessageBox::warning
-        (mainWindow_, "", tr("Please select a Roomba!"));
-    }
-    else
-    {
-        for (int i = 0; i < selectedRoombas_.size(); ++i)
-        {
-            // TODO: Add correct dock position here
-            //selectedRoombas_.at(i)->go2Point(QPointF(50,50));
-            selectedRoombas_.at(i)->goDock();
-        }
-    }
-}
 void FleetManager::clean()
 {
 
@@ -772,153 +675,6 @@ void FleetManager::atcCleaned(Croi::IRoomba *roomba)
     }
 }
 
-
-void FleetManager::allMotorsOn()
-{
-    if (selectedRoombas_.empty())
-    {
-        QMessageBox::warning
-        (mainWindow_, "", tr("Please select a Roomba!"));
-    }
-    else
-    {
-        for (int i = 0; i < selectedRoombas_.size(); ++i)
-        {
-            selectedRoombas_.at(i)->allMotorsOn();
-        }
-    }
-}
-
-void FleetManager::allMotorsOff()
-{
-    if (selectedRoombas_.empty())
-    {
-        QMessageBox::warning
-        (mainWindow_, "", tr("Please select a Roomba!"));
-    }
-    else
-    {
-        for (int i = 0; i < selectedRoombas_.size(); ++i)
-        {
-            selectedRoombas_.at(i)->allMotorsOff();
-        }
-    }
-}
-
-void FleetManager::safeMode()
-{
-    if (selectedRoombas_.empty())
-    {
-        QMessageBox::warning
-        (mainWindow_, "", tr("Please select a Roomba!"));
-    }
-    else
-    {
-        for (int i = 0; i < selectedRoombas_.size(); ++i)
-        {
-            selectedRoombas_.at(i)->safeMode();
-        }
-    }
-}
-
-void FleetManager::fullMode()
-{
-    if (selectedRoombas_.empty())
-    {
-        QMessageBox::warning
-        (mainWindow_, "", tr("Please select a Roomba!"));
-    }
-    else
-    {
-        for (int i = 0; i < selectedRoombas_.size(); ++i)
-        {
-            selectedRoombas_.at(i)->fullMode();
-        }
-    }
-}
-
-void FleetManager::resetAngle()
-{
-    if (selectedRoombas_.empty())
-    {
-        QMessageBox::warning
-        (mainWindow_, "", tr("Please select a Roomba!"));
-    }
-    else
-    {
-        for (int i = 0; i < selectedRoombas_.size(); ++i)
-        {
-            selectedRoombas_.at(i)->resetAngle();
-        }
-    }
-}
-
-void FleetManager::playSong(unsigned int songNum)
-{
-    if (selectedRoombas_.empty())
-    {
-        QMessageBox::warning
-        (mainWindow_, "", tr("Please select a Roomba!"));
-    }
-    else
-    {
-        for (int i = 0; i < selectedRoombas_.size(); ++i)
-        {
-            selectedRoombas_.at(i)->playSong(songNum);
-        }
-    }
-}
-
-void FleetManager::setVelocity(int velocity)
-{
-    if (selectedRoombas_.empty())
-    {
-        QMessageBox::warning
-        (mainWindow_, "", tr("Please select a Roomba!"));
-    }
-    else
-    {
-        for (int i = 0; i < selectedRoombas_.size(); ++i)
-        {
-            if (selectedRoombas_.at(i)->getVelocity() != 0)
-            {
-                selectedRoombas_.at(i)->drive(velocity);
-            }
-        }
-    }
-}
-
-void FleetManager::drive( int velocity, int radius )
-{
-    if (selectedRoombas_.empty())
-    {
-        QMessageBox::warning
-        (mainWindow_, "", tr("Please select a Roomba!"));
-    }
-    else
-    {
-        for (int i = 0; i < selectedRoombas_.size(); ++i)
-        {
-            selectedRoombas_.at(i)->drive(velocity, radius);
-        }
-    }
-}
-
-void FleetManager::drive( int velocity)
-{
-    if (selectedRoombas_.empty())
-    {
-        QMessageBox::warning
-        (mainWindow_, "", tr("Please select a Roomba!"));
-    }
-    else
-    {
-        for (int i = 0; i < selectedRoombas_.size(); ++i)
-        {
-            selectedRoombas_.at(i)->drive(velocity);
-        }
-    }
-}
 // TODO: Check to work like go2POIs
 int FleetManager::findNearestPoint(Croi::IRoomba *roomba)
 {
@@ -950,48 +706,6 @@ int FleetManager::findNearestPoint(Croi::IRoomba *roomba)
     }
 
     return val;
-}
-
-void FleetManager::correctLocation(Util::Direction direction)
-{
-    if (selectedRoombas_.empty())
-    {
-        QMessageBox::warning
-        (mainWindow_, "", tr("Please select one Roomba!"));
-    }
-    else if(selectedRoombas_.size() > 1)
-    {
-        QMessageBox::warning
-        (mainWindow_, "", tr("Please select only one Roomba!"));
-    }
-    else
-    {
-        for (int i = 0; i < selectedRoombas_.size(); ++i)
-        {
-            selectedRoombas_.at(i)->correctLocation(direction);
-        }
-    }
-}
-
-void FleetManager::correctAngle(bool clockWise)
-{
-    if (selectedRoombas_.empty())
-    {
-        QMessageBox::warning
-        (mainWindow_, "", tr("Please select one Roomba!"));
-    }
-    else if(selectedRoombas_.size() > 1)
-    {
-        QMessageBox::warning
-        (mainWindow_, "", tr("Please select only one Roomba!"));
-    }
-    else
-    {
-        for (int i = 0; i < selectedRoombas_.size(); ++i)
-        {
-            selectedRoombas_.at(i)->correctAngle(clockWise);
-        }
-    }
 }
 
 // TODO: Check if this is similar to Juhani's logic!
@@ -1033,6 +747,16 @@ bool FleetManager::MoveRobotToNearestArea(int j) {
     return true;
 }
 
+void FleetManager::setVelocity(int velocity)
+{
+    for (int i = 0; i < roombas_.size(); ++i)
+    {
+        if (roombas_.at(i)->getVelocity() != 0)
+        {
+            roombas_.at(i)->drive(velocity);
+        }
+    }
+}
 
 FleetManager::~FleetManager()
 {
