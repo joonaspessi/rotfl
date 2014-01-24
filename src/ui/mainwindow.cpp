@@ -44,8 +44,6 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
 
     createMenuBar();
-    // TODO: Add better background image for example url(:/widgets/carbon) or color http://www.w3schools.com/cssref/css_colornames.asp
-    setStyleSheet("background-color: floralwhite;");
 
     // Mainwindow could not be smaller than it's contents
     setMinimumSize(Util::PIXELMAPWIDTH+Util::TABWIDTH + 5, Util::PIXELMAPWIDTH + 100);

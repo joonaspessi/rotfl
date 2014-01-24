@@ -9,10 +9,6 @@ Item {
         id : backgroundcarbon
         width: 400
         height:380
-        Rectangle {
-            anchors.fill: parent
-            color: "floralwhite"  // TODO: change to better "Image" for example source: "carbon"
-        }
     }
 
     function setBatteryLevelmAh(mah,percentage) {
