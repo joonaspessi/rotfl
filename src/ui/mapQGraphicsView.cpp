@@ -121,7 +121,7 @@ void MapQGraphicsView::mousePressEvent(QMouseEvent *event)
                 PoiQGraphicsEllipseItem* poi = new PoiQGraphicsEllipseItem
                         (fleetManager_, 0.0-Util::POIWIDTH/2.0, 0.0-Util::POIWIDTH/2.0, Util::POIWIDTH, Util::POIWIDTH);
                 poi->setPos(p);
-                poi->setFlag(QGraphicsItem::ItemIsSelectable,true);
+                poi->setFlag(QGraphicsItem::ItemIsSelectable,false);
                 poi->setFlag(QGraphicsItem::ItemIsMovable,false); // Disabled so that the mapChanged signal works as expected
                 scene()->addItem(poi);
                 fleetManager_->addPoi(poi);
@@ -143,7 +143,7 @@ void MapQGraphicsView::mousePressEvent(QMouseEvent *event)
             startPoint->setPos(p);
             QBrush brush(Qt::GlobalColor::green);
             startPoint->setBrush(brush);
-            startPoint->setFlag(QGraphicsItem::ItemIsSelectable,true);
+            startPoint->setFlag(QGraphicsItem::ItemIsSelectable,false);
             //movable needs additional logic before allowing
             startPoint->setFlag(QGraphicsItem::ItemIsMovable,false);
             //TODO: Add deleleting of startPoint when moving it
@@ -241,7 +241,7 @@ void MapQGraphicsView::mouseReleaseEvent(QMouseEvent *event)
     {
         if (selectedPaintTool_ == Util::SelectedPaintTool::WALL)
         {
-            wallToBeAdded_->setFlag(QGraphicsItem::ItemIsSelectable,true);
+            wallToBeAdded_->setFlag(QGraphicsItem::ItemIsSelectable,false);
             wallToBeAdded_->setFlag(QGraphicsItem::ItemIsMovable,false); // Disabled so that the mapChanged signal works as expected
             fleetManager_->addWall(wallToBeAdded_);
             if(fleetManager_->removeBlockedPois())  //POIs blocked by the wall are removed
@@ -260,7 +260,7 @@ void MapQGraphicsView::mouseReleaseEvent(QMouseEvent *event)
         }
         else if (selectedPaintTool_ == Util::SelectedPaintTool::ATC)
         {
-            atcToBeAdded_->setFlag(QGraphicsItem::ItemIsSelectable,true);
+            atcToBeAdded_->setFlag(QGraphicsItem::ItemIsSelectable,false);
             atcToBeAdded_->setFlag(QGraphicsItem::ItemIsMovable,false); // Disabled so that the mapChanged signal works as expected
             fleetManager_->addAtc(atcToBeAdded_);
             delete atcToBeAddedStartPoint_;
