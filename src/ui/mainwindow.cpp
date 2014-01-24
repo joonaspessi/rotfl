@@ -352,6 +352,7 @@ void MainWindow::setRoombaStatusData(Croi::IRoomba* selectedRoomba)
     // TODO: Remove double bookkeeping of selected roomba
     if (selectedRoomba == selectedRoomba_)
     {
+        qDebug() << "Dirt level: " << 100*selectedRoomba->getDirtAmount()/510 <<"%";
         temperature_labels_.value(selectedRoomba)->setText( QString::number( ( unsigned char )( selectedRoomba->getTemperature() ) ) );
         chargeLevel_labels_.value(selectedRoomba)->setText( QString::number( (unsigned short)( selectedRoomba->getChargeLevel() ) ) );
         QPointF rmbPosition = selectedRoomba->getLoc();
@@ -1151,6 +1152,7 @@ void MainWindow::stopAllManuallyControlledRoombas()
 void MainWindow::action_About_triggered()
 {
     const QString aboutDescription =
+            " <br><br>"
             "<b>Version 1.0</b><br>"
             "<p align='center'>Created for course<br>"
             "<a href='http://www.cs.tut.fi/~projekti/'>TIE-13100 Project Work on Pervasive Systems</a><br>"
@@ -1168,6 +1170,7 @@ void MainWindow::action_About_triggered()
     aboutBox.setWindowTitle("About Roomba, The Fleet Management");
     aboutBox.setTextFormat(Qt::RichText);
     aboutBox.setText(aboutDescription);
+    aboutBox.setIconPixmap(QPixmap(":/icons/TUT_logo"));
     aboutBox.exec();
 }
 

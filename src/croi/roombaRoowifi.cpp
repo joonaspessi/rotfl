@@ -171,6 +171,13 @@ bool RoombaRoowifi::getRightBumb()
     return false;
 }
 
+int RoombaRoowifi::getDirtAmount()
+{
+    int dirtAmount =  int(roowifi_->Sensors.DirtDetectorLeft) + int(roowifi_->Sensors.DirtDetectorRight);
+    return dirtAmount;
+
+}
+
 void RoombaRoowifi::drive(int velocity, int radius)
 {
     roowifi_->Drive(velocity, radius);

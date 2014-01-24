@@ -53,6 +53,7 @@ public:
     virtual double getAngle() = 0;
     virtual bool getLeftBumb() = 0;
     virtual bool getRightBumb() = 0;
+    virtual int getDirtAmount() =0;
     //the basic implementation sets a real roomba icon
     virtual QGraphicsPixmapItem* setIcon();
     virtual void  goDock() = 0;

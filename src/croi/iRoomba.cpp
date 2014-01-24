@@ -198,6 +198,7 @@ void IRoomba::updateState()
             fleetManager->addWall(bumbed);
         }
     }
+
 }
 
 QGraphicsPixmapItem *IRoomba::getIcon()

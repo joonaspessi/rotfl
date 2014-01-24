@@ -80,6 +80,11 @@ bool RoombaVirtual::getRightBumb()
     return false;
 }
 
+int RoombaVirtual::getDirtAmount()
+{
+    return 0;
+}
+
 void RoombaVirtual::drive(int velocity, int radius)
 {
     if(IRoomba::getVelocity() != 0)

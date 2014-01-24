@@ -31,6 +31,7 @@ public:
     virtual double getAngle();
     virtual bool getLeftBumb();
     virtual bool getRightBumb();
+    virtual int getDirtAmount();
 
     virtual void goDock();
     virtual float getBatteryLevel();
