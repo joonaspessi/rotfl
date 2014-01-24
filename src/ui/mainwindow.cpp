@@ -190,13 +190,6 @@ void MainWindow::addRoombaTab(Croi::IRoomba* roomba)
     temperature_layout->addWidget(temperatureUnit_label);
     statusText_layout->addLayout(temperature_layout);
 
-    QHBoxLayout *chargeLevel_layout = new QHBoxLayout;
-    chargeLevel_labels_.insert(roomba, new QLabel("0"));
-    QLabel *chargeLevelUnit_label = new QLabel("mAh");
-    chargeLevel_layout->addWidget(chargeLevel_labels_.value(roomba));
-    chargeLevel_layout->addWidget(chargeLevelUnit_label);
-    statusText_layout->addLayout(chargeLevel_layout);
-
     rmbPosition_labels_.insert(roomba, new QLabel("(0 , 0)"));
     statusText_layout->addWidget(rmbPosition_labels_.value(roomba));
 
@@ -384,10 +377,9 @@ void MainWindow::addRoombaTab(Croi::IRoomba* roomba)
 void MainWindow::setRoombaStatusData()
 {
     temperature_labels_.value(selectedRoomba_)->setText( QString::number( ( unsigned char )( selectedRoomba_->getTemperature() ) ) );
-    chargeLevel_labels_.value(selectedRoomba_)->setText( QString::number( (unsigned short)( selectedRoomba_->getChargeLevel() ) ) );
     QPointF rmbPosition = selectedRoomba_->getLoc();
     rmbPosition_labels_.value(selectedRoomba_)->setText( "(" + QString::number(rmbPosition.x()*Util::COORDCORRECTION, 'f', 0) +
-                                                        " , " + QString::number(rmbPosition.y()*Util::COORDCORRECTION, 'f', 0) + ")" );
+                                                         " , " + QString::number(rmbPosition.y()*Util::COORDCORRECTION, 'f', 0) + ")" );
 
     //QML
     QVariant returnedValue;
@@ -1205,7 +1197,6 @@ void MainWindow::stopAllManuallyControlledRoombas()
 void MainWindow::resetRoombaStatusInfo()
 {
     temperature_labels_.value(selectedRoomba_)->setText( QString::number( ( unsigned char )( 0 ) ) );
-    chargeLevel_labels_.value(selectedRoomba_)->setText( QString::number( (unsigned short)( 0 ) ) );
     QPointF rmbPosition = selectedRoomba_->getLoc();
     rmbPosition_labels_.value(selectedRoomba_)->setText( "(" + QString::number(rmbPosition.x()*Util::COORDCORRECTION, 'f', 0) +
                                                         " , " + QString::number(rmbPosition.y()*Util::COORDCORRECTION, 'f', 0) + ")" );
@@ -1231,10 +1222,11 @@ void MainWindow::resetRoombaStatusInfo()
 void MainWindow::action_About_triggered()
 {
     const QString aboutDescription =
-            "<b>Version 1.0</b><br>"
-            "<p align='center'>Created for course<br>"
+            "<p align='center'><font size='16'>Version 1.0</font><br><br><br>"
+            "Created for course:<br>"
             "<a href='http://www.cs.tut.fi/~projekti/'>TIE-13100 Project Work on Pervasive Systems</a><br>"
-            "Tampere University of Technology<br><br>"
+            "<a href='http://www.tut.fi'>"
+            "<img src=':/icons/TUT_logo' width='595' height='113'></a><br><br>"
             "Credits:<br>"
             "Ville Jokela<br>"
             "Juhani Järvinen<br>"

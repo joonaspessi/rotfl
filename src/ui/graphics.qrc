@@ -16,6 +16,7 @@
         <file alias="rotate_left">graphics/rotate_left.png</file>
         <file alias="rotate_right">graphics/rotate_right.png</file>
         <file>graphics/atc.png</file>
+        <file alias="TUT_logo">graphics/tut_logo.png</file>
     </qresource>
     <qresource prefix="/widgets">
         <file alias="gauges">qml/gauges.qml</file>
