@@ -1213,7 +1213,7 @@ void MainWindow::resetRoombaStatusInfo()
     //QML
     QVariant returnedValue;
     QMetaObject::invokeMethod(roombaStatuses_.value(selectedRoomba_), "setBatteryLevelmAh", Q_RETURN_ARG(QVariant, returnedValue),
-                              Q_ARG(QVariant, 0) );
+                              Q_ARG(QVariant, 0), Q_ARG(QVariant, 0) );
 
     QMetaObject::invokeMethod(roombaStatuses_.value(selectedRoomba_), "setSpeed", Q_RETURN_ARG(QVariant, returnedValue),
                               Q_ARG(QVariant, 0));
