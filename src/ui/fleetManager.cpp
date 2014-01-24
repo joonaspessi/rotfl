@@ -1015,10 +1015,13 @@ bool FleetManager::MoveRobotToNearestArea(int j) {
     qDebug() << "actPos X: " + QString::number(actPos.rx()) + " actPos Y: " +  QString::number(actPos.ry());
 
     //these functions return a reference
-    actPos.ry() += (Util::PIXELCLEANWIDTH+3)/2;
-    actPos.rx() += (Util::PIXELCLEANWIDTH+3)/2;
+    //actPos.ry() += (Util::PIXELCLEANWIDTH+3.0)/2.0;
+    //actPos.rx() += (Util::PIXELCLEANWIDTH+3.0)/2.0;
+    actPos.ry() += Util::PIXELCLEANWIDTH/2.0;
+    actPos.rx() += (Util::PIXELCLEANWIDTH+1.0)/2.0;
 
-    qDebug() << "Square actual start X: actPos.rx() += CTRACEWIDTH/2" + QString::number(actPos.rx()) + " Y: " +  QString::number(actPos.ry());
+
+    qDebug() << "Square actual start X: actPos.rx() += 3.0/2.0" + QString::number(actPos.rx()) + " Y: " +  QString::number(actPos.ry());
 
 
       roombas_.at(j)->calcPath(vertices_, actPos);

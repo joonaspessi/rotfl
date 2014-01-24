@@ -65,7 +65,7 @@ void MapQGraphicsView::mousePressEvent(QMouseEvent *event)
             setDragMode(QGraphicsView::NoDrag);
             qDebug() << "Draw a atc!";
             atcToBeAdded_ = new AtcQGraphicsRectItem
-                    (p.x(), p.y(), 0, 0);
+                    (fleetManager_, p.x(), p.y(), 0, 0);
             //                (0,0,0,0);
 
             atcToBeAddedStartPoint_ = new QPointF(p.x(), p.y());

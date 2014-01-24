@@ -439,7 +439,7 @@ void IRoomba::go2Point(QPointF point)
         turnDirection_= Util::RADTURNCCW;
 
     }
-    QTimer::singleShot(turnTime, this, SLOT(turnTimerTimeout()));
+    QTimer::singleShot(turnTime,Qt::PreciseTimer, this, SLOT(turnTimerTimeout()));
 
 
 }
@@ -490,7 +490,7 @@ void IRoomba::turnTimerTimeout()
 {
     drive(0,32767);
     drive(FWSPEED, Util::RADSTRAIGHT);
-    QTimer::singleShot(driveTime_, this, SLOT(driveTimerTimeout()));
+    QTimer::singleShot(driveTime_, Qt::PreciseTimer, this, SLOT(driveTimerTimeout()));
 
 }
 
@@ -531,7 +531,7 @@ void IRoomba::squareStart() //after reaching to the starting point, turn angle h
     }
 
     drive(100, turnDirection_);
-    QTimer::singleShot(time,this,SLOT(rotateEnded()));
+    QTimer::singleShot(time,Qt::PreciseTimer, this,SLOT(rotateEnded()));
     allMotorsOn();
     qDebug() << "6. squarestart singleShot time: " << time;
 
@@ -539,11 +539,42 @@ void IRoomba::squareStart() //after reaching to the starting point, turn angle h
 
 void IRoomba::rotateEnded()     //turning ended, start to drive straight, distance the width-tracewidth/2
 {
-    drive(0, turnDirection_);
-    drive(100, Util::RADSTRAIGHT);
-    QTimer::singleShot((m_sx-Util::REALCLEANWIDTH)*100,this, SLOT(squareTurn()));
+    qDebug()<<"angle_ before cleaning is "<<angle_;
+    //checking angle_ before starting cleaning. angle_ has to be approx. 0.
+/*
+    if (angle_ > 0.01 && angle_ <2 && (countDown == nOfRound)){
+        angleCorrection();
+    } else if (angle_ > 5 && ((2*PI-angle_)>0.01) && (countDown == nOfRound)) {
+        angleCorrection();
+    } else {
+*/
+        drive(0, turnDirection_);
+        drive(100, Util::RADSTRAIGHT);
+        QTimer::singleShot((m_sx-Util::REALCLEANWIDTH-1.5)*100, Qt::PreciseTimer, this, SLOT(squareTurn()));
 
 }
+
+/*
+void IRoomba::angleCorrection()
+{
+    float time=(fabs(angle_*(180.0/PI)))*18055/1000;
+
+    if (angle_<= PI) {
+        turnDirection_= Util::RADTURNCCW;
+        qDebug()<<"RADTURNCW 1, angle_ is "<<angle_;
+
+    } else {
+        turnDirection_= Util::RADTURNCW;
+        qDebug()<<"RADTURNCCW 2, angle_ is"<<angle_;
+        time=(fabs((2*PI-angle_)*(180.0/PI)))*18055/1000;
+
+    }
+
+    drive(100, turnDirection_);
+    QTimer::singleShot(time, Qt::PreciseTimer,this,SLOT(rotateEnded()));
+
+}
+*/
 
 void IRoomba::squareTurn()    //1st line end, stop and turn 90 degree
 {
@@ -552,7 +583,7 @@ void IRoomba::squareTurn()    //1st line end, stop and turn 90 degree
 
     int turnTime = abs(90 /**(180/PI)*/) * 18055 / 1000;
 
-    QTimer::singleShot(turnTime, this, SLOT(squareMoveOneLine()));
+    QTimer::singleShot(turnTime,Qt::PreciseTimer, this, SLOT(squareMoveOneLine()));
 
 }
 
@@ -561,7 +592,7 @@ void IRoomba::squareMoveOneLine() //move 1st line to 2nd line with distance heig
     drive(0, Util::RADTURNCW);
     drive(100, Util::RADSTRAIGHT);
 
-    QTimer::singleShot(ld*100, this, SLOT(squareTurn2()));
+    QTimer::singleShot(ld*100,Qt::PreciseTimer, this, SLOT(squareTurn2()));
 
 }
 
@@ -572,14 +603,14 @@ void IRoomba::squareTurn2() //stop and turn 90 degree in the beginning of 2nd li
 
     int turnTime = abs(90/**(180/PI)*/) * 18055 / 1000;
 
-    QTimer::singleShot(turnTime, this, SLOT(squareMoveLong()));
+    QTimer::singleShot(turnTime,Qt::PreciseTimer, this, SLOT(squareMoveLong()));
 
 }
 
 void IRoomba::squareMoveLong()
 {
     drive(100, Util::RADSTRAIGHT);
-    QTimer::singleShot((m_sx-Util::REALCLEANWIDTH)*100,this, SLOT(squareTurn3()));
+    QTimer::singleShot((m_sx-Util::REALCLEANWIDTH-1.5)*100, Qt::PreciseTimer,this, SLOT(squareTurn3()));
 }
 
 
@@ -599,12 +630,12 @@ void IRoomba::squareTurn3()
 
         int turnTime = abs(180/**(180/PI)*/) * 18055 / 1000;
 
-        QTimer::singleShot(turnTime, this, SLOT(squareStart2()));
+        QTimer::singleShot(turnTime, Qt::PreciseTimer, this, SLOT(squareStart2()));
 
 
     }
     else {
-        QTimer::singleShot(turnTime, this, SLOT(squareMoveOneLine2()));
+        QTimer::singleShot(turnTime, Qt::PreciseTimer, this, SLOT(squareMoveOneLine2()));
     }
     qDebug()<<"countDown is "<<countDown;
 }
@@ -615,7 +646,7 @@ void IRoomba::squareMoveOneLine2() //move outside of the square,
 
     drive(100, Util::RADSTRAIGHT);
 
-    QTimer::singleShot(ld*100, this, SLOT(squareTurn4()));
+    QTimer::singleShot(ld*100, Qt::PreciseTimer, this, SLOT(squareTurn4()));
 
 }
 
@@ -626,7 +657,7 @@ void IRoomba::squareTurn4()   //at outside of the square, stop, turn 90 degree a
 
     int turnTime = abs(90/**(180/PI)*/) * 18055 / 1000;
 
-    QTimer::singleShot(turnTime, this, SLOT(squareStart2()));
+    QTimer::singleShot(turnTime,Qt::PreciseTimer, this, SLOT(squareStart2()));
 
 
 }
@@ -636,7 +667,7 @@ void IRoomba::squareStart2()
   m_count++;
   if (m_count < nOfRound) {  //how many round to try,1 round is 2 lines
       drive(100, Util::RADSTRAIGHT);
-      QTimer::singleShot((m_sx-Util::REALCLEANWIDTH)*100,this, SLOT(squareTurn()));
+      QTimer::singleShot((m_sx-Util::REALCLEANWIDTH-1.5)*100,Qt::PreciseTimer,this, SLOT(squareTurn()));
   }
   else
   {
@@ -668,10 +699,10 @@ void IRoomba::calc4square(int h)
 //    ld = (abs(h-Util::REALCLEANWIDTH/2))/(2*nOfRound);
 //    ld = h/(2*nOfRound);
       if (h> 2*Util::REALCLEANWIDTH)
-            ld = (h-Util::REALCLEANWIDTH)/(2.0*nOfRound-1.0);
+            ld = (h-Util::REALCLEANWIDTH-1.5)/(2.0*nOfRound-1.0);
 
       else if ((h>Util::REALCLEANWIDTH) && (h<=2*Util::REALCLEANWIDTH))
-            ld = h-Util::REALCLEANWIDTH;
+            ld = h-Util::REALCLEANWIDTH-1.5;
       else
             ld = 0;
 

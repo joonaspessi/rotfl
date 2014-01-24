@@ -178,6 +178,7 @@ private:
     double turnTime_;      //delta time from go2point, needed by cleaningATC.
     int turnDirection_; //directions that go2point used.
     void calc4square(int h);
+   // void angleCorrection();
 };
 
 

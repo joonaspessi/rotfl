@@ -1,10 +1,13 @@
 #include "atcQGraphicsRectItem.h"
 #include "mapQGraphicsView.h"
 #include <QStyleOption>
+#include <QMenu>
+#include <uiUtils.h>
+#include <fleetManager.h>
 
 AtcQGraphicsRectItem::AtcQGraphicsRectItem
-(qreal x, qreal y, qreal w, qreal h, QGraphicsItem *parent):
-    QGraphicsRectItem(x, y, w, h, parent), gettingCleaned_(false)
+(FleetManager* fleetManager, qreal x, qreal y, qreal w, qreal h, QGraphicsItem *parent):
+    QGraphicsRectItem(x, y, w, h, parent), fleetManager_(fleetManager)
 {
     setZValue(1);
 }
@@ -16,15 +19,6 @@ void AtcQGraphicsRectItem::paint(QPainter *painter, const QStyleOptionGraphicsIt
     myoption.state &= !QStyle::State_Selected;
     QPen pen(Qt::GlobalColor::black, 3, Qt::DotLine);
 
-    /*
-    m_outlineItem = new QGraphicsRectItem(m_svgItem->boundingRect());
-        QPen outline(Qt::black, 2, Qt::DashLine);
-        outline.setCosmetic(true);
-        m_outlineItem->setPen(outline);
-        m_outlineItem->setBrush(Qt::NoBrush);
-        m_outlineItem->setVisible(drawOutline);
-        m_outlineItem->setZValue(1);
-*/
 
   //  pen.setWidth(2);
     if (isSelected()) {
@@ -43,6 +37,26 @@ void AtcQGraphicsRectItem::setGettingCleaned()
 {
     gettingCleaned_ = true;
 }
+
+
+int AtcQGraphicsRectItem::type() const
+{
+    return Util::ATCTYPE;
+}
+
+void AtcQGraphicsRectItem::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
+{
+    QMenu menu;
+    QAction *removeAction = menu.addAction("Remove");
+    QAction *selectedAction = menu.exec(event->screenPos());
+
+    if (selectedAction == removeAction)
+    {
+        fleetManager_->removeAtc(this);
+    }
+}
+
+
 
 AtcQGraphicsRectItem::~AtcQGraphicsRectItem()
 {

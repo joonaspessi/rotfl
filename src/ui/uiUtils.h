@@ -34,6 +34,7 @@ const unsigned int PIXELCLEANWIDTH = round(REALCLEANWIDTH/COORDCORRECTION);  //w
 
 const int POITYPE = QGraphicsItem::UserType;
 const int WALLTYPE = QGraphicsItem::UserType+1;
+const int ATCTYPE = QGraphicsItem::UserType+2;
 const int RADSTRAIGHT = 32768;
 const int RADTURNCW = 65535;
 const int RADTURNCCW = 1;
