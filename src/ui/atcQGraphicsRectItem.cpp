@@ -10,22 +10,7 @@ AtcQGraphicsRectItem::AtcQGraphicsRectItem
     QGraphicsRectItem(x, y, w, h, parent), gettingCleaned_(false), fleetManager_(fleetManager)
 {
     setZValue(1);
-}
-
-
-void AtcQGraphicsRectItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
-{
-    QStyleOptionGraphicsItem myoption = (*option);
-    myoption.state &= !QStyle::State_Selected;
-    QPen pen(Qt::GlobalColor::black, 3, Qt::DotLine);
-
-
-  //  pen.setWidth(2);
-    if (isSelected()) {
-        pen.setColor(Qt::GlobalColor::red);
-    }
-    this->setPen(pen);
-    QGraphicsRectItem::paint(painter, &myoption, widget);
+    setPen(QPen(Qt::GlobalColor::black, 3, Qt::DotLine));
 }
 
 bool AtcQGraphicsRectItem::isGettingCleaned()

@@ -14,8 +14,6 @@ public:
     (FleetManager *fleetManager, qreal x1, qreal y1, qreal x2, qreal y2, QGraphicsItem *parent = 0);
 
     virtual ~WallQGraphicsLineItem();
-    //reason for this reimplementation is to have self-defined color (red) on select
-    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
     int type() const;
     void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
 

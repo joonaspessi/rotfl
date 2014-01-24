@@ -14,8 +14,6 @@ public:
     (FleetManager *fleetManager, qreal x, qreal y, qreal w, qreal h, QGraphicsItem* parent = 0);
 
     virtual ~PoiQGraphicsEllipseItem();
-    //reason for this reimplementation is to have self-defined color (red) on select
-    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
     int type() const;
     void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
     bool getGettingCollected();
