@@ -127,7 +127,7 @@ void RoombaRoowifi::goDock()
 
 float RoombaRoowifi::getBatteryLevel()
 {
-    roowifi_->GetBatteryLevel();
+    return roowifi_->GetBatteryLevel();
 }
 
 
