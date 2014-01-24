@@ -22,13 +22,16 @@ int PoiQGraphicsEllipseItem::type() const
 
 void PoiQGraphicsEllipseItem::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 {
-    QMenu menu;
-    QAction *removeAction = menu.addAction("Remove");
-    QAction *selectedAction = menu.exec(event->screenPos());
-
-    if (selectedAction == removeAction)
+    if (brush().color() != Qt::green)
     {
-        fleetManager_->removePoi(this);
+        QMenu menu;
+        QAction *removeAction = menu.addAction("Remove");
+        QAction *selectedAction = menu.exec(event->screenPos());
+
+        if (selectedAction == removeAction)
+        {
+            fleetManager_->removePoi(this);
+        }
     }
 }
 
