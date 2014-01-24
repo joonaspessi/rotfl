@@ -73,38 +73,14 @@ void MapQGraphicsView::mousePressEvent(QMouseEvent *event)
             scene()->addItem(atcToBeAdded_);
 
             // Add textual coordinates to the Top Left corner point of the Rectangle
-            atcToBeAddedStartPointText_ = new QGraphicsSimpleTextItem("X: " + QString::number(p.x()*Util::COORDCORRECTION) +
-                                                                      " Y: " +  QString::number(p.y()*Util::COORDCORRECTION));
+            atcToBeAddedStartPointText_ = new QGraphicsSimpleTextItem("X: " + QString::number(p.x()*Util::COORDCORRECTION, 'f', 0) +
+                                                                      " Y: " +  QString::number(p.y()*Util::COORDCORRECTION, 'f', 0));
             atcToBeAddedStartPointText_->setPos(p);
             atcToBeAddedStartPointText_->setZValue(5);
             QBrush atcToBeAddedStartPointBrush(Qt::GlobalColor::blue);
             atcToBeAddedStartPointText_->setBrush(atcToBeAddedStartPointBrush);
             scene()->addItem(atcToBeAddedStartPointText_);
-
-            qDebug() << "Square corner X: " + QString::number(p.x()) + " Y: " +  QString::number(p.y());
-            //        AtcQGraphicsRectItem* atc = new AtcQGraphicsRectItem
-            //                (0.0-POIWIDTH/5.0-TRACEWIDTH/2.0, 0.0-POIWIDTH/5.0-TRACEWIDTH/2.0, 5*POIWIDTH, 5*POIWIDTH);
-
-            //              (0.0-5*POIWIDTH/2.0, 0.0-5*POIWIDTH/2.0, 5*POIWIDTH, 5*POIWIDTH);
-            //        (0.0, 0.0, 5*POIWIDTH, 5*POIWIDTH);
-
-
-            //        atc->setPos(p);
-            //        fleetManager_->pushATC(p);
-
-            //        qDebug() << "pushATC(p) p.x(): " << p.x() << "p.y(): "<< p.y();
-
-
-            //        atc->setFlag(QGraphicsItem::ItemIsSelectable,true);
-            //        atc->setFlag(QGraphicsItem::ItemIsMovable,false); // Disabled so that the mapChanged signal works as expected
-            //        scene()->addItem(atc);
-            //        fleetManager_->addAtc(atcToBeAdded_);
-
-            //        qDebug() << "Adding scenePos().x(): " << atc->scenePos().x()
-            //                 << " ,scenePos().y(): " << atc->scenePos().y();
-            qDebug() << "squP.x(): " << p.x() << "P.y(): "<< p.y();
             (*flog.ts)<< QString("Draw a ATC, Adding ATC with x: %1 y: %2").arg(p.x()).arg(p.y()) <<endl;
-
             emit mapChanged();
         }
         else if (selectedPaintTool_ == Util::SelectedPaintTool::POI)
@@ -212,7 +188,7 @@ void MapQGraphicsView::mouseMoveEvent(QMouseEvent *event)
         // Add textual coordinates to the end of the rectangle
         if (atcToBeAddedEndPointText_ == NULL)
         {
-            atcToBeAddedEndPointText_ = new QGraphicsSimpleTextItem("X: " + QString::number(p.x()) + " Y: " +  QString::number(p.y()));
+            atcToBeAddedEndPointText_ = new QGraphicsSimpleTextItem("X: " + QString::number(p.x(), 'f', 0) + " Y: " +  QString::number(p.y(), 'f', 0));
             atcToBeAddedEndPointText_->setPos(p);
             QBrush atcToBeAddedEndPointTextBrush(Qt::GlobalColor::blue);
             atcToBeAddedEndPointText_->setBrush(atcToBeAddedEndPointTextBrush);
@@ -226,9 +202,9 @@ void MapQGraphicsView::mouseMoveEvent(QMouseEvent *event)
         {
 
             atcToBeAddedEndPointText_->setPos(p);
-            atcToBeAddedEndPointText_->setText("X: " + QString::number(p.x()*Util::COORDCORRECTION) + " Y: " +  QString::number(p.y()*Util::COORDCORRECTION)
-                                               + "\nW " + QString::number((abs(atcToBeAdded_->rect().width())+3)*Util::COORDCORRECTION)
-                                               + " H " + QString::number((abs(atcToBeAdded_->rect().height())+3)*Util::COORDCORRECTION) );
+            atcToBeAddedEndPointText_->setText("X: " + QString::number(p.x()*Util::COORDCORRECTION, 'f', 0) + " Y: " +  QString::number(p.y()*Util::COORDCORRECTION, 'f', 0)
+                                               + "\nW " + QString::number((abs(atcToBeAdded_->rect().width())+3)*Util::COORDCORRECTION, 'f', 0)
+                                               + " H " + QString::number((abs(atcToBeAdded_->rect().height())+3)*Util::COORDCORRECTION, 'f', 0) );
         }
     }
     // Call the base class implementation to deliver the event for QGraphicsScene
