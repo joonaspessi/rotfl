@@ -458,7 +458,6 @@ void IRoomba::sensorUpdateTimerTimeout()
     {
         prevPReached_ = false;
         followingPath_ = false;
-        isReady_ = true;
 
         for(unsigned int i = 0; i < pathLines_.size(); ++i)
         {
@@ -469,6 +468,7 @@ void IRoomba::sensorUpdateTimerTimeout()
 
         if(destPoi_ != NULL)
         {
+            isReady_ = true;
             PoiQGraphicsEllipseItem* tempPoi = destPoi_;
             destPoi_ = NULL;
             qobject_cast<FleetManager*>(parent())->poiCollected(this, tempPoi);
@@ -676,6 +676,7 @@ void IRoomba::squareStart2()
       //allMotorsOff();
       //cleaning_ = false;
       //qobject_cast<FleetManager*>(parent())->removeAtc(destAtc_);
+      isReady_ = true;
       qobject_cast<FleetManager*>(parent())->atcCleaned(this);
       // emit areaCleaned();
       //qDebug() << "area cleaned, check next angle to move to new POI ";
