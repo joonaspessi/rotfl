@@ -571,6 +571,7 @@ void MainWindow::handleUIElementsControlModeStateChange(bool state)
     wall_action_->setDisabled(state);
     start_action_->setDisabled(state);
     startVirtual_action_->setDisabled(state);
+    velocity_horizontalSlider_->setDisabled(state);
 }
 
 void MainWindow::pushButton_Clean_clicked()
