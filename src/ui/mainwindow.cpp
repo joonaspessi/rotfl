@@ -27,7 +27,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include <qfunctions_wince.h>
-#include "threadReader.h"
 
 #include "croi/iRoomba.h"
 #include "croi/roombaSerial.h"

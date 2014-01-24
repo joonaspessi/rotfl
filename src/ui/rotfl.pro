@@ -16,7 +16,6 @@ QMAKE_CXXFLAGS += -std=c++0x
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    threadReader.cpp \
     ../croi/posixSerial.cpp \
     ../croi/roombaSerial.cpp \
     mapQGraphicsView.cpp \
@@ -31,7 +30,6 @@ SOURCES += main.cpp\
     atcQGraphicsRectItem.cpp
 
 HEADERS  += mainwindow.h \
-    threadReader.h \
     ../croi/posixSerialUtils.h \
     ../croi/posixSerial.h \
     ../croi/iRoomba.h \
