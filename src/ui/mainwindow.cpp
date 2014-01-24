@@ -362,6 +362,14 @@ void MainWindow::addRoombaTab(Croi::IRoomba* roomba)
     else if (qobject_cast<Croi::RoombaRoowifi*>(roomba))
     {
         tabWidget_->setTabIcon(currentIndex, QIcon::fromTheme("network-offline"));
+        // Roombas location couldn't be corrected before it's connected
+        resetAngle_pushButtons_.value(roomba)->setDisabled(true);
+        correctLeft_toolButtons_.value(roomba)->setDisabled(true);
+        correctRight_toolButtons_.value(roomba)->setDisabled(true);
+        correctUp_toolButtons_.value(roomba)->setDisabled(true);
+        correctDown_toolButtons_.value(roomba)->setDisabled(true);
+        correctCw_pushButtons_.value(roomba)->setDisabled(true);
+        correctCcw_pushButtons_.value(roomba)->setDisabled(true);
     }
     cursor_action_->trigger();  // Change to Cursor after adding a Roomba to prevent accidentially adding too many
     fleetManagementEnable_pushButton_->setEnabled(true); // Enable starting fleet management when adding first roomba
@@ -500,6 +508,14 @@ void MainWindow::connectionEstablished()
     driveBackward_toolButtons_.value(selectedRoomba_)->setEnabled(true);
     turnCcw_pushButtons_.value(selectedRoomba_)->setEnabled(true);
     turnCw_pushButtons_.value(selectedRoomba_)->setEnabled(true);
+    resetAngle_pushButtons_.value(selectedRoomba_)->setEnabled(true);
+    correctLeft_toolButtons_.value(selectedRoomba_)->setEnabled(true);
+    correctRight_toolButtons_.value(selectedRoomba_)->setEnabled(true);
+    correctUp_toolButtons_.value(selectedRoomba_)->setEnabled(true);
+    correctDown_toolButtons_.value(selectedRoomba_)->setEnabled(true);
+    correctCw_pushButtons_.value(selectedRoomba_)->setEnabled(true);
+    correctCcw_pushButtons_.value(selectedRoomba_)->setEnabled(true);
+
     handleUIElementsChangeAllTabsState(false);
     (*flog.ts) << "Connection established." << endl;
 }
