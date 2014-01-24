@@ -16,8 +16,10 @@ Item {
     }
 
     function setBatteryLevelmAh(mah,percentage) {
-        //console.log(mah + ' ' + percentage);
-        batterygauge.setBatteryGauge(mah,percentage);
+        var parsedPercentage = percentage.toFixed(2);
+        parsedPercentage = parsedPercentage.substring(2);
+        batterygauge.setBatteryGauge(mah,parsedPercentage);
+        //console.log(mah + ' ' + parsedPercentage);
         return true;
     }
 
