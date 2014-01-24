@@ -415,7 +415,7 @@ void IRoomba::go2Point(QPointF point)
         }
     }
 
-    float tabs = abs(turningAngle*(180.0/Util::PI));
+    float tabs = fabs(turningAngle*(180.0/Util::PI));
     float distance = sqrt(pow(deltaX,2.0)+pow(deltaY,2.0))*Util::COORDCORRECTION;
     int turnTime = round(tabs*TURNTIMEINUSFORDEG/1000.0);
     driveTime_= round(distance*100.0*100.0/FWSPEED);
