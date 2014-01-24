@@ -180,13 +180,6 @@ void MainWindow::addRoombaTab(Croi::IRoomba* roomba)
 
     QVBoxLayout *statusText_layout = new QVBoxLayout();
 
-    QHBoxLayout *temperature_layout = new QHBoxLayout;
-    temperature_labels_.insert(roomba, new QLabel("0"));
-    QLabel *temperatureUnit_label = new QLabel("C");
-    temperature_layout->addWidget(temperature_labels_.value(roomba));
-    temperature_layout->addWidget(temperatureUnit_label);
-    statusText_layout->addLayout(temperature_layout);
-
     rmbPosition_labels_.insert(roomba, new QLabel("(0 , 0)"));
     statusText_layout->addWidget(rmbPosition_labels_.value(roomba));
 
@@ -373,7 +366,6 @@ void MainWindow::addRoombaTab(Croi::IRoomba* roomba)
 
 void MainWindow::setRoombaStatusData()
 {
-    temperature_labels_.value(selectedRoomba_)->setText( QString::number( ( unsigned char )( selectedRoomba_->getTemperature() ) ) );
     QPointF rmbPosition = selectedRoomba_->getLoc();
     rmbPosition_labels_.value(selectedRoomba_)->setText( "(" + QString::number(rmbPosition.x()*Util::COORDCORRECTION, 'f', 0) +
                                                          " , " + QString::number(rmbPosition.y()*Util::COORDCORRECTION, 'f', 0) + ")" );
@@ -1194,7 +1186,6 @@ void MainWindow::stopAllManuallyControlledRoombas()
 
 void MainWindow::resetRoombaStatusInfo()
 {
-    temperature_labels_.value(selectedRoomba_)->setText( QString::number( ( unsigned char )( 0 ) ) );
     QPointF rmbPosition = selectedRoomba_->getLoc();
     rmbPosition_labels_.value(selectedRoomba_)->setText( "(" + QString::number(rmbPosition.x()*Util::COORDCORRECTION, 'f', 0) +
                                                         " , " + QString::number(rmbPosition.y()*Util::COORDCORRECTION, 'f', 0) + ")" );

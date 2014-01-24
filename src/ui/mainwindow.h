@@ -172,7 +172,6 @@ private:
     QMap<Croi::IRoomba*, QToolButton *>correctDown_toolButtons_;
     QMap<Croi::IRoomba*, QPushButton *>correctCw_pushButtons_;
     QMap<Croi::IRoomba*, QPushButton *>correctCcw_pushButtons_;
-    QMap<Croi::IRoomba*, QLabel *>temperature_labels_;
     QMap<Croi::IRoomba*, QLabel *>rmbPosition_labels_;
     QMap<Croi::IRoomba*, QLineEdit *>roombaNameLineEdits_;
     QMap<Croi::IRoomba*, QObject *>roombaStatuses_;
