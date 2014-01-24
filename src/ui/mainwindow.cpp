@@ -470,7 +470,7 @@ void MainWindow::pushButton_Connection_clicked()
         connection_pushButtons_.value(selectedRoomba_)->setDisabled(true);
         handleUIElementsConnectionStateChange(true);
         handleUIElementsChangeAllTabsState(true);
-        fleetManager_->connect(stdip);
+        selectedRoomba_->rmb_connect(stdip);
         (*flog.ts) << "Connect Button pressed." << endl;
     }
 
@@ -479,7 +479,7 @@ void MainWindow::pushButton_Connection_clicked()
         connection_pushButtons_.value(selectedRoomba_)->setProperty("Connected", QVariant("ROOWIFI-DISCONNECTED"));
         connection_pushButtons_.value(selectedRoomba_)->setText("Connect");
         connection_pushButtons_.value(selectedRoomba_)->setIcon(QIcon::fromTheme("network-wireless"));
-        fleetManager_->disconnect();
+        selectedRoomba_->disconnect();
         resetRoombaStatusInfo();
         handleUIElementsConnectionStateChange(false);
         tabWidget_->setTabIcon(tabWidget_->currentIndex(), QIcon::fromTheme("network-offline"));
