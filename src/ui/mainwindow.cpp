@@ -524,6 +524,8 @@ void MainWindow::handleUIElementsConnectionStateChange(bool state)
     driveBackward_toolButtons_.value(selectedRoomba_)->setEnabled(state);
     turnCw_pushButtons_.value(selectedRoomba_)->setEnabled(state);
     turnCcw_pushButtons_.value(selectedRoomba_)->setEnabled(state);
+    start_action_->setDisabled(state);
+    startVirtual_action_->setDisabled(state);
 }
 
 void MainWindow::handleUIElementsControlModeStateChange(bool state)
