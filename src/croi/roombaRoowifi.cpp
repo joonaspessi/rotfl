@@ -45,7 +45,7 @@ void RoombaRoowifi::reconnectCallback_timerTimeout()
     //TODO: Better way needed, Checking charge rate is a hack to ensure that Roomba has waken up from sleep mode
     if (roowifi_->IsConnected() && roowifi_->Sensors.Charge > 0)
     {
-        safeMode(); // Switch to safe mode automatically in connect
+        fullMode(); // Switch to full mode automatically in connect
         reconnectCounter_ = 0;
         emit connectionEstablished();
     }
@@ -75,10 +75,17 @@ int RoombaRoowifi::disconnect()
 void RoombaRoowifi::safeMode()
 {
     roowifi_->SafeMode();
+    IRoomba::safeMode();
+}
+
+void RoombaRoowifi::fullMode()
+{
+    roowifi_->FullMode();
+
+    // Save initial song, Pop corn part 1, TODO: Set in better place
     int Song[14];
     int SongDuration[14];
 
-    //Pop Corn part1
     Song[0] = 82;   SongDuration[0] = RooWifi::NotesDuration::SemiQuaver;
     Song[1] = 80;   SongDuration[1] = RooWifi::NotesDuration::SemiQuaver;
     Song[2] = 82;   SongDuration[2] = RooWifi::NotesDuration::SemiQuaver;
@@ -95,12 +102,7 @@ void RoombaRoowifi::safeMode()
     Song[13] = 70;  SongDuration[13] = RooWifi::NotesDuration::Quaver;
 
     roowifi_->StoreSong( 1, 14, Song, SongDuration );
-    IRoomba::safeMode();
-}
 
-void RoombaRoowifi::fullMode()
-{
-    roowifi_->FullMode();
     IRoomba::fullMode();
 }
 
