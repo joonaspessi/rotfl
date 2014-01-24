@@ -34,6 +34,7 @@ void MapQGraphicsView::mousePressEvent(QMouseEvent *event)
                 item->setSelected(true);
             }
             setDragMode(QGraphicsView::NoDrag);
+            emit roombaSelected();
             qDebug() << "Draw a cursor!";
             (*flog.ts) << "Draw a cursor!" << endl;
         }

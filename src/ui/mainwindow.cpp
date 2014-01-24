@@ -75,6 +75,11 @@ MainWindow::MainWindow(QWidget *parent) :
     setCurrentFile("");
 
     connect(map_,SIGNAL(mapChanged()),this,SLOT(mapModified()));
+    connect(map_,SIGNAL(roombaSelected()),this,SLOT(setSelectedRoombaTab()));
+
+    updateRoombaStatusData_ = new QTimer();
+    connect(updateRoombaStatusData_,SIGNAL(timeout()),this,SLOT(setRoombaStatusData()));
+    updateRoombaStatusData_->setInterval(500);
 
     // This event filter is implemented in eventFilter function, keeps mouse coordinates in status bar
     qApp->installEventFilter(this);
@@ -358,6 +363,7 @@ void MainWindow::addRoombaTab(Croi::IRoomba* roomba)
     if (qobject_cast<Croi::RoombaVirtual*>(roomba))
     {
         tabWidget_->setTabIcon(currentIndex, QIcon::fromTheme("network-wireless"));
+        updateRoombaStatusData_->start();
     }
     else if (qobject_cast<Croi::RoombaRoowifi*>(roomba))
     {
@@ -375,34 +381,30 @@ void MainWindow::addRoombaTab(Croi::IRoomba* roomba)
     fleetManagementEnable_pushButton_->setEnabled(true); // Enable starting fleet management when adding first roomba
 }
 
-void MainWindow::setRoombaStatusData(Croi::IRoomba* selectedRoomba)
+void MainWindow::setRoombaStatusData()
 {
-    // TODO: Remove double bookkeeping of selected roomba
-    if (selectedRoomba == selectedRoomba_)
-    {
-        temperature_labels_.value(selectedRoomba)->setText( QString::number( ( unsigned char )( selectedRoomba->getTemperature() ) ) );
-        chargeLevel_labels_.value(selectedRoomba)->setText( QString::number( (unsigned short)( selectedRoomba->getChargeLevel() ) ) );
-        QPointF rmbPosition = selectedRoomba->getLoc();
-        rmbPosition_labels_.value(selectedRoomba)->setText( "(" + QString::number(rmbPosition.x()*Util::COORDCORRECTION, 'f', 0) +
-                                                            " , " + QString::number(rmbPosition.y()*Util::COORDCORRECTION, 'f', 0) + ")" );
+    temperature_labels_.value(selectedRoomba_)->setText( QString::number( ( unsigned char )( selectedRoomba_->getTemperature() ) ) );
+    chargeLevel_labels_.value(selectedRoomba_)->setText( QString::number( (unsigned short)( selectedRoomba_->getChargeLevel() ) ) );
+    QPointF rmbPosition = selectedRoomba_->getLoc();
+    rmbPosition_labels_.value(selectedRoomba_)->setText( "(" + QString::number(rmbPosition.x()*Util::COORDCORRECTION, 'f', 0) +
+                                                        " , " + QString::number(rmbPosition.y()*Util::COORDCORRECTION, 'f', 0) + ")" );
 
-        //QML
-        QVariant returnedValue;
-        QMetaObject::invokeMethod(roombaStatuses_.value(selectedRoomba), "setBatteryLevelmAh", Q_RETURN_ARG(QVariant, returnedValue),
-                                  Q_ARG(QVariant, selectedRoomba->getChargeLevel()), Q_ARG(QVariant, selectedRoomba->getBatteryLevel()) );
+    //QML
+    QVariant returnedValue;
+    QMetaObject::invokeMethod(roombaStatuses_.value(selectedRoomba_), "setBatteryLevelmAh", Q_RETURN_ARG(QVariant, returnedValue),
+                              Q_ARG(QVariant, selectedRoomba_->getChargeLevel()), Q_ARG(QVariant, selectedRoomba_->getBatteryLevel()) );
 
-        QMetaObject::invokeMethod(roombaStatuses_.value(selectedRoomba), "setSpeed", Q_RETURN_ARG(QVariant, returnedValue),
-                                  Q_ARG(QVariant, abs(selectedRoomba->getVelocity())));
+    QMetaObject::invokeMethod(roombaStatuses_.value(selectedRoomba_), "setSpeed", Q_RETURN_ARG(QVariant, returnedValue),
+                              Q_ARG(QVariant, abs(selectedRoomba_->getVelocity())));
 
-        QMetaObject::invokeMethod(roombaStatuses_.value(selectedRoomba), "setDirection", Q_RETURN_ARG(QVariant, returnedValue),
-                                  Q_ARG(QVariant, abs(selectedRoomba->getCurrentAngle()*180/Util::PI)));
+    QMetaObject::invokeMethod(roombaStatuses_.value(selectedRoomba_), "setDirection", Q_RETURN_ARG(QVariant, returnedValue),
+                              Q_ARG(QVariant, abs(selectedRoomba_->getCurrentAngle()*180/Util::PI)));
 
-        QMetaObject::invokeMethod(roombaStatuses_.value(selectedRoomba), "setTemperature", Q_RETURN_ARG(QVariant, returnedValue),
-                                  Q_ARG(QVariant, abs(selectedRoomba->getTemperature())));
+    QMetaObject::invokeMethod(roombaStatuses_.value(selectedRoomba_), "setTemperature", Q_RETURN_ARG(QVariant, returnedValue),
+                              Q_ARG(QVariant, abs(selectedRoomba_->getTemperature())));
 
-        QMetaObject::invokeMethod(roombaStatuses_.value(selectedRoomba), "setDistance", Q_RETURN_ARG(QVariant, returnedValue),
-                                  Q_ARG(QVariant, QString::number(selectedRoomba->getTotalDistance() * Util::COORDCORRECTION, 'f', 0)));
-    }
+    QMetaObject::invokeMethod(roombaStatuses_.value(selectedRoomba_), "setDistance", Q_RETURN_ARG(QVariant, returnedValue),
+                              Q_ARG(QVariant, QString::number(selectedRoomba_->getTotalDistance() * Util::COORDCORRECTION, 'f', 0)));
 }
 
 void MainWindow::createToolbar()
@@ -485,6 +487,7 @@ void MainWindow::pushButton_Connection_clicked()
     else if(connection_pushButtons_.value(selectedRoomba_)->property("Connected") == QVariant("ROOWIFI-CONNECTED"))
     {
         connection_pushButtons_.value(selectedRoomba_)->setProperty("Connected", QVariant("ROOWIFI-DISCONNECTED"));
+        updateRoombaStatusData_->stop();
         connection_pushButtons_.value(selectedRoomba_)->setText("Connect");
         connection_pushButtons_.value(selectedRoomba_)->setIcon(QIcon::fromTheme("network-wireless"));
         selectedRoomba_->disconnect();
@@ -497,6 +500,7 @@ void MainWindow::pushButton_Connection_clicked()
 
 void MainWindow::connectionEstablished()
 {
+    updateRoombaStatusData_->start();
     connection_pushButtons_.value(selectedRoomba_)->setProperty("Connected", QVariant("ROOWIFI-CONNECTED"));
     connection_pushButtons_.value(selectedRoomba_)->setText("Disconnect");
     connection_pushButtons_.value(selectedRoomba_)->setEnabled(true);
@@ -1152,14 +1156,23 @@ bool MainWindow::eventFilter(QObject *object, QEvent *event)
     }
 }
 
-void MainWindow::setSelectedRoombaTab(Croi::IRoomba * roomba)
+void MainWindow::setSelectedRoombaTab()
 {
+    Croi::IRoomba *selectecRoomba;
+    for (auto roomba : roombaTabs_.values())
+    {
+        if (roomba->getIcon()->isSelected())
+        {
+            selectecRoomba = roomba;
+            break;
+        }
+    }
     stopAllManuallyControlledRoombas();
-    int selectedTab = roombaTabs_.key(roomba, -1);
+    int selectedTab = roombaTabs_.key(selectecRoomba, -1);
     if (selectedTab != -1)
     {
         qDebug() << "setSelectedTab: "<< selectedTab << "\n";
-        selectedRoomba_ = roomba;
+        selectedRoomba_ = selectecRoomba;
         tabWidget_->setCurrentIndex(selectedTab);
     }
 }

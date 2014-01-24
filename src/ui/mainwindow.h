@@ -30,7 +30,6 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
-    void setRoombaStatusData(Croi::IRoomba* selectedRoomba);
 
     void setCurrentFile(const QString &fileName);
     // Added asking of saving changes made to map before closing
@@ -39,13 +38,15 @@ public:
     bool eventFilter(QObject *object, QEvent *event);
     // Adds new tab for tabwidget_ for new roomba
     void addRoombaTab(Croi::IRoomba *roomba);
-    // Changes the tab corresponding to roomba
-    void setSelectedRoombaTab(Croi::IRoomba *roomba);
 public slots:
 
     // Signal indicates that wall or point of interest is added to the map
     void mapModified();
+    // Changes the tab corresponding to roomba
+    void setSelectedRoombaTab();
 private slots:
+
+    void setRoombaStatusData();
 
     void pushButton_Connection_clicked();
 
@@ -142,6 +143,7 @@ private:
     QPushButton *fleetManagementEnable_pushButton_;
     QPushButton *Go2POIs_pushButton_;
     QPushButton *clean_pushButton_;
+    QTimer *updateRoombaStatusData_;
     // Toolbar Actions
     QAction *cursor_action_;
     QAction *wall_action_;

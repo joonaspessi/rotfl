@@ -194,7 +194,6 @@ void FleetManager::updateTimerTimeout()
         if(roombas_.at(i)->getIcon()->isSelected() ||
                 roombas_.at(i)->getStartPoint()->isSelected())
         {
-            mainWindow_->setRoombaStatusData(roombas_.at(i));
             //both the roomba and it's startPoint are selected for clarity
             roombas_.at(i)->getIcon()->setSelected(true);
             roombas_.at(i)->getStartPoint()->setSelected(true);
@@ -202,7 +201,7 @@ void FleetManager::updateTimerTimeout()
             {
                 selectedRoombas_.append(roombas_.at(i));
                 // Set selected Roomba's tab active
-                mainWindow_->setSelectedRoombaTab(roombas_.at(i));
+//                mainWindow_->setSelectedRoombaTab(roombas_.at(i));
             }
         }
         else //roomba is not selected

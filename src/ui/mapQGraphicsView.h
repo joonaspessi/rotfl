@@ -27,6 +27,7 @@ public:
 
 signals:
     void mapChanged();
+    void roombaSelected();
 
 public slots:
     void mousePressEvent(QMouseEvent *event);
