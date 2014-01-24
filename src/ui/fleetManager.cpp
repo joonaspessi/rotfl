@@ -223,8 +223,8 @@ void FleetManager::addWall(WallQGraphicsLineItem* wall)
         for(unsigned int j = 0; j < vertices_.at(0).size(); ++j)
         {
             QList<QGraphicsItem*> items =
-                map_->scene()->items(vertices_.at(i).at(j)->topLeftX,
-                            vertices_.at(i).at(j)->topLeftY,
+                map_->scene()->items(vertices_[i][j]->topLeftX,
+                            vertices_[i][j]->topLeftY,
                             Util::VERTICEWIDTH, Util::VERTICEWIDTH,
                             Qt::IntersectsItemShape, Qt::AscendingOrder);
             for(QList<QGraphicsItem*>::Iterator k = items.begin();
@@ -232,7 +232,7 @@ void FleetManager::addWall(WallQGraphicsLineItem* wall)
             {
                 if(*k == wall)
                 {
-                    vertices_.at(i).at(j)->hasWall = true;
+                    vertices_[i][j]->hasWall = true;
 
                     //calculates how many vertices have to be blocked that are next to the vertice that has a wall
                     //includes some leeway (the factor 1.5), byt that is lessened by flooring
@@ -336,8 +336,8 @@ void FleetManager::removeWall(WallQGraphicsLineItem* wall)
         for(unsigned int j = 0; j < vertices_.at(0).size(); ++j)
         {
             QList<QGraphicsItem*> items =
-                map_->scene()->items(vertices_.at(i).at(j)->topLeftX,
-                            vertices_.at(i).at(j)->topLeftY,
+                map_->scene()->items(vertices_[i][j]->topLeftX,
+                            vertices_[i][j]->topLeftY,
                             Util::VERTICEWIDTH, Util::VERTICEWIDTH,
                             Qt::IntersectsItemShape, Qt::AscendingOrder);
 
@@ -361,7 +361,7 @@ void FleetManager::removeWall(WallQGraphicsLineItem* wall)
 
             if(wallFound && !anotherWallFound)
             {
-                vertices_.at(i).at(j)->hasWall = false;
+                vertices_[i][j]->hasWall = false;
             }
 
         }
@@ -376,7 +376,7 @@ void FleetManager::removeWall(WallQGraphicsLineItem* wall)
         for(unsigned int j = 0; j < vertices_.at(0).size(); ++j)
         {
             //unblocked already so checks can be skipped
-            if(!vertices_.at(i).at(j)->blocked)
+            if(!vertices_[i][j]->blocked)
             {
                 continue;
             }
@@ -415,7 +415,7 @@ void FleetManager::removeWall(WallQGraphicsLineItem* wall)
 
             if(!wallNear)
             {
-                vertices_.at(i).at(j)->blocked = false;
+                vertices_[i][j]->blocked = false;
             }
         }
     }
@@ -426,7 +426,7 @@ void FleetManager::ifShowTraces()
 {
     for (int i = 0; i < roombas_.size(); ++i)
     {
-        roombas_.at(i)->ifShowTraces();
+        roombas_[i]->ifShowTraces();
     }
 }
 
@@ -455,7 +455,7 @@ void FleetManager::go2Pois()
 
         for (int i = 0; i < pois_.size() && !managedRoombas_.empty(); ++i)
         {
-            if(!go2Poi(pois_.at(i)))
+            if(!go2Poi(pois_[i]))
             {
                 if(i == 0)
                 {
@@ -479,14 +479,14 @@ bool FleetManager::go2Poi(PoiQGraphicsEllipseItem *poi)
     for(unsigned int i = 0; i < managedRoombas_.size(); ++i)
     {
         //path calculated only for ready IRoombas
-        if(managedRoombas_.at(i)->isReady())
+        if(managedRoombas_[i]->isReady())
         {
             isReadyFound = true;
-            compareDistance = managedRoombas_.at(i)
+            compareDistance = managedRoombas_[i]
                     ->calcPath(vertices_, poi);
             if(compareDistance < distance)
             {
-                selectedRoomba = managedRoombas_.at(i);
+                selectedRoomba = managedRoombas_[i];
                 distance = compareDistance;
             }
         }
@@ -532,7 +532,7 @@ void FleetManager::stopFleet(bool wallHit)
     go2PoisOn_ = false;
     for(unsigned int i = 0; i < roombas_.size(); ++i)
     {
-        roombas_.at(i)->stop();
+        roombas_[i]->stop();
     }
 
     if(wallHit)
@@ -591,7 +591,7 @@ void FleetManager::poiCollected(Croi::IRoomba* collector, PoiQGraphicsEllipseIte
     bool unreachableExists = true;
     for(int i = 0; i < roombas_.size(); ++i)
     {
-        if(roombas_.at(i)->getDestPoi() != NULL)
+        if(roombas_[i]->getDestPoi() != NULL)
         {
             unreachableExists = false;
         }
@@ -610,12 +610,12 @@ bool FleetManager::isBlocked(QPointF* point)
     {
         for(unsigned int j = 0; j < vertices_.at(0).size(); ++j)
         {
-            if(vertices_.at(i).at(j)->topLeftX <= point->x() &&
-               vertices_.at(i).at(j)->topLeftX+Util::VERTICEWIDTH-1 >= point->x() &&
-               vertices_.at(i).at(j)->topLeftY <= point->y() &&
-               vertices_.at(i).at(j)->topLeftY+Util::VERTICEWIDTH-1 >= point->y())
+            if(vertices_[i][j]->topLeftX <= point->x() &&
+               vertices_[i][j]->topLeftX+Util::VERTICEWIDTH-1 >= point->x() &&
+               vertices_[i][j]->topLeftY <= point->y() &&
+               vertices_[i][j]->topLeftY+Util::VERTICEWIDTH-1 >= point->y())
             {
-                return vertices_.at(i).at(j)->blocked;
+                return vertices_[i][j]->blocked;
             }
         }
     }
