@@ -32,6 +32,7 @@
 #include "croi/iRoomba.h"
 #include "croi/roombaSerial.h"
 #include "croi/roombaRoowifi.h"
+#include "croi/roombaVirtual.h"
 #include "croi/croiUtil.h"
 #include "mapQGraphicsView.h"
 #include "fleetManager.h"
@@ -216,28 +217,39 @@ void MainWindow::addRoombaTab(Croi::IRoomba* roomba)
 
     roombaDashBoard_layout->addLayout(status_layout);
 
-    // Roowifi connection groupbox
+    // Roomba settings groupbox
     QVBoxLayout *connect_layout = new QVBoxLayout();
     QHBoxLayout *ipLineEdit_layout = new QHBoxLayout();
-    ip1LineEdits_.insert(roomba, new QLineEdit("192"));
-    ip2LineEdits_.insert(roomba, new QLineEdit("168"));
-    ip3LineEdits_.insert(roomba, new QLineEdit("1"));
-    ip4LineEdits_.insert(roomba, new QLineEdit("145"));
-    roombaNameLineEdits_.insert(roomba, new QLineEdit("Roomba 1"));
-    ipLineEdit_layout->addWidget(roombaNameLineEdits_.value(roomba));
-    ipLineEdit_layout->addWidget(ip1LineEdits_.value(roomba));
-    ipLineEdit_layout->addWidget(ip2LineEdits_.value(roomba));
-    ipLineEdit_layout->addWidget(ip3LineEdits_.value(roomba));
-    ipLineEdit_layout->addWidget(ip4LineEdits_.value(roomba));
-
-    connection_pushButtons_.insert(roomba, new QPushButton("Connect", this));
-    connection_pushButtons_.value(roomba)->setProperty("Connected", QVariant(false));
-    connection_pushButtons_.value(roomba)->setIcon(QIcon::fromTheme("network-wireless"));
+    QGroupBox *connect_groupBox = new QGroupBox();
+    roombaNameLineEdits_.insert(roomba, new QLineEdit(""));
+    connection_pushButtons_.insert(roomba, new QPushButton("", this));
     connect(connection_pushButtons_.value(roomba),SIGNAL(clicked()),this,SLOT(pushButton_Connection_clicked()));
+    if (qobject_cast<Croi::RoombaRoowifi*>(roomba))
+    {
+        ip1LineEdits_.insert(roomba, new QLineEdit("192"));
+        ip2LineEdits_.insert(roomba, new QLineEdit("168"));
+        ip3LineEdits_.insert(roomba, new QLineEdit("1"));
+        ip4LineEdits_.insert(roomba, new QLineEdit("145"));
+        ipLineEdit_layout->addWidget(roombaNameLineEdits_.value(roomba));
+        ipLineEdit_layout->addWidget(ip1LineEdits_.value(roomba));
+        ipLineEdit_layout->addWidget(ip2LineEdits_.value(roomba));
+        ipLineEdit_layout->addWidget(ip3LineEdits_.value(roomba));
+        ipLineEdit_layout->addWidget(ip4LineEdits_.value(roomba));
+        roombaNameLineEdits_.value(roomba)->setText(QString("Roomba %1").arg(tabWidget_->count()));
+        connection_pushButtons_.value(roomba)->setText("Connect");
+        connection_pushButtons_.value(roomba)->setProperty("Connected", QVariant("ROOWIFI-DISCONNECTED"));
+        connection_pushButtons_.value(roomba)->setIcon(QIcon::fromTheme("network-wireless"));
+        connect_groupBox->setTitle("Virtual Roomba settings");
+    }
+    else if (qobject_cast<Croi::RoombaVirtual*>(roomba))
+    {
+        ipLineEdit_layout->addWidget(roombaNameLineEdits_.value(roomba));
+        connection_pushButtons_.value(roomba)->setText("Rename");
+        roombaNameLineEdits_.value(roomba)->setText(QString("Virtual Roomba %1").arg(tabWidget_->count()));
+        connect_groupBox->setTitle("Roowifi settings");
+    }
     ipLineEdit_layout->addWidget(connection_pushButtons_.value(roomba));
     connect_layout->addLayout(ipLineEdit_layout);
-
-    QGroupBox *connect_groupBox = new QGroupBox("Roowifi connection");
     connect_groupBox->setLayout(connect_layout);
     roombaDashBoard_layout->addWidget(connect_groupBox);
 
@@ -342,7 +354,15 @@ void MainWindow::addRoombaTab(Croi::IRoomba* roomba)
     int currentIndex = tabWidget_->addTab(roombaDashBoard_widget, roombaNameLineEdits_.value(roomba)->text());
     roombaTabs_.insert(currentIndex, roomba);
     tabWidget_->setCurrentIndex(currentIndex);
-    tabWidget_->setTabIcon(currentIndex, QIcon::fromTheme("network-offline"));
+    // Virtual Roomba is always connected
+    if (qobject_cast<Croi::RoombaVirtual*>(roomba))
+    {
+        tabWidget_->setTabIcon(currentIndex, QIcon::fromTheme("network-wireless"));
+    }
+    else if (qobject_cast<Croi::RoombaRoowifi*>(roomba))
+    {
+        tabWidget_->setTabIcon(currentIndex, QIcon::fromTheme("network-offline"));
+    }
     cursor_action_->trigger();  // Change to Cursor after adding a Roomba to prevent accidentially adding too many
     fleetManagementEnable_pushButton_->setEnabled(true); // Enable starting fleet management when adding first roomba
 }
@@ -439,7 +459,9 @@ void MainWindow::handleUIElementsChangeAllTabsState(bool state)
 
 void MainWindow::pushButton_Connection_clicked()
 {
-    if (connection_pushButtons_.value(selectedRoomba_)->property("Connected") == QVariant(false))
+    tabWidget_->setTabText(tabWidget_->currentIndex(), roombaNameLineEdits_.value(selectedRoomba_)->text());
+    // "Connected" property is only set for RoombaRoowifi
+    if (connection_pushButtons_.value(selectedRoomba_)->property("Connected") == QVariant("ROOWIFI-DISCONNECTED"))
     {
         QString ip = ip1LineEdits_.value(selectedRoomba_)->text() + "." + ip2LineEdits_.value(selectedRoomba_)->text()
                 + "." + ip3LineEdits_.value(selectedRoomba_)->text() + "." + ip4LineEdits_.value(selectedRoomba_)->text();
@@ -452,9 +474,9 @@ void MainWindow::pushButton_Connection_clicked()
         (*flog.ts) << "Connect Button pressed." << endl;
     }
 
-    else
+    else if(connection_pushButtons_.value(selectedRoomba_)->property("Connected") == QVariant("ROOWIFI-CONNECTED"))
     {
-        connection_pushButtons_.value(selectedRoomba_)->setProperty("Connected", QVariant(false));
+        connection_pushButtons_.value(selectedRoomba_)->setProperty("Connected", QVariant("ROOWIFI-DISCONNECTED"));
         connection_pushButtons_.value(selectedRoomba_)->setText("Connect");
         connection_pushButtons_.value(selectedRoomba_)->setIcon(QIcon::fromTheme("network-wireless"));
         fleetManager_->disconnect();
@@ -467,11 +489,10 @@ void MainWindow::pushButton_Connection_clicked()
 
 void MainWindow::connectionEstablished()
 {
-    connection_pushButtons_.value(selectedRoomba_)->setProperty("Connected", QVariant(true));
+    connection_pushButtons_.value(selectedRoomba_)->setProperty("Connected", QVariant("ROOWIFI-CONNECTED"));
     connection_pushButtons_.value(selectedRoomba_)->setText("Disconnect");
     connection_pushButtons_.value(selectedRoomba_)->setEnabled(true);
     connection_pushButtons_.value(selectedRoomba_)->setIcon(QIcon::fromTheme("network-offline"));
-    tabWidget_->setTabText(tabWidget_->currentIndex(), roombaNameLineEdits_.value(selectedRoomba_)->text());
     tabWidget_->setTabIcon(tabWidget_->currentIndex(), QIcon::fromTheme("network-wireless"));
     allMotors_pushButtons_.value(selectedRoomba_)->setEnabled(true);
     playSong_pushButtons_.value(selectedRoomba_)->setEnabled(true);
@@ -509,10 +530,13 @@ void MainWindow::handleUIElementsControlModeStateChange(bool state)
 {
     for (auto roomba : roombaTabs_.values())
     {
-        ip1LineEdits_.value(roomba)->setDisabled(state);
-        ip2LineEdits_.value(roomba)->setDisabled(state);
-        ip3LineEdits_.value(roomba)->setDisabled(state);
-        ip4LineEdits_.value(roomba)->setDisabled(state);
+        if (qobject_cast<Croi::RoombaRoowifi*>(roomba))
+        {
+            ip1LineEdits_.value(roomba)->setDisabled(state);
+            ip2LineEdits_.value(roomba)->setDisabled(state);
+            ip3LineEdits_.value(roomba)->setDisabled(state);
+            ip4LineEdits_.value(roomba)->setDisabled(state);
+        }
         roombaNameLineEdits_.value(roomba)->setDisabled(state);
         connection_pushButtons_.value(roomba)->setDisabled(state);
         allMotors_pushButtons_.value(roomba)->setDisabled(state);
