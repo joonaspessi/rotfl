@@ -28,14 +28,15 @@
 #include "ui_mainwindow.h"
 #include <qfunctions_wince.h>
 
-#include "croi/iRoomba.h"
-#include "croi/roombaSerial.h"
-#include "croi/roombaRoowifi.h"
-#include "croi/roombaVirtual.h"
-#include "croi/croiUtil.h"
+#include "../croi/iRoomba.h"
+#include "../croi/roombaRoowifi.h"
+#include "../croi/roombaVirtual.h"
+#include "../croi/croiUtil.h"
 #include "mapQGraphicsView.h"
 #include "fleetManager.h"
 #include "flogger.h"
+
+#include <QQmlExtensionPlugin>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),

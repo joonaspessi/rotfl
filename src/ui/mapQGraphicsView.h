@@ -6,7 +6,7 @@
 #include "atcQGraphicsRectItem.h"
 #include "uiUtils.h"
 #include <QMouseEvent>
-#include "croi/iRoomba.h"
+#include "../croi/iRoomba.h"
 
 //#include "fleetManager.h"
 

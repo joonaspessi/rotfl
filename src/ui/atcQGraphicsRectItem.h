@@ -5,7 +5,7 @@
 #include <QGraphicsSceneMouseEvent>
 
 class FleetManager;
-class Q_WIDGETS_EXPORT AtcQGraphicsRectItem:
+class AtcQGraphicsRectItem:
         public QGraphicsRectItem
 {
 public:

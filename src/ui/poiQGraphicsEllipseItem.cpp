@@ -3,8 +3,8 @@
 #include <QDebug>
 #include <QStyleOption>
 #include <QMenu>
-#include <uiUtils.h>
-#include <fleetManager.h>
+#include "uiUtils.h"
+#include "fleetManager.h"
 
 PoiQGraphicsEllipseItem::PoiQGraphicsEllipseItem
 (FleetManager* fleetManager, qreal x, qreal y, qreal w, qreal h, QGraphicsItem* parent):

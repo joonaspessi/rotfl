@@ -1,6 +1,6 @@
 #include "roombaRoowifi.h"
 #include "croiUtil.h"
-#include "mapQGraphicsView.h"
+#include "../ui/mapQGraphicsView.h"
 
 namespace Croi {
 
@@ -37,6 +37,7 @@ int RoombaRoowifi::rmb_connect(std::string ip)
     roowifi_->StartAutoCapture();
     //Check after one second if the connection was established
     QTimer::singleShot(2000, this, SLOT(reconnectCallback_timerTimeout()));
+    return 0;
 }
 
 void RoombaRoowifi::reconnectCallback_timerTimeout()
@@ -70,6 +71,7 @@ int RoombaRoowifi::disconnect()
     roowifi_->StopAutoCapture();
     roowifi_->Disconnect();
     IRoomba::disconnect();
+    return 0;
 }
 
 void RoombaRoowifi::safeMode()

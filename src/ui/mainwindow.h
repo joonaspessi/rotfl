@@ -9,8 +9,7 @@
 #include <QSlider>
 #include <QPushButton>
 #include <QToolButton>
-#include "croi/posixSerial.h"
-#include "croi/iRoomba.h"
+#include "../croi/iRoomba.h"
 #include "mapQGraphicsView.h"
 #include "uiUtils.h"
 

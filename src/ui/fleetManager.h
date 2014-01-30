@@ -2,7 +2,7 @@
 #define FLEETMANAGER_H
 
 #include <QObject>
-#include <croi/iRoomba.h>
+#include "../croi/iRoomba.h"
 #include "wallQGraphicsLineItem.h"
 #include "atcQGraphicsRectItem.h"
 #include "poiQGraphicsEllipseItem.h"

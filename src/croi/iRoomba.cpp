@@ -1,6 +1,6 @@
 #include "iRoomba.h"
-#include "mapQGraphicsView.h"
-#include "fleetManager.h"
+#include "../ui/mapQGraphicsView.h"
+#include "../ui/fleetManager.h"
 #include "QDebug"
 #include <QObject>
 #include <queue>

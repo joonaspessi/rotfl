@@ -4,20 +4,19 @@
 #
 #-------------------------------------------------
 
-QT       += core gui network quick
+QT       += core gui network quick qml widgets opengl
 
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = rotfl
 TEMPLATE = app
 
-unix:INCLUDEPATH += "../"
+INCLUDEPATH += "..//"
 QMAKE_CXXFLAGS += -std=c++0x
+
+CONFIG += static
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    ../croi/posixSerial.cpp \
-    ../croi/roombaSerial.cpp \
     mapQGraphicsView.cpp \
     poiQGraphicsEllipseItem.cpp \
     ../../ext_lib/RooWifi_11b/roowifi.cpp \
@@ -30,11 +29,7 @@ SOURCES += main.cpp\
     atcQGraphicsRectItem.cpp
 
 HEADERS  += mainwindow.h \
-    ../croi/posixSerialUtils.h \
-    ../croi/posixSerial.h \
     ../croi/iRoomba.h \
-    ../croi/roombaSerial.h \
-    ../croi/croiUtil.h \
     poiQGraphicsEllipseItem.h \
     mapQGraphicsView.h \
     ../../ext_lib/RooWifi_11b/roowifi.h \
@@ -51,5 +46,7 @@ FORMS    += mainwindow.ui
 
 RESOURCES += \
     graphics.qrc
+
+
 OTHER_FILES += \
     qml/gauges.qml

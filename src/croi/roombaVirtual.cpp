@@ -1,6 +1,6 @@
 #include "roombaVirtual.h"
 #include "croiUtil.h"
-#include "mapQGraphicsView.h"
+#include "../ui/mapQGraphicsView.h"
 #include <QDebug>
 
 namespace Croi {
@@ -25,12 +25,14 @@ int RoombaVirtual::rmb_connect(std::string ip)
     connect(statusTimer_, SIGNAL(timeout()), this, SLOT(statusTimerTimeout()));
     statusTimer_->setSingleShot(false);
     statusTimer_->start(100);
+    return 0;
 }
 
 int RoombaVirtual::disconnect()
 {
     statusTimer_->stop();
     IRoomba::disconnect();
+    return 0;
 }
 
 void RoombaVirtual::allMotorsOn()

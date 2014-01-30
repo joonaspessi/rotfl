@@ -7,10 +7,10 @@
 #include <QGraphicsPolygonItem>
 #include <QPointF>
 #include <QStack>
-#include "poiQGraphicsEllipseItem.h"
-#include "uiUtils.h"
+#include "../ui/poiQGraphicsEllipseItem.h"
+#include "../ui/uiUtils.h"
 #include <queue>
-#include "atcQGraphicsRectItem.h"
+#include "../ui/atcQGraphicsRectItem.h"
 
 class MapQGraphicsView;
 class FleetManager;
