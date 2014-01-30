@@ -427,7 +427,7 @@ void IRoomba::go2Point(QPointF point)
     }
     else
     {
-        driveTime_= round((distance*100.0*100.0/FWSPEED)*1.3);
+        driveTime_= round((distance*100.0*100.0/FWSPEED)*1.25);
     }
 
     qDebug() << "turningAngle: " << tabs << "ttime: " << turnTime;
