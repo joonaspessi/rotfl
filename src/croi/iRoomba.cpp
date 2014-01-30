@@ -9,6 +9,7 @@
 #include <limits>
 #include "croiUtil.h"
 #include <QMessageBox>
+#include "roombaVirtual.h"
 
 namespace Croi {
 
@@ -418,7 +419,16 @@ void IRoomba::go2Point(QPointF point)
     float tabs = fabs(turningAngle*(180.0/Util::PI));
     float distance = sqrt(pow(deltaX,2.0)+pow(deltaY,2.0))*Util::COORDCORRECTION;
     int turnTime = round(tabs*TURNTIMEINUSFORDEG/1000.0);
-    driveTime_= round(distance*100.0*100.0/FWSPEED);
+    //driveTime_ is calculated. It needs to be corrected with a real roomba
+    //by a factor of around 1.3
+    if(qobject_cast<RoombaVirtual*>(this))
+    {
+        driveTime_= round(distance*100.0*100.0/FWSPEED);
+    }
+    else
+    {
+        driveTime_= round((distance*100.0*100.0/FWSPEED)*1.3);
+    }
 
     qDebug() << "turningAngle: " << tabs << "ttime: " << turnTime;
     qDebug() << "distance: " << distance << "dtime: " << driveTime_;
