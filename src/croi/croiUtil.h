@@ -9,7 +9,7 @@ namespace Croi {
 //these are to correct the values we get from Roomba, whics should be in degrees
 //and mm but have to actually be multiplied with these corections to
 const double ANGLECORRECTION = 3.057;
-const double DISTANCECORRECTION = 6.1;
+const double DISTANCECORRECTION = 8.133;
 const double PI = 3.14159265;
 const unsigned int FWSPEED = 100;  //this DOES NOT affect turning speed (100)
 //Roomba turns 1 degree in 18055 microseconds, when speed is 100

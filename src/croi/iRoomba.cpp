@@ -183,7 +183,7 @@ void IRoomba::updateState()
     {
         FleetManager *fleetManager = qobject_cast<FleetManager*>(parent());
 
-        if(destPoi_ != NULL)
+        if(destPoi_ != NULL || cleaning_)
         {
             fleetManager->stopFleet(true);
         }
@@ -427,7 +427,7 @@ void IRoomba::go2Point(QPointF point)
     }
     else
     {
-        driveTime_= round((distance*100.0*100.0/FWSPEED)*1.25);
+        driveTime_= (distance*100.0*100.0/FWSPEED)*0.85;
     }
 
     qDebug() << "turningAngle: " << tabs << "ttime: " << turnTime;
