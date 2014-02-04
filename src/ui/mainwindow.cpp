@@ -1174,13 +1174,17 @@ void MainWindow::tabChanged_triggered(int index)
 
 void MainWindow::stopAllManuallyControlledRoombas()
 {
-    for (auto roomba : roombaTabs_.values())
+    // Don't stop Roombas when fleetmanagement is going on
+    if (fleetManagementEnable_pushButton_->property("Enabled")  == QVariant(false))
     {
-        roomba->drive(0, Util::RADSTRAIGHT);
-        driveForward_toolButtons_.value(roomba)->setChecked(false);
-        driveBackward_toolButtons_.value(roomba)->setChecked(false);
-        turnCcw_pushButtons_.value(roomba)->setChecked(false);
-        turnCw_pushButtons_.value(roomba)->setChecked(false);
+        for (auto roomba : roombaTabs_.values())
+        {
+            roomba->drive(0, Util::RADSTRAIGHT);
+            driveForward_toolButtons_.value(roomba)->setChecked(false);
+            driveBackward_toolButtons_.value(roomba)->setChecked(false);
+            turnCcw_pushButtons_.value(roomba)->setChecked(false);
+            turnCw_pushButtons_.value(roomba)->setChecked(false);
+        }
     }
 }
 
