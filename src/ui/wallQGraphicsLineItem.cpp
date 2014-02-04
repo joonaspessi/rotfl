@@ -1,9 +1,9 @@
-#include "wallQGraphicsLineItem.h"
-#include "mapQGraphicsView.h"
-#include <QStyleOption>
 #include <QMenu>
-#include <uiUtils.h>
-#include <fleetManager.h>
+#include <QStyleOption>
+#include "fleetManager.h"
+#include "mapQGraphicsView.h"
+#include "uiUtils.h"
+#include "wallQGraphicsLineItem.h"
 
 WallQGraphicsLineItem::WallQGraphicsLineItem
 (FleetManager* fleetManager, qreal x1, qreal y1, qreal x2, qreal y2, QGraphicsItem *parent):

@@ -2,13 +2,11 @@
 #define MAPQGRAPHICSVIEW_H
 
 #include <QGraphicsView>
-#include "wallQGraphicsLineItem.h"
-#include "atcQGraphicsRectItem.h"
-#include "uiUtils.h"
 #include <QMouseEvent>
-#include "croi/iRoomba.h"
-
-//#include "fleetManager.h"
+#include "atcQGraphicsRectItem.h"
+#include "iRoomba.h"
+#include "uiUtils.h"
+#include "wallQGraphicsLineItem.h"
 
 class FleetManager;
 

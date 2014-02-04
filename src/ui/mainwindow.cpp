@@ -16,26 +16,22 @@
 #include <QMessageBox>
 #include <QQuickView>
 #include <QtQml>
+#include <cmath>
+#include <unistd.h>
 #include <QtQuick>
 #include <QTabWidget>
 #include <QGroupBox>
 #include <QGridLayout>
-
-#include <cmath>
-#include <unistd.h>
-
-#include "mainwindow.h"
-#include "ui_mainwindow.h"
 #include <qfunctions_wince.h>
-
-#include "croi/iRoomba.h"
-#include "croi/roombaSerial.h"
-#include "croi/roombaRoowifi.h"
-#include "croi/roombaVirtual.h"
-#include "croi/croiUtil.h"
-#include "mapQGraphicsView.h"
+#include "croiUtil.h"
 #include "fleetManager.h"
 #include "flogger.h"
+#include "iRoomba.h"
+#include "mainwindow.h"
+#include "mapQGraphicsView.h"
+#include "roombaRoowifi.h"
+#include "roombaVirtual.h"
+#include "ui_mainwindow.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),

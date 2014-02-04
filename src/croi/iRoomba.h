@@ -2,15 +2,15 @@
 #define IROOMBA_H
 
 #include <exception>
+#include <queue>
 #include <string>
-#include <QObject>
 #include <QGraphicsPolygonItem>
+#include <QObject>
 #include <QPointF>
 #include <QStack>
+#include "atcQGraphicsRectItem.h"
 #include "poiQGraphicsEllipseItem.h"
 #include "uiUtils.h"
-#include <queue>
-#include "atcQGraphicsRectItem.h"
 
 class MapQGraphicsView;
 class FleetManager;

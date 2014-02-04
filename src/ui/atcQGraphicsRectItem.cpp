@@ -1,9 +1,9 @@
-#include "atcQGraphicsRectItem.h"
-#include "mapQGraphicsView.h"
-#include "fleetManager.h"
-#include "uiUtils.h"
-#include <QStyleOption>
 #include <QMenu>
+#include <QStyleOption>
+#include "atcQGraphicsRectItem.h"
+#include "fleetManager.h"
+#include "mapQGraphicsView.h"
+#include "uiUtils.h"
 
 AtcQGraphicsRectItem::AtcQGraphicsRectItem
 (FleetManager* fleetManager, qreal x, qreal y, qreal w, qreal h, QGraphicsItem *parent):

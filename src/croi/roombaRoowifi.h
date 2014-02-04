@@ -1,8 +1,8 @@
 #ifndef ROOMBAROOWIFI_H
 #define ROOMBAROOWIFI_H
 
+#include "roowifi.h"
 #include "iRoomba.h"
-#include "../ext_lib/RooWifi_11b/roowifi.h"
 
 namespace Croi {
 

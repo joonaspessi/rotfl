@@ -6,7 +6,7 @@
 
 class FleetManager;
 
-class Q_WIDGETS_EXPORT PoiQGraphicsEllipseItem:
+class PoiQGraphicsEllipseItem:
         public QGraphicsEllipseItem
 {
 public:

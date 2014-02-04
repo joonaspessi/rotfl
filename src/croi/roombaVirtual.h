@@ -1,9 +1,9 @@
 #ifndef ROOMBAVIRTUAL_H
 #define ROOMBAVIRTUAL_H
 
-#include "iRoomba.h"
-#include <QTimer>
 #include <QGraphicsPixmapItem>
+#include <QTimer>
+#include "iRoomba.h"
 
 namespace Croi {
 

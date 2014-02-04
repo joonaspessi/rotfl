@@ -2,8 +2,8 @@
 #define UIUTILS_H
 
 #include <limits>
-#include <QGraphicsItem>
 #include <cmath>
+#include <QGraphicsItem>
 
 namespace Util {
 

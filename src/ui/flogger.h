@@ -1,8 +1,8 @@
 #ifndef FLOGGER_H
 #define FLOGGER_H
 
-#include <qfile.h>
-#include <qtextstream.h>
+#include <QFile>
+#include <QTextStream>
 
 class Flogger
 {

@@ -1,16 +1,14 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include <QMainWindow>
-#include <QStandardItemModel>
 #include <QGraphicsScene>
 #include <QLabel>
 #include <QLineEdit>
-#include <QSlider>
+#include <QMainWindow>
 #include <QPushButton>
+#include <QSlider>
 #include <QToolButton>
-#include "croi/posixSerial.h"
-#include "croi/iRoomba.h"
+#include "iRoomba.h"
 #include "mapQGraphicsView.h"
 #include "uiUtils.h"
 

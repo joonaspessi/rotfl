@@ -1,16 +1,16 @@
 #ifndef FLEETMANAGER_H
 #define FLEETMANAGER_H
 
-#include <QObject>
-#include <croi/iRoomba.h>
-#include "wallQGraphicsLineItem.h"
-#include "atcQGraphicsRectItem.h"
-#include "poiQGraphicsEllipseItem.h"
+#include "math.h"
 #include <set>
 #include <string>
-#include <QVector>
+#include <QObject>
 #include <QTimer>
-#include "math.h"
+#include <QVector>
+#include "atcQGraphicsRectItem.h"
+#include "iRoomba.h"
+#include "poiQGraphicsEllipseItem.h"
+#include "wallQGraphicsLineItem.h"
 
 #include <limits>
 #include "uiUtils.h"

@@ -1,13 +1,13 @@
-#include "mainwindow.h"
-#include "fleetManager.h"
-#include "croi/roombaRoowifi.h"
+#include <limits>
 #include <QDebug>
-#include <QObject>
 #include <QList>
 #include <QMessageBox>
+#include <QObject>
+#include "fleetManager.h"
+#include "mainwindow.h"
+#include "roombaRoowifi.h"
+#include "roombaVirtual.h"
 #include "uiUtils.h"
-#include <limits>
-#include "croi/roombaVirtual.h"
 
 FleetManager::FleetManager(MainWindow* mainWindow, QObject *parent):
     QObject(parent), mainWindow_(mainWindow), map_(NULL), go2PoisOn_(false),

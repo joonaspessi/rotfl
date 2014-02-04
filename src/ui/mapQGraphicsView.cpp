@@ -1,16 +1,16 @@
-#include "mapQGraphicsView.h"
-#include <QPointF>
-#include <QReadLocker>
-#include "poiQGraphicsEllipseItem.h"
-#include "wallQGraphicsLineItem.h"
-#include "atcQGraphicsRectItem.h"
-#include "fleetManager.h"
-#include <iostream>
-#include "mainwindow.h"
 #include <cmath>
+#include <iostream>
 #include <QDebug>
 #include <QMessageBox>
+#include <QPointF>
+#include <QReadLocker>
+#include "atcQGraphicsRectItem.h"
+#include "fleetManager.h"
 #include "flogger.h"
+#include "mainwindow.h"
+#include "mapQGraphicsView.h"
+#include "poiQGraphicsEllipseItem.h"
+#include "wallQGraphicsLineItem.h"
 
 MapQGraphicsView::MapQGraphicsView(FleetManager* fleetManager, QWidget* parent) :
     QGraphicsView(parent), wallToBeAddedStartPoint_(NULL), atcToBeAddedStartPoint_(NULL),

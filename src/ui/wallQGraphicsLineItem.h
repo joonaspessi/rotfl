@@ -6,7 +6,7 @@
 
 class FleetManager;
 
-class Q_WIDGETS_EXPORT WallQGraphicsLineItem:
+class WallQGraphicsLineItem:
         public QGraphicsLineItem
 {
 public:

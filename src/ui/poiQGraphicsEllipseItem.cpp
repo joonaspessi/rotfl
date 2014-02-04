@@ -1,10 +1,10 @@
-#include "poiQGraphicsEllipseItem.h"
-#include "mapQGraphicsView.h"
 #include <QDebug>
-#include <QStyleOption>
 #include <QMenu>
-#include <uiUtils.h>
-#include <fleetManager.h>
+#include <QStyleOption>
+#include "fleetManager.h"
+#include "mapQGraphicsView.h"
+#include "poiQGraphicsEllipseItem.h"
+#include "uiUtils.h"
 
 PoiQGraphicsEllipseItem::PoiQGraphicsEllipseItem
 (FleetManager* fleetManager, qreal x, qreal y, qreal w, qreal h, QGraphicsItem* parent):
